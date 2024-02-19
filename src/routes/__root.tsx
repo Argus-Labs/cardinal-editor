@@ -3,6 +3,7 @@ import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
 
 import logo from '@/assets/logo.svg'
 import { Input } from '@/components/ui/input'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // Show dev tools only in development
 // src: https://tanstack.com/router/latest/docs/framework/react/devtools
@@ -25,6 +26,7 @@ export const Route = createRootRoute({
           </Link>
           {/* TODO: connect with running cardinal instance */}
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <div className="size-2 rounded-full bg-green-500 flex-shrink-0" />
             <label htmlFor="host" className="flex-shrink-0 text-sm">Cardinal URL</label>
             <Input id="host" placeholder="localhost:3333" value="localhost:3333" />

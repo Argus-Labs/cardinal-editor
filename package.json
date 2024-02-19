@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-router": "^1.16.6",
     "@tanstack/router-devtools": "^1.16.6",
     "class-variance-authority": "^0.7.0",
