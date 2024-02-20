@@ -45,7 +45,7 @@ export const Route = createRootRoute({
         </nav>
       </header>
       <main className="flex min-h-[calc(100%-3rem-1px)]">
-        <aside className="flex flex-col justify-between px-3 py-2 min-w-64 border-r text-sm">
+        <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 border-r text-sm">
           <div>
             {sidebarNav.map((item) => (
               <p className="font-bold px-2 py-1">{item.title}</p>
@@ -53,7 +53,7 @@ export const Route = createRootRoute({
           </div>
           <ThemeToggle className="self-end" />
         </aside>
-        <div className="bg-muted w-full px-3 py-2">
+        <div className="bg-muted w-full px-4 pt-4 pb-2">
           <Outlet />
         </div>
       </main>
