@@ -78,3 +78,7 @@
 html {
   font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', Arial, sans-serif;
 }
+
+html, body, #root {
+  height: 100%;
+}
