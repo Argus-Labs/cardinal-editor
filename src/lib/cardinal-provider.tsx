@@ -32,7 +32,7 @@ export function CardinalProvider({
   useEffect(() => {
     const ping = async () => {
       try {
-        const res = await fetch(cardinalUrl)
+        const res = await fetch(`${cardinalUrl}/health`)
         setIsCardinalConnected(res.ok)
       } catch (error) {
         setIsCardinalConnected(false)
