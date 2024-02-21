@@ -1,3 +1,4 @@
+import { EntityCard } from '@/components/entity-card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
@@ -17,15 +18,16 @@ function Index() {
       const res = await fetch(`${cardinalUrl}/debug/state`)
       return await res.json()
     },
+    refetchInterval: 1000,
   })
 
   return (
     <>
-      <Tabs defaultValue="card">
+      <Tabs defaultValue="card" className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Entities</h1>
           <div className="flex items-center gap-4">
-            <TabsList className="bg-background ">
+            <TabsList className="bg-background border">
               <TabsTrigger value="card" className="data-[state=active]:bg-muted px-2">
                 <LayoutGrid size={20} />
               </TabsTrigger>
@@ -37,8 +39,11 @@ function Index() {
           </div>
         </div>
         <TabsContent value="card">
-          entities displayed in card view
-          {JSON.stringify(entities)}
+          <div className="grid grid-cols-4 gap-4">
+            {entities?.map((entity: any) => (
+              <EntityCard key={entity.id} entity={entity} />
+            ))}
+          </div>
         </TabsContent>
         <TabsContent value="list">
           in construction...
