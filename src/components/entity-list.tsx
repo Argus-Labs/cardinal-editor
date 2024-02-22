@@ -19,8 +19,8 @@ export function EntityList({ entities }: EntityListProps) {
               asChild
               className="px-3 py-2 border border-t-0 border-border rounded-b-lg bg-background whitespace-pre-wrap text-xs"
             >
-              {entity.data.map((component: any) => (
-                <p>{JSON.stringify(component, null, 2)}</p>
+              {entity.data.map((component: any, i: number) => (
+                <p key={i}>{JSON.stringify(component, null, 2)}</p>
               ))}
             </AccordionContent>
           </AccordionItem>

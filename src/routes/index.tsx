@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
 
-import { EntityCard } from '@/components/entity-card';
+import { EntityCards } from '@/components/entity-cards';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
@@ -61,11 +61,7 @@ function Index() {
         ) : (
           <>
             <TabsContent value="card">
-              <div className="grid grid-cols-4 gap-4">
-                {entities?.map((entity: any) => (
-                  <EntityCard key={entity.id} entity={entity} />
-                ))}
-              </div>
+              <EntityCards entities={entities} />
             </TabsContent>
             <TabsContent value="list">
               <EntityList entities={entities} />
