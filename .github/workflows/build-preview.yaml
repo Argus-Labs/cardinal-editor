@@ -93,14 +93,19 @@ jobs:
         working-directory: ./dist
         run: |
           export VERCEL_ENV="preview"
-          [[ "${{ github.ref }}" == "refs/heads/main"  ]] && export VERCEL_ENV="production" && export ARGS="--prod"
+          export SLACK_ENV="Development"
+          if [[ "${{ github.ref }}" == "refs/heads/main"  ]]; then
+            export ARGS="--prod"
+            export VERCEL_ENV="production"
+            export SLACK_ENV="Production"
+          fi
 
           vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} $ARGS 2>&1 | tee output.txt
 
           ## Get Vercel deploy URL and store as job steps output
           echo "inspect_url=$(cat output.txt  | grep Inspect | grep -Eo "https://[a-zA-Z0-9./?=_%:-]*")" >> "$GITHUB_OUTPUT"
           echo "preview_url=$(cat output.txt  | grep -i $VERCEL_ENV | grep -Eo "https://[a-zA-Z0-9./?=_%:-]*")" >> "$GITHUB_OUTPUT"
-          echo "environment=$VERCEL_ENV" >> "$GITHUB_OUTPUT"
+          echo "environment=$SLACK_ENV" >> "$GITHUB_OUTPUT"
 
       - name: Post Vercel Preview URL to PR Comment
         if: ${{ github.event_name == 'pull_request' }}
