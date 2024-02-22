@@ -4,14 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, Unlink } from 'lucide-react';
 
 export const Route = createFileRoute('/')({
   component: Index,
 })
 
 function Index() {
-  const { cardinalUrl } = useCardinal()
+  const { cardinalUrl, isCardinalConnected } = useCardinal()
   const { data: entities } = useQuery({
     queryKey: ['state'],
     queryFn: async () => {
@@ -19,6 +19,7 @@ function Index() {
       return await res.json()
     },
     refetchInterval: 1000,
+    enabled: isCardinalConnected,
   })
 
   return (
@@ -38,16 +39,28 @@ function Index() {
             <Button>New archetype</Button>
           </div>
         </div>
-        <TabsContent value="card">
-          <div className="grid grid-cols-4 gap-4">
-            {entities?.map((entity: any) => (
-              <EntityCard key={entity.id} entity={entity} />
-            ))}
+        {!isCardinalConnected ? (
+          <div className="flex flex-col gap-4 items-center pt-72">
+            <Unlink size={40} strokeWidth={2.5} className="text-muted-foreground" />
+            <div className="space-y-2 text-center">
+              <p className="text-lg font-semibold">Not Connected</p>
+              <p className="text-muted-foreground">Make sure you have a running Cardinal instance!</p>
+            </div>
           </div>
-        </TabsContent>
-        <TabsContent value="list">
-          in construction...
-        </TabsContent>
+        ) : (
+          <>
+            <TabsContent value="card">
+              <div className="grid grid-cols-4 gap-4">
+                {entities?.map((entity: any) => (
+                  <EntityCard key={entity.id} entity={entity} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="list">
+              in construction...
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </>
   )
