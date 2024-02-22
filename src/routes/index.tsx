@@ -6,6 +6,7 @@ import { EntityCard } from '@/components/entity-card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
+import { EntityList } from '@/components/entity-list';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -67,7 +68,7 @@ function Index() {
               </div>
             </TabsContent>
             <TabsContent value="list">
-              in construction...
+              <EntityList entities={entities} />
             </TabsContent>
           </>
         )}
