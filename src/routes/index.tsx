@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { EntityList } from '@/components/entity-list';
+import { useConfig } from '@/lib/config-provider';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -23,11 +24,16 @@ function Index() {
     refetchInterval: 1000,
     enabled: isCardinalConnected,
   })
+  const { config, setConfig } = useConfig()
   const hasNoEntities = !(entities && entities.length > 0)
+
+  const handleTabSwitch = (view: string) => {
+    setConfig({ ...config, view })
+  }
 
   return (
     <>
-      <Tabs defaultValue="card" className="space-y-6">
+      <Tabs defaultValue={config.view} onValueChange={handleTabSwitch} className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Entities</h1>
           <div className="flex items-center gap-4">

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { ThemeProvider } from '@/lib/theme-provider'
 import { CardinalProvider } from '@/lib/cardinal-provider'
+import { ConfigProvider } from '@/lib/config-provider'
 import { routeTree } from './routeTree.gen'
 import './index.css'
 
@@ -29,9 +30,11 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <QueryClientProvider client={queryClient}>
-          <CardinalProvider>
-            <RouterProvider router={router} />
-          </CardinalProvider>
+          <ConfigProvider>
+            <CardinalProvider>
+              <RouterProvider router={router} />
+            </CardinalProvider>
+          </ConfigProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </StrictMode>,
