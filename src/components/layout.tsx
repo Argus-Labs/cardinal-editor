@@ -36,8 +36,8 @@ export function Layout({ children, sidebarItems }: LayoutProps) {
       <main className="flex min-h-[calc(100%-3rem-1px)]">
         <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 border-r text-sm">
           <div>
-            {sidebarItems.map((item) => (
-              <p className="font-bold px-2 py-1">{item.title}</p>
+            {sidebarItems.map((item, i) => (
+              <p key={i} className="font-bold px-2 py-1">{item.title}</p>
             ))}
           </div>
           <ThemeToggle className="self-end" />

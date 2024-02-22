@@ -6,8 +6,15 @@ import { ThemeProvider } from '@/lib/theme-provider'
 import { routeTree } from './routeTree.gen'
 import './index.css'
 import { CardinalProvider } from './lib/cardinal-provider'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-const router = createRouter({ routeTree })
+const queryClient = new QueryClient()
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+  defaultPreload: 'intent',
+  defaultPreloadStaleTime: 0,
+})
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -21,9 +28,11 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <CardinalProvider>
-          <RouterProvider router={router} />
-        </CardinalProvider>
+        <QueryClientProvider client={queryClient}>
+          <CardinalProvider>
+            <RouterProvider router={router} />
+          </CardinalProvider>
+        </QueryClientProvider>
       </ThemeProvider>
     </StrictMode>,
   )
