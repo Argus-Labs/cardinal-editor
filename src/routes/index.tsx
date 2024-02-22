@@ -1,10 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
+
 import { EntityCard } from '@/components/entity-card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { LayoutGrid, List, Unlink } from 'lucide-react';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -21,6 +22,7 @@ function Index() {
     refetchInterval: 1000,
     enabled: isCardinalConnected,
   })
+  const hasNoEntities = !(entities && entities.length > 0)
 
   return (
     <>
@@ -45,6 +47,14 @@ function Index() {
             <div className="space-y-2 text-center">
               <p className="text-lg font-semibold">Not Connected</p>
               <p className="text-muted-foreground">Make sure you have a running Cardinal instance!</p>
+            </div>
+          </div>
+        ) : hasNoEntities ? (
+          <div className="flex flex-col gap-4 items-center pt-72 col-span-4">
+            <Box size={40} strokeWidth={2.5} className="text-muted-foreground" />
+            <div className="space-y-2 text-center">
+              <p className="text-lg font-semibold">No Entities Found</p>
+              <p className="text-muted-foreground">Create entities in Cardinal to display them here</p>
             </div>
           </div>
         ) : (
