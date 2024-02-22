@@ -22,7 +22,7 @@ export function EntityList({ entities }: EntityListProps) {
             >
               <div className="px-3 py-2 space-y-2">
                 {entity.data.map((component: any, i: number) => (
-                  <ComponentDetails component={component} id={i} />
+                  <ComponentDetails key={i} component={component} id={i} />
                 ))}
               </div>
             </AccordionContent>
