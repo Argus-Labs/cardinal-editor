@@ -18,7 +18,7 @@ export function ComponentDetails({ component, id }: ComponentDetailsProps) {
   const attributes = Object.keys(component)
   return (
     // 0.8125rem / 13px since the default sizes are too small/big
-    <details className="space-y-1 text-[0.8125rem]">
+    <details open className="space-y-1 text-[0.8125rem]">
       {/* TODO: change to component name once it is in the payload */}
       <summary className="font-bold">
         Component {id}
