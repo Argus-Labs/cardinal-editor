@@ -1,0 +1,132 @@
+name: Build Preview
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: namespace-profile-default-cached
+    steps:
+      - name: Checkout Cardinal Editor
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Upload Build to GitHub Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cardinal-editor-build-${{ github.run_id }}
+          path: ./dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: namespace-profile-default-cached
+    outputs:
+      vercel_inspect_url: ${{ steps.deploy.outputs.inspect_url }}
+      vercel_preview_url: ${{ steps.deploy.outputs.preview_url }}
+      vercel_environment: ${{ steps.deploy.outputs.environment }}
+    steps:
+      - name: Download Artifact From GitHub
+        uses: actions/download-artifact@v4
+        with:
+          name: cardinal-editor-build-${{ github.run_id }}
+          path: ./dist
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Fix File Ownership
+        run: |
+          sudo chown -R $USER ./dist
+
+      - name: Set Local Shell Environment Variable
+        run: |
+          echo "VERCEL_ORG_ID=${{ secrets.VERCEL_ORG_ID }}" >> $GITHUB_ENV
+          echo "VERCEL_PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID }}" >> $GITHUB_ENV
+
+      - name: Pull Vercel Environment Information
+        working-directory: ./dist
+        run: |
+          export VERCEL_ENV="preview"
+          [[ "${{ github.ref }}" == "refs/heads/main"  ]] && export VERCEL_ENV="production"
+
+          vercel pull --yes --environment=$VERCEL_ENV --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        working-directory: ./dist
+        run: |
+          [[ "${{ github.ref }}" == "refs/heads/main"  ]] && export ARGS="--prod"
+          vercel build --token=${{ secrets.VERCEL_TOKEN }} $ARGS
+
+      - name: Deploy
+        id: deploy
+        working-directory: ./dist
+        run: |
+          export VERCEL_ENV="preview"
+          export SLACK_ENV="Development"
+          if [[ "${{ github.ref }}" == "refs/heads/main"  ]]; then
+            export ARGS="--prod"
+            export VERCEL_ENV="production"
+            export SLACK_ENV="Production"
+          fi
+
+          vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} $ARGS 2>&1 | tee output.txt
+
+          ## Get Vercel deploy URL and store as job steps output
+          echo "inspect_url=$(cat output.txt  | grep Inspect | grep -Eo "https://[a-zA-Z0-9./?=_%:-]*")" >> "$GITHUB_OUTPUT"
+          echo "preview_url=$(cat output.txt  | grep -i $VERCEL_ENV | grep -Eo "https://[a-zA-Z0-9./?=_%:-]*")" >> "$GITHUB_OUTPUT"
+          echo "environment=$SLACK_ENV" >> "$GITHUB_OUTPUT"
+
+      - name: Post Vercel Preview URL to PR Comment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          comment_tag: vercel_deploy
+          message: |
+            ### Build deployed to Vercel
+            ___
+            :mag: Inspect: ${{ steps.deploy.outputs.inspect_url }}
+            :globe_with_meridians: Build: ${{ steps.deploy.outputs.preview_url }}
+
+  slack_notification:
+    name: Slack Notification
+    uses: Argus-Labs/devops-infra/.github/workflows/slack-build-notification.yml@debug
+    needs: deploy
+    with:
+      client_name: Cardinal Editor
+      build_preview_url: ${{ needs.deploy.outputs.vercel_preview_url }}
+      build_inspect_url: ${{ needs.deploy.outputs.vercel_inspect_url }}
+      build_environment: ${{ needs.deploy.outputs.vercel_environment }}
+      slack_channel_id: ${{ vars.SLACK_CHANNEL_ID }}
+    secrets:
+      slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
