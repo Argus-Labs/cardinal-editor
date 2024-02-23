@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
+import { ArchetypeSheet } from '@/components/archetype-sheet';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -47,7 +48,7 @@ function Index() {
                 <List size={20} />
               </TabsTrigger>
             </TabsList>
-            <Button>New archetype</Button>
+            <ArchetypeSheet />
           </div>
         </div>
         {!isCardinalConnected ? (
