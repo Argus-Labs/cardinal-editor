@@ -1,18 +1,18 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type CardinalProvideState = {
+interface CardinalProviderState {
   cardinalUrl: string,
   setCardinalUrl: (url: string) => void,
   isCardinalConnected: boolean
 }
 
-type CardinalProviderProps = {
+interface CardinalProviderProps {
   children: React.ReactNode,
-  defaultCardinalUrl?: string,
-  storageKey?: string,
 }
 
-const initialState: CardinalProvideState = {
+const storageKey = 'cardinal-url'
+const defaultCardinalUrl = 'http://localhost:3333'
+const initialState: CardinalProviderState = {
   cardinalUrl: 'http://localhost:3333',
   setCardinalUrl: () => null,
   isCardinalConnected: false,
@@ -20,13 +20,10 @@ const initialState: CardinalProvideState = {
 
 const CardinalProviderContext = createContext(initialState)
 
-export function CardinalProvider({
-  children,
-  defaultCardinalUrl = 'http://localhost:3333',
-  storageKey = 'cardinal-url',
-  ...props
-}: CardinalProviderProps) {
-  const [cardinalUrl, setCardinalUrl] = useState(() => localStorage.getItem(storageKey) || defaultCardinalUrl)
+export function CardinalProvider({ children, ...props }: CardinalProviderProps) {
+  const [cardinalUrl, setCardinalUrl] = useState(
+    () => localStorage.getItem(storageKey) || defaultCardinalUrl
+  )
   const [isCardinalConnected, setIsCardinalConnected] = useState(false)
 
   useEffect(() => {
@@ -43,7 +40,7 @@ export function CardinalProvider({
     const intervalId = setInterval(ping, 1000)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [setCardinalUrl])
 
   const value = {
     cardinalUrl,

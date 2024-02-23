@@ -2,10 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
 
-import { EntityCard } from '@/components/entity-card';
+import { EntityCards } from '@/components/entity-cards';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
+import { EntityList } from '@/components/entity-list';
+import { useConfig } from '@/lib/config-provider';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -22,11 +24,16 @@ function Index() {
     refetchInterval: 1000,
     enabled: isCardinalConnected,
   })
+  const { config, setConfig } = useConfig()
   const hasNoEntities = !(entities && entities.length > 0)
+
+  const handleTabSwitch = (view: string) => {
+    setConfig({ ...config, view })
+  }
 
   return (
     <>
-      <Tabs defaultValue="card" className="space-y-6">
+      <Tabs defaultValue={config.view} onValueChange={handleTabSwitch} className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Entities</h1>
           <div className="flex items-center gap-4">
@@ -60,14 +67,10 @@ function Index() {
         ) : (
           <>
             <TabsContent value="card">
-              <div className="grid grid-cols-4 gap-4">
-                {entities?.map((entity: any) => (
-                  <EntityCard key={entity.id} entity={entity} />
-                ))}
-              </div>
+              <EntityCards entities={entities} />
             </TabsContent>
             <TabsContent value="list">
-              in construction...
+              <EntityList entities={entities} />
             </TabsContent>
           </>
         )}
