@@ -6,10 +6,21 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { MultiSelect } from '@/components/multi-select';
+import { EntityCard } from './entity-cards';
+
+// TODO: update this when registered components endpoint is done
+const sampleEntity = (components: string[]) => {
+  return {
+    id: '0',
+    data: components.map((c) => ({ [c]: 'dummy data' }))
+  }
+}
 
 export function ArchetypeSheet() {
   const [components, setComponents] = useState<string[]>([])
   const options = [{ value: 'player', label: 'Player' }, { value: 'health', label: 'Health' }]
+  const hasSelectedComponents = components && components.length > 0
+  const accordionValue = hasSelectedComponents ? "default" : ""
 
   return (
     <>
@@ -38,12 +49,15 @@ export function ArchetypeSheet() {
               <Accordion
                 collapsible
                 type="single"
+                value={accordionValue}
                 className="bg-muted border border-border rounded-lg px-3 py-1"
               >
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    <p className="text-muted-foreground">No components selected...</p>
+                    {hasSelectedComponents && (
+                      <EntityCard entity={sampleEntity(components)} />
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
