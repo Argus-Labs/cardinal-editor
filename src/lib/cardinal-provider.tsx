@@ -40,7 +40,7 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
     const intervalId = setInterval(ping, 1000)
 
     return () => clearInterval(intervalId)
-  }, [setCardinalUrl])
+  }, [cardinalUrl])
 
   const value = {
     cardinalUrl,
