@@ -20,8 +20,8 @@ export function EntityList({ entities }: EntityListProps) {
               asChild
               className="px-3 py-2 border border-t-0 border-border rounded-b-lg bg-background whitespace-pre-wrap text-xs"
             >
-              {entity.data.map((component: any, i: number) => (
-                <ComponentDetails key={i} component={component} id={i} />
+              {entity.components.map((component: any) => (
+                <ComponentDetails key={component.id} component={component} />
               ))}
             </AccordionContent>
           </AccordionItem>

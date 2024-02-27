@@ -18,7 +18,10 @@ function Index() {
   const { data: entities } = useQuery({
     queryKey: ['state'],
     queryFn: async () => {
-      const res = await fetch(`${cardinalUrl}/debug/state`)
+      const res = await fetch(`${cardinalUrl}/query/debug/state`, {
+        method: 'POST',
+        body: '{}'
+      })
       return await res.json()
     },
     refetchInterval: 1000,
