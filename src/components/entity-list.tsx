@@ -1,8 +1,9 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ComponentDetails } from "./component-details"
+import { ComponentDetails } from "@/components/component-details"
+import { Entity } from "@/lib/types"
 
 interface EntityListProps {
-  entities: any[]
+  entities: Entity[]
 }
 
 export function EntityList({ entities }: EntityListProps) {
@@ -20,7 +21,7 @@ export function EntityList({ entities }: EntityListProps) {
               asChild
               className="px-3 py-2 border border-t-0 border-border rounded-b-lg bg-background whitespace-pre-wrap text-xs"
             >
-              {entity.components.map((component: any) => (
+              {entity.components.map((component) => (
                 <ComponentDetails key={component.id} component={component} />
               ))}
             </AccordionContent>

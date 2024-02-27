@@ -1,8 +1,8 @@
-import { ComponentDetails } from "./component-details"
+import { Entity } from "@/lib/types"
+import { ComponentDetails } from "@/components/component-details"
 
-// Entities are basically open maps/objects, I'll keep it as `any` for now to avoid fighting ts
 interface EntityCardsProps {
-  entities: any[]
+  entities: Entity[]
 }
 
 // TODO: make this responsive, along with the sidebar
@@ -20,7 +20,7 @@ export function EntityCards({ entities }: EntityCardsProps) {
 }
 
 interface EntityCardProps {
-  entity: any
+  entity: Entity
 }
 
 export function EntityCard({ entity }: EntityCardProps) {
@@ -31,7 +31,7 @@ export function EntityCard({ entity }: EntityCardProps) {
           Entity {entity.id}
         </div>
         <div className="px-3 py-2 space-y-2">
-          {entity.components.map((component: any) => (
+          {entity.components.map((component) => (
             <ComponentDetails key={component.id} component={component} />
           ))}
         </div>
