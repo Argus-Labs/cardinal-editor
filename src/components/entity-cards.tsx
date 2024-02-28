@@ -31,8 +31,8 @@ export function EntityCard({ entity }: EntityCardProps) {
           Entity {entity.id}
         </div>
         <div className="px-3 py-2 space-y-2">
-          {entity.components.map((component) => (
-            <ComponentDetails key={component.id} component={component} />
+          {Object.keys(entity.components).map((name) => (
+            <ComponentDetails key={name} name={name} component={entity.components[name]} />
           ))}
         </div>
       </div>
