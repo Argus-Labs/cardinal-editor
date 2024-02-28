@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
 
 import { EntityCards, EntityList } from '@/components/entity-views';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
