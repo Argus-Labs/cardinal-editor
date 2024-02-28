@@ -1,10 +1,8 @@
-export interface Component {
-  id: number,
-  name: string,
-  component: Object
+export interface Components {
+  [name: string]: object
 }
 
 export interface Entity {
   id: number,
-  components: Component[]
+  components: Components
 }
