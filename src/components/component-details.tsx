@@ -1,7 +1,6 @@
-import { Component } from "@/lib/types"
-
 interface ComponentDetailsProps {
-  component: Component
+  name: string
+  component: object
 }
 
 // TODO: add case for object types (arrays are included as objects too)
@@ -14,14 +13,14 @@ const formatAttribute = (attr: any): React.ReactNode => {
   }
 }
 
-export function ComponentDetails({ component }: ComponentDetailsProps) {
-  const attributes = Object.keys(component.component).filter((k) => !k.startsWith("_"))
+export function ComponentDetails({ name, component }: ComponentDetailsProps) {
+  const attributes = Object.keys(component).filter((k) => !k.startsWith("_"))
 
   return (
     // 0.8125rem / 13px since the default sizes are too small/big
     <details open className="space-y-1 text-[0.8125rem]">
       <summary className="font-bold">
-        {component.name}
+        {name}
         <span className="ml-2 text-muted-foreground font-medium">
           {`{} ${attributes.length} keys`}
         </span>
@@ -30,7 +29,7 @@ export function ComponentDetails({ component }: ComponentDetailsProps) {
         {attributes.map((attr) => (
           <p key={attr} className="ml-3 text-muted-foreground font-medium">
             {/* @ts-ignore */}
-            {attr}: {formatAttribute(component.component[attr])}
+            {attr}: {formatAttribute(component[attr])}
           </p>
         ))}
       </div>
