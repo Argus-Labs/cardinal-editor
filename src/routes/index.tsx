@@ -6,7 +6,7 @@ import { EntityView } from '@/components/entity-views';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
-import { ArchetypeSheet } from '@/components/archetype-sheet';
+import { EntityGroupSheet } from '@/components/entity-group-sheet';
 import { stateQueryOptions } from '@/lib/query-options';
 
 export const Route = createFileRoute('/')({
@@ -40,7 +40,7 @@ function Index() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-            <ArchetypeSheet />
+            <EntityGroupSheet />
           </div>
         </div>
         {!isCardinalConnected ? (
