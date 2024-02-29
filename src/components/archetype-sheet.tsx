@@ -7,18 +7,24 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { MultiSelect } from '@/components/multi-select';
 import { EntityCard } from '@/components/entity-views';
+import { useQuery } from '@tanstack/react-query';
+import { Entity, WorldResponse } from '@/lib/types';
+import { useCardinal } from '@/lib/cardinal-provider';
+import { worldQueryOptions } from '@/lib/query-options';
 
 // TODO: update this when registered components endpoint is done
-const sampleEntity = (components: string[]) => {
+const sampleEntity = (components: string[]): Entity => {
   return {
-    id: '0',
-    data: components.map((c) => ({ [c]: 'dummy data' }))
+    id: 0,
+    components: components.reduce((acc, c) => ({ ...acc, [c]: { attribute: 'dummy data' } }), {})
   }
 }
 
 export function ArchetypeSheet() {
+  const cardinal = useCardinal()
+  const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
   const [components, setComponents] = useState<string[]>([])
-  const options = [{ value: 'player', label: 'Player' }, { value: 'health', label: 'Health' }]
+  const options = data?.components.map((c) => ({ label: c, value: c })) ?? []
   const hasSelectedComponents = components && components.length > 0
   const accordionValue = hasSelectedComponents ? "default" : ""
 
