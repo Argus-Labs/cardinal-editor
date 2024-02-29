@@ -114,16 +114,16 @@ function SideBarItem({ item }: SideBarItemProps) {
                   <AccordionItem value="default" className="border-0 [&_.params]:data-[state=open]:hidden">
                     <AccordionTrigger
                       title={formatName(item.name)}
-                      className="p-2 max-w-full rounded-lg border-b border-border data-[state=closed]:bg-background"
+                      className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
                     >
                       <p className="text-sm text-left max-w-[85%] truncate">{formatName(item.name)}</p>
                     </AccordionTrigger>
-                    <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground">
+                    <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
                       {Object.keys(item.fields).join(', ')}
                     </div>
                     <AccordionContent className="p-2 space-y-2">
                       {Object.keys(item.fields).map((param) => (
-                        <div className="space-y-1">
+                        <div key={param} className="space-y-1">
                           <p className="font-medium space-x-2">
                             <span>{param}</span>
                             <span className="text-muted-foreground font-normal">{item.fields[param]}</span>
