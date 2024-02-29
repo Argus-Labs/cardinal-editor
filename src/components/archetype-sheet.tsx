@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { MultiSelect } from '@/components/multi-select';
-import { EntityCard } from './entity-cards';
+import { EntityCard } from '@/components/entity-views';
 
 // TODO: update this when registered components endpoint is done
 const sampleEntity = (components: string[]) => {
