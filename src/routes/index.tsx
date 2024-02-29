@@ -17,6 +17,7 @@ function Index() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
   const { config, setConfig } = useConfig()
+
   const hasNoEntities = !(entities && entities.length > 0)
 
   const handleTabSwitch = (view: string) => {

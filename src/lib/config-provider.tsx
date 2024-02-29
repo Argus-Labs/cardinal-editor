@@ -1,10 +1,17 @@
 import { createContext, useContext, useState } from "react"
 
+interface Archetype {
+  name: string,
+  components: string[],
+}
+
 // yes, enums would work here. it just requires more work and can be deffered for now
 interface Config {
   view: string, // 'card' | 'list'
+  archetypes: Archetype[]
 }
 
+// TODO: separate items for view/archetype
 interface ConfigProviderState {
   config: Config,
   setConfig: (config: Config) => void,
@@ -17,6 +24,7 @@ interface ConfigProviderProps {
 const storageKey = 'ce-config'
 const defaultValue: Config = {
   view: 'card',
+  archetypes: [],
 }
 const initialState: ConfigProviderState = {
   config: defaultValue,
@@ -28,7 +36,11 @@ const ConfigProviderContext = createContext(initialState)
 export function ConfigProvider({ children, ...props }: ConfigProviderProps) {
   const [config, setConfig] = useState(() => {
     const config = localStorage.getItem(storageKey)
-    return config ? JSON.parse(config) : defaultValue
+    if (!config) {
+      localStorage.setItem(storageKey, JSON.stringify(defaultValue))
+      return defaultValue
+    }
+    return JSON.parse(config)
   })
 
   const value = {

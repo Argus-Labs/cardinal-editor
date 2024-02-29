@@ -31,7 +31,6 @@ interface MultiSelectProps {
 }
 
 export function MultiSelect({ options, selected, onChange, className, ...props }: MultiSelectProps) {
-
   const [open, setOpen] = useState(false)
 
   const handleUnselect = (item: string) => {
