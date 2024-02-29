@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
 
-import { EntityCards, EntityList } from '@/components/entity-views';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EntityView } from '@/components/entity-views';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
 import { ArchetypeSheet } from '@/components/archetype-sheet';
@@ -26,18 +26,20 @@ function Index() {
 
   return (
     <>
-      <Tabs defaultValue={config.view} onValueChange={handleTabSwitch} className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Entities</h1>
           <div className="flex items-center gap-4">
-            <TabsList className="bg-background border">
-              <TabsTrigger value="card" className="data-[state=active]:bg-muted px-2">
-                <LayoutGrid size={20} />
-              </TabsTrigger>
-              <TabsTrigger value="list" className="data-[state=active]:bg-muted px-2">
-                <List size={20} />
-              </TabsTrigger>
-            </TabsList>
+            <Tabs value={config.view} onValueChange={handleTabSwitch} className="space-y-6">
+              <TabsList className="bg-background border">
+                <TabsTrigger value="card" className="data-[state=active]:bg-muted px-2">
+                  <LayoutGrid size={20} />
+                </TabsTrigger>
+                <TabsTrigger value="list" className="data-[state=active]:bg-muted px-2">
+                  <List size={20} />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
             <ArchetypeSheet />
           </div>
         </div>
@@ -59,15 +61,10 @@ function Index() {
           </div>
         ) : (
           <>
-            <TabsContent value="card">
-              <EntityCards entities={entities} />
-            </TabsContent>
-            <TabsContent value="list">
-              <EntityList entities={entities} />
-            </TabsContent>
+            <EntityView view={config.view} entities={entities} />
           </>
         )}
-      </Tabs>
+      </div>
     </>
   )
 }
