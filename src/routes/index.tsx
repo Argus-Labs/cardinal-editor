@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
 import { ArchetypeSheet } from '@/components/archetype-sheet';
+import { stateQueryOptions } from '@/lib/query-options';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -14,18 +15,7 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
-  const { data: entities } = useQuery({
-    queryKey: ['state'],
-    queryFn: async () => {
-      const res = await fetch(`${cardinalUrl}/query/debug/state`, {
-        method: 'POST',
-        body: '{}'
-      })
-      return await res.json()
-    },
-    refetchInterval: 1000,
-    enabled: isCardinalConnected,
-  })
+  const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
   const { config, setConfig } = useConfig()
   const hasNoEntities = !(entities && entities.length > 0)
 

@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 import { useCardinal } from '@/lib/cardinal-provider'
+import { MessageOrQuery, WorldResponse } from '@/lib/types'
+import { worldQueryOptions } from '@/lib/query-options'
 
 export const Route = createRootRoute({
   component: Root
@@ -16,15 +18,7 @@ export const Route = createRootRoute({
 
 function Root() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
-  const { data } = useQuery({
-    queryKey: ['world'],
-    queryFn: async () => {
-      const res = await fetch(`${cardinalUrl}/debug/world`)
-      return await res.json()
-    },
-    refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
-    enabled: isCardinalConnected,
-  })
+  const { data } = useQuery<WorldResponse>(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const sidebarItems = [
     {
       title: 'Messages',
@@ -79,12 +73,7 @@ interface SideBarItemProps {
   item: {
     title: string,
     icon: React.ReactNode,
-    items: {
-      name: string,
-      fields: {
-        [param: string]: string
-      }
-    }[]
+    items: MessageOrQuery[]
   }
 }
 
