@@ -22,12 +22,12 @@ const sampleEntity = (components: string[]): Entity => {
 }
 
 // TODO: consider zod for form vaidation
-export function ArchetypeSheet() {
+export function EntityGroupSheet() {
   const cardinal = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
   const { config, setConfig } = useConfig()
-  const [archetypeName, setArchetypeName] = useState('')
-  const [archetypeError, setArchetypeError] = useState('')
+  const [entityGroupName, setEntityGroupName] = useState('')
+  const [entityGroupError, setEntityGroupError] = useState('')
   const [selected, setSelected] = useState<string[]>([])
   const [selectedError, setSelectedError] = useState('')
 
@@ -36,43 +36,48 @@ export function ArchetypeSheet() {
   const accordionValue = hasSelectedComponents ? "default" : ""
 
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-    if (archetypeName.length === 0) {
+    if (entityGroupName.length === 0) {
       e.preventDefault()
-      setArchetypeError('Please enter a name for the archetype')
+      setEntityGroupError('Please enter a name for the entity group')
     }
     if (selected.length === 0) {
       e.preventDefault()
       setSelectedError('Please select at least 1 component')
       return
     }
-    const newArchetype = {
-      name: archetypeName,
+    const newEntityGroup = {
+      name: entityGroupName,
       components: selected
     }
     // TODO: check for duplicates
-    setConfig({ ...config, archetypes: [...config.archetypes, newArchetype] })
+    setConfig({ ...config, entityGroups: [...config.entityGroups, newEntityGroup] })
   }
 
   return (
     <>
       <Sheet>
         <SheetTrigger asChild>
-          <Button>New Archetype</Button>
+          <Button>New Entity Group</Button>
         </SheetTrigger>
         <SheetContent className="flex flex-col justify-between">
           <div>
             <SheetHeader>
-              <SheetTitle>New Archetype</SheetTitle>
+              <SheetTitle>New Entity Group</SheetTitle>
               <SheetDescription>
-                You can create entity "Archetypes" by grouping different components. It acts as a filter
+                You can create "entity groups" by grouping different components. It acts as a filter
                 to only show entities containing the components you specify.
               </SheetDescription>
             </SheetHeader>
             <div className="space-y-4 mt-4">
               <div className="space-y-1">
-                <Label>Archetype name</Label>
-                <Input required value={archetypeName} onChange={(e) => setArchetypeName(e.target.value)} placeholder="New archetype..." />
-                <small className="text-destructive">{archetypeError}</small>
+                <Label>Entity group name</Label>
+                <Input
+                  required
+                  value={entityGroupName}
+                  onChange={(e) => setEntityGroupName(e.target.value)}
+                  placeholder="New entity group..."
+                />
+                <small className="text-destructive">{entityGroupError}</small>
               </div>
               <div className="space-y-1">
                 <Label>Components</Label>
@@ -98,7 +103,7 @@ export function ArchetypeSheet() {
           </div>
           <SheetFooter className="mt-auto">
             <SheetClose asChild>
-              <Button onClick={handleClick}>Create Archetype</Button>
+              <Button onClick={handleClick}>Create Entity Group</Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react"
 
-interface Archetype {
+interface EntityGroup {
   name: string,
   components: string[],
 }
@@ -8,10 +8,10 @@ interface Archetype {
 // yes, enums would work here. it just requires more work and can be deffered for now
 interface Config {
   view: string, // 'card' | 'list'
-  archetypes: Archetype[]
+  entityGroups: EntityGroup[]
 }
 
-// TODO: separate items for view/archetype
+// TODO: separate items for view/entiy group
 interface ConfigProviderState {
   config: Config,
   setConfig: (config: Config) => void,
@@ -24,7 +24,7 @@ interface ConfigProviderProps {
 const storageKey = 'ce-config'
 const defaultValue: Config = {
   view: 'card',
-  archetypes: [],
+  entityGroups: [],
 }
 const initialState: ConfigProviderState = {
   config: defaultValue,

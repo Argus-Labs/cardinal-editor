@@ -12,11 +12,11 @@ interface EntityViewsProps {
 
 // TODO: make this responsive, along with the sidebar
 export function EntityView({ view, entities }: EntityViewsProps) {
-  const { config: { archetypes } } = useConfig()
+  const { config: { entityGroups } } = useConfig()
 
   // TODO: this is probably very inefficient. come up with a better filter algorithm
   const grouped = new Set()
-  const filtered = archetypes.map((a) => ({
+  const filtered = entityGroups.map((a) => ({
     ...a,
     entities: entities.filter((e) => {
       const exists = a.components.filter((c) => e.components[c]).length > 0
