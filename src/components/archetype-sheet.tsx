@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Entity, WorldResponse } from '@/lib/types';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { worldQueryOptions } from '@/lib/query-options';
+import { useConfig } from '@/lib/config-provider';
 
 // TODO: update this when registered components endpoint is done
 const sampleEntity = (components: string[]): Entity => {
@@ -20,13 +21,36 @@ const sampleEntity = (components: string[]): Entity => {
   }
 }
 
+// TODO: consider zod for form vaidation
 export function ArchetypeSheet() {
   const cardinal = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
+  const { config, setConfig } = useConfig()
+  const [archetypeName, setArchetypeName] = useState('')
+  const [archetypeError, setArchetypeError] = useState('')
   const [selected, setSelected] = useState<string[]>([])
+  const [selectedError, setSelectedError] = useState('')
+
   const components = data?.components.map((c) => ({ label: c, value: c })) ?? []
   const hasSelectedComponents = selected && selected.length > 0
   const accordionValue = hasSelectedComponents ? "default" : ""
+
+  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (archetypeName.length === 0) {
+      e.preventDefault()
+      setArchetypeError('Please enter a name for the archetype')
+    }
+    if (selected.length === 0) {
+      e.preventDefault()
+      setSelectedError('Please select at least 1 component')
+      return
+    }
+    const newArchetype = {
+      name: archetypeName,
+      components: selected
+    }
+    setConfig({ ...config, archetypes: [...config.archetypes, newArchetype] })
+  }
 
   return (
     <>
@@ -46,11 +70,13 @@ export function ArchetypeSheet() {
             <div className="space-y-4 mt-4">
               <div className="space-y-1">
                 <Label>Archetype name</Label>
-                <Input placeholder="New archetype..." />
+                <Input required value={archetypeName} onChange={(e) => setArchetypeName(e.target.value)} placeholder="New archetype..." />
+                <small className="text-destructive">{archetypeError}</small>
               </div>
               <div className="space-y-1">
                 <Label>Components</Label>
                 <MultiSelect options={components} selected={selected} onChange={setSelected} />
+                <small className="text-destructive">{selectedError}</small>
               </div>
               <Accordion
                 collapsible
@@ -71,7 +97,7 @@ export function ArchetypeSheet() {
           </div>
           <SheetFooter className="mt-auto">
             <SheetClose asChild>
-              <Button type="submit">Create Archetype</Button>
+              <Button onClick={handleClick}>Create Archetype</Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>

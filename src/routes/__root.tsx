@@ -19,6 +19,7 @@ export const Route = createRootRoute({
 function Root() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+
   const sidebarItems = [
     {
       title: 'Messages',
