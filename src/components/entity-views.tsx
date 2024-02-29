@@ -1,5 +1,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useConfig } from "@/lib/config-provider"
 import { Entity } from "@/lib/types"
+import { Badge } from "./ui/badge"
 
 interface EntityViewsProps {
   entities: Entity[]
@@ -7,14 +9,63 @@ interface EntityViewsProps {
 
 // TODO: make this responsive, along with the sidebar
 export function EntityCards({ entities }: EntityViewsProps) {
+  const { config: { archetypes } } = useConfig()
+
+  // TODO: this is probably very inefficient. come up with a better filter algorithm
+  const grouped = new Set()
+  const filtered = archetypes.map((a) => ({
+    ...a,
+    entities: entities.filter((e) => {
+      const exists = a.components.filter((c) => e.components[c]).length > 0
+      if (exists) grouped.add(e.id)
+      return exists
+    })
+  }))
+  const ungrouped = entities.filter((e) => !grouped.has(e.id))
+
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
-        {entities.map((entity) => (
-          <EntityCard key={entity.id} entity={entity} />
+      <div className="space-y-4">
+        {filtered.map((archetype) => (
+          <div key={archetype.name} className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold">{archetype.name}</h2>
+                <p className="text-muted-foreground text-sm font-medium">
+                  {archetype.entities.length} results
+                </p>
+              </div>
+              {archetype.components.map((c) => (
+                <Badge key={c} className="bg-background text-foreground border border-border hover:bg-background">
+                  {c}
+                </Badge>
+              ))}
+              <hr className="border-border" />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {archetype.entities.map((entity, i) => (
+                <EntityCard key={i} entity={entity} />
+              ))}
+            </div>
+          </div>
         ))}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">Ungrouped</h2>
+              <p className="text-muted-foreground text-sm font-medium">
+                {ungrouped.length} results
+              </p>
+            </div>
+            <hr className="border-border" />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {ungrouped.map((entity) => (
+              <EntityCard key={entity.id} entity={entity} />
+            ))}
+          </div>
+        </div>
       </div>
-
     </>
   )
 }

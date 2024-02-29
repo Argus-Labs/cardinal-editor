@@ -49,6 +49,7 @@ export function ArchetypeSheet() {
       name: archetypeName,
       components: selected
     }
+    // TODO: check for duplicates
     setConfig({ ...config, archetypes: [...config.archetypes, newArchetype] })
   }
 
