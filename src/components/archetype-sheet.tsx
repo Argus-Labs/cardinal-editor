@@ -23,9 +23,9 @@ const sampleEntity = (components: string[]): Entity => {
 export function ArchetypeSheet() {
   const cardinal = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
-  const [components, setComponents] = useState<string[]>([])
-  const options = data?.components.map((c) => ({ label: c, value: c })) ?? []
-  const hasSelectedComponents = components && components.length > 0
+  const [selected, setSelected] = useState<string[]>([])
+  const components = data?.components.map((c) => ({ label: c, value: c })) ?? []
+  const hasSelectedComponents = selected && selected.length > 0
   const accordionValue = hasSelectedComponents ? "default" : ""
 
   return (
@@ -50,7 +50,7 @@ export function ArchetypeSheet() {
               </div>
               <div className="space-y-1">
                 <Label>Components</Label>
-                <MultiSelect options={options} selected={components} onChange={setComponents} />
+                <MultiSelect options={components} selected={selected} onChange={setSelected} />
               </div>
               <Accordion
                 collapsible
@@ -62,7 +62,7 @@ export function ArchetypeSheet() {
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
                     {hasSelectedComponents && (
-                      <EntityCard entity={sampleEntity(components)} />
+                      <EntityCard entity={sampleEntity(selected)} />
                     )}
                   </AccordionContent>
                 </AccordionItem>
