@@ -1,9 +1,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
+import { EditEntityGroupSheet } from "@/components/entity-group-sheet"
 import { useConfig } from "@/lib/config-provider"
 import { Entity } from "@/lib/types"
-import { Edit } from "lucide-react"
-import { Button } from "./ui/button"
 
 interface EntityViewsProps {
   view: string,
@@ -34,9 +33,7 @@ export function EntityView({ view, entities }: EntityViewsProps) {
             <div className="space-y-2">
               <div className="flex items-center gap-1">
                 <h2 className="font-semibold">{name}</h2>
-                <Button variant="ghost" size="icon" className="size-8">
-                  <Edit size={16} />
-                </Button>
+                <EditEntityGroupSheet entityGroup={{ name, components }} />
                 <p className="ml-auto text-muted-foreground text-xs font-medium">
                   {entities.length} results
                 </p>
