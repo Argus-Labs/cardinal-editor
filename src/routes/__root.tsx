@@ -22,18 +22,31 @@ function Root() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
 
+  // HACK: filter out messages/queries that don't use /{tx,query}/game/... endpoints
+  // until we get the full endpoint from /debug/world or if we decided not to even
+  // send them from the server.
+  const builtin: any = {
+    messages: {
+      'create-persona': true
+    },
+    queries: {
+      'signer': true,
+      'state': true,
+      'list': true,
+    }
+  }
   const sidebarItems = [
     {
       title: 'Messages',
       type: 'message',
       icon: <MessageSquareCode size={20} strokeWidth={2.1} />,
-      items: data?.messages ?? []
+      items: data?.messages.filter((m) => !builtin.messages[m.name]) ?? []
     },
     {
       title: 'Queries',
       type: 'query',
       icon: <SearchCode size={20} strokeWidth={2.1} />,
-      items: data?.queries ?? []
+      items: data?.queries.filter((q) => !builtin.queries[q.name]) ?? []
     },
   ]
 
