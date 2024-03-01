@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Edit } from 'lucide-react';
 
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -7,12 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { MultiSelect } from '@/components/multi-select';
 import { EntityCard } from '@/components/entity-views';
-import { useQuery } from '@tanstack/react-query';
+import { useToast } from '@/components/ui/use-toast';
 import { Entity, WorldResponse } from '@/lib/types';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { worldQueryOptions } from '@/lib/query-options';
 import { useConfig } from '@/lib/config-provider';
-import { Edit } from 'lucide-react';
 
 // TODO: update this when registered components endpoint is done
 const sampleEntity = (components: string[]): Entity => {
@@ -27,6 +28,7 @@ export function NewEntityGroupSheet() {
   const cardinal = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
   const { config, setConfig } = useConfig()
+  const { toast } = useToast()
   const [entityGroupName, setEntityGroupName] = useState('')
   const [entityGroupError, setEntityGroupError] = useState('')
   const [selected, setSelected] = useState<string[]>([])
@@ -56,6 +58,9 @@ export function NewEntityGroupSheet() {
       components: selected
     }
     setConfig({ ...config, entityGroups: [...config.entityGroups, newEntityGroup] })
+    toast({
+      title: 'Successfully created entity group'
+    })
   }
 
   return (
@@ -128,6 +133,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
   const cardinal = useCardinal()
   const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
   const { config, setConfig } = useConfig()
+  const { toast } = useToast()
   const [entityGroupName, setEntityGroupName] = useState(entityGroup.name)
   const [entityGroupError, setEntityGroupError] = useState('')
   const [selected, setSelected] = useState<string[]>(entityGroup.components)
@@ -160,6 +166,9 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
       }
     })
     setConfig({ ...config, entityGroups: newEntityGroups })
+    toast({
+      title: 'Successfully updated entity group'
+    })
   }
 
   return (

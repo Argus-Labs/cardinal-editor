@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { MessageOrQuery, WorldResponse } from '@/lib/types'
 import { worldQueryOptions } from '@/lib/query-options'
+import { Toaster } from '@/components/ui/toaster'
 
 export const Route = createRootRoute({
   component: Root
@@ -66,6 +67,7 @@ function Root() {
           <Outlet />
         </div>
       </main>
+      <Toaster />
     </>
   )
 }
