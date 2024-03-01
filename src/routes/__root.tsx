@@ -12,6 +12,7 @@ import { useCardinal } from '@/lib/cardinal-provider'
 import { MessageOrQuery, WorldResponse } from '@/lib/types'
 import { worldQueryOptions } from '@/lib/query-options'
 import { Toaster } from '@/components/ui/toaster'
+import { useState } from 'react'
 
 export const Route = createRootRoute({
   component: Root
@@ -24,11 +25,13 @@ function Root() {
   const sidebarItems = [
     {
       title: 'Messages',
+      type: 'message',
       icon: <MessageSquareCode size={20} strokeWidth={2.1} />,
       items: data?.messages ?? []
     },
     {
       title: 'Queries',
+      type: 'query',
       icon: <SearchCode size={20} strokeWidth={2.1} />,
       items: data?.queries ?? []
     },
@@ -75,18 +78,13 @@ function Root() {
 interface SideBarItemProps {
   item: {
     title: string,
+    type: string,
     icon: React.ReactNode,
     items: MessageOrQuery[]
   }
 }
 
 function SideBarItem({ item }: SideBarItemProps) {
-  const items = item.items
-  const formatName = (name: string) => {
-    let s = name.replace(/-/g, ' ')
-    return s.charAt(0).toUpperCase() + s.slice(1)
-  }
-
   return (
     <>
       <Accordion collapsible type="single" defaultValue="default">
@@ -95,50 +93,96 @@ function SideBarItem({ item }: SideBarItemProps) {
             <p className="flex items-center gap-2 font-bold">{item.icon} {item.title}</p>
           </AccordionTrigger>
           <AccordionContent className="space-y-2">
-            {items.length > 0 ? (
-              items.map((item, i) => (
-                <Accordion
-                  collapsible
-                  key={i}
-                  type="single"
-                  className="bg-muted border border-border rounded-lg"
-                >
-                  <AccordionItem value="default" className="border-0 [&_.params]:data-[state=open]:hidden">
-                    <AccordionTrigger
-                      title={formatName(item.name)}
-                      className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
-                    >
-                      <p className="text-sm text-left max-w-[85%] truncate">{formatName(item.name)}</p>
-                    </AccordionTrigger>
-                    <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
-                      {Object.keys(item.fields).join(', ')}
-                    </div>
-                    <AccordionContent className="p-2 space-y-2">
-                      {Object.keys(item.fields).map((param) => (
-                        <div key={param} className="space-y-1">
-                          <p className="font-medium space-x-2">
-                            <span>{param}</span>
-                            <span className="text-muted-foreground font-normal">{item.fields[param]}</span>
-                          </p>
-                          <Input className="h-8" />
-                        </div>
-                      ))}
-                      <Button className="w-full h-8">Send</Button>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              ))
-            ) : (
+            {item.items.length === 0 ? (
               <div className="flex flex-col gap-4 items-center bg-muted text-muted-foreground py-4 rounded-lg">
                 <BookDashed size={24} strokeWidth={2.5} />
                 <div className="space-y-2 text-center">
                   <p className="text-xs font-semibold">No {item.title} Found</p>
                 </div>
               </div>
+            ) : (
+              item.items.map((msgOrQry, i) => (
+                <MessageQueryAccordion key={i} type={item.type} msgOrQry={msgOrQry} />
+              ))
             )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </>
+  )
+}
+
+interface MessageQueryAccordionProps {
+  type: string,
+  msgOrQry: MessageOrQuery
+}
+
+function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
+  const { cardinalUrl } = useCardinal()
+  const [fields, setFields] = useState<{ [param: string]: string }>(
+    Object.keys(msgOrQry.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {})
+  )
+
+  const formatName = (name: string) => {
+    let s = name.replace(/-/g, ' ')
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+  const handleClick = async () => {
+    if (type === 'message') {
+      alert('We don\'t support sending messages yet...')
+      return
+    }
+    const ns = type === 'message' ? 'tx' : 'query'
+    // TODO: figure out if we need to get personaTag from user or we can use random values
+    const base = {
+      personaTag: "", // this is required!
+      namespace: "",
+      nonce: 0,
+      signature: "",
+    }
+    const body = type === 'message' ? { ...base, body: fields } : fields
+    const res = await fetch(`${cardinalUrl}/${ns}/game/${msgOrQry.name}`, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+    if (res.ok) {
+      alert(JSON.stringify(await res.json(), null, 2))
+    }
+  }
+
+  return (
+    <Accordion
+      collapsible
+      type="single"
+      className="bg-muted border border-border rounded-lg"
+    >
+      <AccordionItem value="default" className="border-0 [&_.params]:data-[state=open]:hidden">
+        <AccordionTrigger
+          title={formatName(msgOrQry.name)}
+          className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
+        >
+          <p className="text-sm text-left max-w-[85%] truncate">{formatName(msgOrQry.name)}</p>
+        </AccordionTrigger>
+        <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
+          {Object.keys(msgOrQry.fields).join(', ')}
+        </div>
+        <AccordionContent className="p-2 space-y-2">
+          {Object.keys(msgOrQry.fields).map((param) => (
+            <div key={param} className="space-y-1">
+              <p className="font-medium space-x-2">
+                <span>{param}</span>
+                <span className="text-muted-foreground font-normal">{msgOrQry.fields[param]}</span>
+              </p>
+              <Input
+                value={fields[param]}
+                onChange={(e) => setFields({ ...fields, [param]: e.target.value })}
+                className="h-8"
+              />
+            </div>
+          ))}
+          <Button onClick={handleClick} className="w-full h-8">Send</Button>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 }
