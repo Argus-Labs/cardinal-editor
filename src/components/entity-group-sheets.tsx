@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/use-toast';
 import { MultiSelect } from '@/components/multi-select';
 import { EntityCard } from '@/components/entity-views';
-import { useToast } from '@/components/ui/use-toast';
 import { Entity, WorldResponse } from '@/lib/types';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { worldQueryOptions } from '@/lib/query-options';
@@ -134,6 +135,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
   const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
   const { config, setConfig } = useConfig()
   const { toast } = useToast()
+  const [open, setOpen] = useState(false)
   const [entityGroupName, setEntityGroupName] = useState(entityGroup.name)
   const [entityGroupError, setEntityGroupError] = useState('')
   const [selected, setSelected] = useState<string[]>(entityGroup.components)
@@ -143,7 +145,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
   const hasSelectedComponents = selected && selected.length > 0
   const accordionValue = hasSelectedComponents ? "default" : ""
 
-  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+  const handleEdit = (e: React.MouseEvent<HTMLElement>) => {
     if (entityGroupName.length === 0) {
       e.preventDefault()
       setEntityGroupError('Please enter a name for the entity group')
@@ -170,10 +172,18 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
       title: 'Successfully updated entity group'
     })
   }
+  const handleDelete = () => {
+    const newEntityGroups = config.entityGroups.filter((eg) => eg.name !== entityGroupName)
+    setConfig({ ...config, entityGroups: newEntityGroups })
+    setOpen(false)
+    toast({
+      title: 'Successfully deleted entity group'
+    })
+  }
 
   return (
     <>
-      <Sheet>
+      <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="size-8">
             <Edit size={16} />
@@ -219,7 +229,30 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
           </div>
           <SheetFooter className="mt-auto">
             <SheetClose asChild>
-              <Button onClick={handleClick}>Save Changes</Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="destructive">Delete</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete Entity Group?</DialogTitle>
+                    <DialogDescription>
+                      Are you sure want to delete this entity group?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </SheetClose>
+            <SheetClose asChild>
+              <Button onClick={handleEdit}>Save Changes</Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>
