@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode, SearchCode } from 'lucide-react'
 
 import logo from '@/assets/world.svg'
@@ -10,9 +11,10 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { MessageOrQuery, WorldResponse } from '@/lib/types'
-import { worldQueryOptions } from '@/lib/query-options'
+import { lastQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { Toaster } from '@/components/ui/toaster'
-import { useState } from 'react'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import { BottomBar } from '@/components/bottom-bar'
 
 export const Route = createRootRoute({
   component: Root
@@ -79,8 +81,16 @@ function Root() {
           </div>
           <ThemeToggle className="self-end" />
         </aside>
-        <div className="bg-muted w-full px-4 pt-4 pb-2">
-          <Outlet />
+        <div className="w-full">
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel>
+              <div className="bg-muted h-full px-4 pt-4 pb-16 overflow-y-auto">
+                <Outlet />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <BottomBar />
+          </ResizablePanelGroup>
         </div>
       </main>
       <Toaster />
@@ -131,10 +141,11 @@ interface MessageQueryAccordionProps {
 }
 
 function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
-  const { cardinalUrl } = useCardinal()
+  const { cardinalUrl, isCardinalConnected } = useCardinal()
   const [fields, setFields] = useState<{ [param: string]: string }>(
     Object.keys(msgOrQry.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {})
   )
+  const queryClient = useQueryClient()
 
   const formatName = (name: string) => {
     let s = name.replace(/-/g, ' ')
@@ -154,13 +165,10 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
       signature: "",
     }
     const body = type === 'message' ? { ...base, body: fields } : fields
-    const res = await fetch(`${cardinalUrl}/${ns}/game/${msgOrQry.name}`, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-    if (res.ok) {
-      alert(JSON.stringify(await res.json(), null, 2))
-    }
+    queryClient.fetchQuery(lastQueryOptions({
+      cardinalUrl, isCardinalConnected, ns, body,
+      name: msgOrQry.name
+    }))
   }
 
   return (
