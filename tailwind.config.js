@@ -73,6 +73,9 @@ module.exports = {
       },
       fontFamily: {
         mono: ['IBM Plex Mono', 'monospace']
+      },
+      screens: {
+        "3xl": "2080"
       }
     },
   },

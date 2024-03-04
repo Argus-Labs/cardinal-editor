@@ -1,20 +1,18 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Entity } from "@/lib/types"
 
-interface EntityViewsProps {
+interface EntityCardsListProps {
   entities: Entity[]
 }
 
-// TODO: make this responsive, along with the sidebar
-export function EntityCards({ entities }: EntityViewsProps) {
+export function EntityCards({ entities }: EntityCardsListProps) {
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 3xl:flex 3xl:flex-wrap">
         {entities.map((entity) => (
           <EntityCard key={entity.id} entity={entity} />
         ))}
       </div>
-
     </>
   )
 }
@@ -26,7 +24,7 @@ interface EntityCardProps {
 export function EntityCard({ entity }: EntityCardProps) {
   return (
     <>
-      <div className="bg-background border border-border rounded-lg font-mono text-sm">
+      <div className="3xl:min-w-96 bg-background border border-border rounded-lg font-mono text-sm">
         <div className="px-3 py-2 font-bold border-b border-border">
           Entity {entity.id}
         </div>
@@ -40,7 +38,7 @@ export function EntityCard({ entity }: EntityCardProps) {
   )
 }
 
-export function EntityList({ entities }: EntityViewsProps) {
+export function EntityList({ entities }: EntityCardsListProps) {
   return (
     <>
       <Accordion type="multiple" className="font-mono space-y-1">
