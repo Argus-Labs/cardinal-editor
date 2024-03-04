@@ -1,26 +1,49 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Edit } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query'
+import { Edit } from 'lucide-react'
+import { useState } from 'react'
 
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useToast } from '@/components/ui/use-toast';
-import { MultiSelect } from '@/components/multi-select';
-import { EntityCard } from '@/components/entity-views';
-import { Entity } from '@/lib/types';
-import { useCardinal } from '@/lib/cardinal-provider';
-import { worldQueryOptions } from '@/lib/query-options';
-import { useConfig } from '@/lib/config-provider';
+import { EntityCard } from '@/components/entity-views'
+import { MultiSelect } from '@/components/multi-select'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { useToast } from '@/components/ui/use-toast'
+import { useCardinal } from '@/lib/cardinal-provider'
+import { useConfig } from '@/lib/config-provider'
+import { worldQueryOptions } from '@/lib/query-options'
+import { Entity } from '@/lib/types'
 
 // TODO: update this when registered components endpoint is done
 const sampleEntity = (components: string[]): Entity => {
   return {
     id: 0,
-    components: components.reduce((acc, c) => ({ ...acc, [c]: { attribute: 'dummy data' } }), {})
+    components: components.reduce((acc, c) => ({ ...acc, [c]: { attribute: 'dummy data' } }), {}),
   }
 }
 
@@ -37,7 +60,7 @@ export function NewEntityGroupSheet() {
 
   const components = data?.components.map((c) => ({ label: c, value: c })) ?? []
   const hasSelectedComponents = selected && selected.length > 0
-  const accordionValue = hasSelectedComponents ? "default" : ""
+  const accordionValue = hasSelectedComponents ? 'default' : ''
 
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (entityGroupName.length === 0) {
@@ -56,11 +79,11 @@ export function NewEntityGroupSheet() {
     }
     const newEntityGroup = {
       name: entityGroupName,
-      components: selected
+      components: selected,
     }
     setConfig({ ...config, entityGroups: [...config.entityGroups, newEntityGroup] })
     toast({
-      title: 'Successfully created entity group'
+      title: 'Successfully created entity group',
     })
   }
 
@@ -104,9 +127,7 @@ export function NewEntityGroupSheet() {
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    {hasSelectedComponents && (
-                      <EntityCard entity={sampleEntity(selected)} />
-                    )}
+                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected)} />}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -125,8 +146,8 @@ export function NewEntityGroupSheet() {
 
 interface EditEntityGroupProps {
   entityGroup: {
-    name: string,
-    components: string[],
+    name: string
+    components: string[]
   }
 }
 
@@ -143,7 +164,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
 
   const components = data?.components.map((c) => ({ label: c, value: c })) ?? []
   const hasSelectedComponents = selected && selected.length > 0
-  const accordionValue = hasSelectedComponents ? "default" : ""
+  const accordionValue = hasSelectedComponents ? 'default' : ''
 
   const handleEdit = (e: React.MouseEvent<HTMLElement>) => {
     if (entityGroupName.length === 0) {
@@ -164,12 +185,12 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
       if (eg.name !== entityGroup.name) return eg
       return {
         name: entityGroupName,
-        components: selected
+        components: selected,
       }
     })
     setConfig({ ...config, entityGroups: newEntityGroups })
     toast({
-      title: 'Successfully updated entity group'
+      title: 'Successfully updated entity group',
     })
   }
   const handleDelete = () => {
@@ -177,7 +198,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
     setConfig({ ...config, entityGroups: newEntityGroups })
     setOpen(false)
     toast({
-      title: 'Successfully deleted entity group'
+      title: 'Successfully deleted entity group',
     })
   }
 
@@ -219,9 +240,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    {hasSelectedComponents && (
-                      <EntityCard entity={sampleEntity(selected)} />
-                    )}
+                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected)} />}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -245,7 +264,9 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
                     <DialogClose asChild>
-                      <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                      <Button variant="destructive" onClick={handleDelete}>
+                        Delete
+                      </Button>
                     </DialogClose>
                   </DialogFooter>
                 </DialogContent>

@@ -1,16 +1,19 @@
-import { Entity, WorldResponse } from "./types"
+import { Entity, WorldResponse } from '@/lib/types'
 
 interface cardinalQueryOptionsProps {
-  cardinalUrl: string,
+  cardinalUrl: string
   isCardinalConnected: boolean
 }
 
-export const stateQueryOptions = ({ cardinalUrl, isCardinalConnected }: cardinalQueryOptionsProps) => ({
+export const stateQueryOptions = ({
+  cardinalUrl,
+  isCardinalConnected,
+}: cardinalQueryOptionsProps) => ({
   queryKey: ['state'],
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}/query/debug/state`, {
       method: 'POST',
-      body: '{}'
+      body: '{}',
     })
     return res.json() as Promise<Entity[]>
   },
@@ -18,7 +21,10 @@ export const stateQueryOptions = ({ cardinalUrl, isCardinalConnected }: cardinal
   enabled: isCardinalConnected,
 })
 
-export const worldQueryOptions = ({ cardinalUrl, isCardinalConnected }: cardinalQueryOptionsProps) => ({
+export const worldQueryOptions = ({
+  cardinalUrl,
+  isCardinalConnected,
+}: cardinalQueryOptionsProps) => ({
   queryKey: ['world'],
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}/debug/world`)
@@ -29,21 +35,27 @@ export const worldQueryOptions = ({ cardinalUrl, isCardinalConnected }: cardinal
 })
 
 interface lastQueryOptionsProps {
-  cardinalUrl: string,
-  isCardinalConnected: boolean,
-  ns: string, // 'tx' | 'query'
-  name: string, // endpoint name
+  cardinalUrl: string
+  isCardinalConnected: boolean
+  ns: string // 'tx' | 'query'
+  name: string // endpoint name
   body: object
 }
 
-export const lastQueryOptions = ({ cardinalUrl, isCardinalConnected, ns, name, body }: lastQueryOptionsProps) => ({
+export const lastQueryOptions = ({
+  cardinalUrl,
+  isCardinalConnected,
+  ns,
+  name,
+  body,
+}: lastQueryOptionsProps) => ({
   queryKey: ['last-query'],
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}/${ns}/game/${name}`, {
       method: 'POST',
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
     return res.json()
   },
-  enabled: isCardinalConnected
+  enabled: isCardinalConnected,
 })

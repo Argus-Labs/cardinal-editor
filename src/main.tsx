@@ -1,13 +1,14 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { ThemeProvider } from '@/lib/theme-provider'
 import { CardinalProvider } from '@/lib/cardinal-provider'
 import { ConfigProvider } from '@/lib/config-provider'
-import { routeTree } from './routeTree.gen'
+import { ThemeProvider } from '@/lib/theme-provider'
+
 import './index.css'
+import { routeTree } from './routeTree.gen'
 
 const queryClient = new QueryClient()
 const router = createRouter({

@@ -3,19 +3,19 @@ export interface Components {
 }
 
 export interface Entity {
-  id: number,
+  id: number
   components: Components
 }
 
 export interface MessageOrQuery {
-  name: string,
+  name: string
   fields: {
     [param: string]: string
   }
 }
 
 export interface WorldResponse {
-  components: string[],
-  messages: MessageOrQuery[],
-  queries: MessageOrQuery[],
+  components: string[]
+  messages: MessageOrQuery[]
+  queries: MessageOrQuery[]
 }

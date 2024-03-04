@@ -1,14 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { Box, LayoutGrid, List, Unlink } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge';
-import { EntityCards, EntityList } from '@/components/entity-views';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EditEntityGroupSheet, NewEntityGroupSheet } from '@/components/entity-group-sheets';
-import { useCardinal } from '@/lib/cardinal-provider';
-import { useConfig } from '@/lib/config-provider';
-import { stateQueryOptions } from '@/lib/query-options';
+import { EditEntityGroupSheet, NewEntityGroupSheet } from '@/components/entity-group-sheets'
+import { EntityCards, EntityList } from '@/components/entity-views'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useCardinal } from '@/lib/cardinal-provider'
+import { useConfig } from '@/lib/config-provider'
+import { stateQueryOptions } from '@/lib/query-options'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -25,11 +25,12 @@ function Index() {
   const grouped = new Set()
   const filtered = entityGroups.map((eg) => ({
     ...eg,
-    entities: entities?.filter((e) => {
-      const exists = eg.components.filter((c) => e.components[c]).length > 0
-      if (exists) grouped.add(e.id)
-      return exists
-    }) ?? []
+    entities:
+      entities?.filter((e) => {
+        const exists = eg.components.filter((c) => e.components[c]).length > 0
+        if (exists) grouped.add(e.id)
+        return exists
+      }) ?? [],
   }))
   const ungrouped = entities?.filter((e) => !grouped.has(e.id)) ?? []
 
@@ -61,7 +62,9 @@ function Index() {
             <Unlink size={40} strokeWidth={2.5} className="text-muted-foreground" />
             <div className="space-y-2 text-center">
               <p className="text-lg font-semibold">Not Connected</p>
-              <p className="text-muted-foreground">Make sure you have a running Cardinal instance!</p>
+              <p className="text-muted-foreground">
+                Make sure you have a running Cardinal instance!
+              </p>
             </div>
           </div>
         ) : hasNoEntities ? (
@@ -69,7 +72,9 @@ function Index() {
             <Box size={40} strokeWidth={2.5} className="text-muted-foreground" />
             <div className="space-y-2 text-center">
               <p className="text-lg font-semibold">No Entities Found</p>
-              <p className="text-muted-foreground">Create entities in Cardinal to display them here</p>
+              <p className="text-muted-foreground">
+                Create entities in Cardinal to display them here
+              </p>
             </div>
           </div>
         ) : (
@@ -79,19 +84,28 @@ function Index() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-1">
                     <h2 className="font-semibold">{eg.name}</h2>
-                    <EditEntityGroupSheet entityGroup={{ name: eg.name, components: eg.components }} />
+                    <EditEntityGroupSheet
+                      entityGroup={{ name: eg.name, components: eg.components }}
+                    />
                     <p className="ml-auto text-muted-foreground text-xs font-medium">
                       {eg.entities.length} results
                     </p>
                   </div>
                   {eg.components.map((c) => (
-                    <Badge key={c} className="bg-background text-foreground border border-border hover:bg-background">
+                    <Badge
+                      key={c}
+                      className="bg-background text-foreground border border-border hover:bg-background"
+                    >
                       {c}
                     </Badge>
                   ))}
                   <hr className="border-border" />
                 </div>
-                {view === 'card' ? <EntityCards entities={eg.entities} /> : <EntityList entities={eg.entities} />}
+                {view === 'card' ? (
+                  <EntityCards entities={eg.entities} />
+                ) : (
+                  <EntityList entities={eg.entities} />
+                )}
               </div>
             ))}
             <div className="space-y-4">
@@ -104,7 +118,11 @@ function Index() {
                 </div>
                 <hr className="border-border" />
               </div>
-              {view === 'card' ? <EntityCards entities={ungrouped} /> : <EntityList entities={ungrouped} />}
+              {view === 'card' ? (
+                <EntityCards entities={ungrouped} />
+              ) : (
+                <EntityList entities={ungrouped} />
+              )}
             </div>
           </div>
         )}

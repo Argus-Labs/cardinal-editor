@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 interface CardinalProviderState {
-  cardinalUrl: string,
-  setCardinalUrl: (url: string) => void,
+  cardinalUrl: string
+  setCardinalUrl: (url: string) => void
   isCardinalConnected: boolean
 }
 
 interface CardinalProviderProps {
-  children: React.ReactNode,
+  children: React.ReactNode
 }
 
 const storageKey = 'cardinal-url'
@@ -22,7 +22,7 @@ const CardinalProviderContext = createContext(initialState)
 
 export function CardinalProvider({ children, ...props }: CardinalProviderProps) {
   const [cardinalUrl, setCardinalUrl] = useState(
-    () => localStorage.getItem(storageKey) || defaultCardinalUrl
+    () => localStorage.getItem(storageKey) || defaultCardinalUrl,
   )
   const [isCardinalConnected, setIsCardinalConnected] = useState(false)
 
