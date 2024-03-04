@@ -1,14 +1,19 @@
-import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode, SearchCode } from 'lucide-react'
+import { useState } from 'react'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { ThemeToggle } from '@/components/theme-toggle'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { MessageOrQuery, WorldResponse } from '@/lib/types'
 import { lastQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { MessageOrQuery, WorldResponse } from '@/lib/types'
 
 export function Sidebar() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
@@ -19,26 +24,26 @@ export function Sidebar() {
   // send them from the server.
   const builtin: any = {
     messages: {
-      'create-persona': true
+      'create-persona': true,
     },
     queries: {
-      'signer': true,
-      'state': true,
-      'list': true,
-    }
+      signer: true,
+      state: true,
+      list: true,
+    },
   }
   const sidebarItems = [
     {
       title: 'Messages',
       type: 'message',
       icon: <MessageSquareCode size={20} strokeWidth={2.1} />,
-      items: data?.messages.filter((m) => !builtin.messages[m.name]) ?? []
+      items: data?.messages.filter((m) => !builtin.messages[m.name]) ?? [],
     },
     {
       title: 'Queries',
       type: 'query',
       icon: <SearchCode size={20} strokeWidth={2.1} />,
-      items: data?.queries.filter((q) => !builtin.queries[q.name]) ?? []
+      items: data?.queries.filter((q) => !builtin.queries[q.name]) ?? [],
     },
   ]
 
@@ -56,9 +61,9 @@ export function Sidebar() {
 
 interface SideBarItemProps {
   item: {
-    title: string,
-    type: string,
-    icon: React.ReactNode,
+    title: string
+    type: string
+    icon: React.ReactNode
     items: MessageOrQuery[]
   }
 }
@@ -69,7 +74,9 @@ function SideBarItem({ item }: SideBarItemProps) {
       <Accordion collapsible type="single" defaultValue="default">
         <AccordionItem value="default" className="border-0">
           <AccordionTrigger className="px-2">
-            <p className="flex items-center gap-2 font-bold">{item.icon} {item.title}</p>
+            <p className="flex items-center gap-2 font-bold">
+              {item.icon} {item.title}
+            </p>
           </AccordionTrigger>
           <AccordionContent className="space-y-2">
             {item.items.length === 0 ? (
@@ -92,14 +99,14 @@ function SideBarItem({ item }: SideBarItemProps) {
 }
 
 interface MessageQueryAccordionProps {
-  type: string,
+  type: string
   msgOrQry: MessageOrQuery
 }
 
 function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const [fields, setFields] = useState<{ [param: string]: string }>(
-    Object.keys(msgOrQry.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {})
+    Object.keys(msgOrQry.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {}),
   )
   const queryClient = useQueryClient()
 
@@ -109,29 +116,30 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
   }
   const handleClick = async () => {
     if (type === 'message') {
-      alert('We don\'t support sending messages yet...')
+      alert("We don't support sending messages yet...")
       return
     }
     const ns = type === 'message' ? 'tx' : 'query'
     const base = {
-      personaTag: "", // this is required!
-      namespace: "",
+      personaTag: '', // this is required!
+      namespace: '',
       nonce: 0,
-      signature: "",
+      signature: '',
     }
     const body = type === 'message' ? { ...base, body: fields } : fields
-    queryClient.fetchQuery(lastQueryOptions({
-      cardinalUrl, isCardinalConnected, ns, body,
-      name: msgOrQry.name
-    }))
+    queryClient.fetchQuery(
+      lastQueryOptions({
+        cardinalUrl,
+        isCardinalConnected,
+        ns,
+        body,
+        name: msgOrQry.name,
+      }),
+    )
   }
 
   return (
-    <Accordion
-      collapsible
-      type="single"
-      className="bg-muted border border-border rounded-lg"
-    >
+    <Accordion collapsible type="single" className="bg-muted border border-border rounded-lg">
       <AccordionItem value="default" className="border-0 [&_.params]:data-[state=open]:hidden">
         <AccordionTrigger
           title={formatName(msgOrQry.name)}
@@ -156,7 +164,9 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
               />
             </div>
           ))}
-          <Button onClick={handleClick} className="w-full h-8">Send</Button>
+          <Button onClick={handleClick} className="w-full h-8">
+            Send
+          </Button>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -1,12 +1,13 @@
-import { useState } from 'react'
-import { useCardinal } from '@/lib/cardinal-provider'
 import { useQueryClient } from '@tanstack/react-query'
+import { RefreshCw } from 'lucide-react'
+import { useState } from 'react'
+
+import logo from '@/assets/world.svg'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useCardinal } from '@/lib/cardinal-provider'
 import { worldQueryOptions } from '@/lib/query-options'
 import { cn } from '@/lib/utils'
-import logo from '@/assets/world.svg'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { RefreshCw } from 'lucide-react'
 
 export function Header() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
@@ -24,7 +25,9 @@ export function Header() {
       <nav className="flex items-center justify-between px-3 h-12">
         <img src={logo} width={32} height={32} />
         <div className="flex items-center gap-2">
-          <label htmlFor="host" className="flex-shrink-0 text-xs text-muted-foreground">Cardinal URL</label>
+          <label htmlFor="host" className="flex-shrink-0 text-xs text-muted-foreground">
+            Cardinal URL
+          </label>
           <Input
             id="host"
             placeholder="localhost:4040"
@@ -32,10 +35,21 @@ export function Header() {
             onChange={(e) => setCardinalUrl(e.target.value)}
             className="h-8"
           />
-          <Button variant="outline" size="icon" className="size-8 flex-shrink-0" title="Refresh world" onClick={refetchWorld}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8 flex-shrink-0"
+            title="Refresh world"
+            onClick={refetchWorld}
+          >
             <RefreshCw size={16} className={cn(fetching && 'animate-spin')} />
           </Button>
-          <div className={cn("size-2 rounded-full flex-shrink-0", isCardinalConnected ? "bg-green-500" : "bg-red-500")} />
+          <div
+            className={cn(
+              'size-2 rounded-full flex-shrink-0',
+              isCardinalConnected ? 'bg-green-500' : 'bg-red-500',
+            )}
+          />
         </div>
       </nav>
     </header>

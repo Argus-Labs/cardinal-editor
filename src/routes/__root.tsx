@@ -1,9 +1,10 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { Toaster } from '@/components/ui/toaster'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+
 import { BottomBar } from '@/components/bottom-bar'
 import { Header } from '@/components/header'
 import { Sidebar } from '@/components/sidebar'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import { Toaster } from '@/components/ui/toaster'
 
 export const Route = createRootRoute({
   component: Root,
