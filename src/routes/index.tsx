@@ -2,11 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
 
-import { EntityCards } from '@/components/entity-cards';
+import { EntityCards, EntityList } from '@/components/entity-views';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
-import { EntityList } from '@/components/entity-list';
 import { useConfig } from '@/lib/config-provider';
 
 export const Route = createFileRoute('/')({
@@ -18,7 +17,10 @@ function Index() {
   const { data: entities } = useQuery({
     queryKey: ['state'],
     queryFn: async () => {
-      const res = await fetch(`${cardinalUrl}/debug/state`)
+      const res = await fetch(`${cardinalUrl}/query/debug/state`, {
+        method: 'POST',
+        body: '{}'
+      })
       return await res.json()
     },
     refetchInterval: 1000,
