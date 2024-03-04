@@ -5,15 +5,19 @@ import logo from '@/assets/world.svg'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { BookDashed, MessageSquareCode, SearchCode } from 'lucide-react'
 
 // TODO: autofill from cardinal, will probably need custom components for queries & messages
 const sidebarItems = [
   {
     title: 'Queries',
+    icon: <MessageSquareCode size={20} strokeWidth={2.1} />,
     items: []
   },
   {
     title: 'Messages',
+    icon: <SearchCode size={20} strokeWidth={2.1} />,
     items: []
   },
 ]
@@ -49,7 +53,25 @@ function Root() {
         <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 border-r text-sm">
           <div>
             {sidebarItems.map((item, i) => (
-              <p key={i} className="font-bold px-2 py-1">{item.title}</p>
+              <Accordion key={i} collapsible type="single" defaultValue="default">
+                <AccordionItem value="default" className="border-0">
+                  <AccordionTrigger className="px-2">
+                    <p className="flex items-center gap-2 font-bold">{item.icon} {item.title}</p>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {item.items.length > 0 ? (
+                      <>unimplemented...</>
+                    ) : (
+                      <div className="flex flex-col gap-4 items-center bg-muted text-muted-foreground py-4 rounded-lg">
+                        <BookDashed size={24} strokeWidth={2.5} />
+                        <div className="space-y-2 text-center">
+                          <p className="text-xs font-semibold">No {item.title} Found</p>
+                        </div>
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             ))}
           </div>
           <ThemeToggle className="self-end" />
