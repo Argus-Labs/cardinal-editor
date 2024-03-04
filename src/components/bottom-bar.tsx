@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 export function BottomBar() {
   const ref = useRef<ImperativePanelHandle>(null);
   const [collapsed, setCollapsed] = useState(true)
-  const { data } = useQuery<any>({ queryKey: ['last-query'], initialData: null })
+  const { data } = useQuery({ queryKey: ['last-query'], initialData: null })
 
   useEffect(() => {
     const panel = ref.current

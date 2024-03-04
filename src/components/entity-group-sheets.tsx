@@ -11,7 +11,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { useToast } from '@/components/ui/use-toast';
 import { MultiSelect } from '@/components/multi-select';
 import { EntityCard } from '@/components/entity-views';
-import { Entity, WorldResponse } from '@/lib/types';
+import { Entity } from '@/lib/types';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { worldQueryOptions } from '@/lib/query-options';
 import { useConfig } from '@/lib/config-provider';
@@ -27,7 +27,7 @@ const sampleEntity = (components: string[]): Entity => {
 // TODO: consider zod for form vaidation
 export function NewEntityGroupSheet() {
   const cardinal = useCardinal()
-  const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
+  const { data } = useQuery(worldQueryOptions(cardinal))
   const { config, setConfig } = useConfig()
   const { toast } = useToast()
   const [entityGroupName, setEntityGroupName] = useState('')
@@ -132,7 +132,7 @@ interface EditEntityGroupProps {
 
 export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
   const cardinal = useCardinal()
-  const { data } = useQuery<WorldResponse>(worldQueryOptions(cardinal))
+  const { data } = useQuery(worldQueryOptions(cardinal))
   const { config, setConfig } = useConfig()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)

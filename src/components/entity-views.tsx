@@ -66,7 +66,7 @@ export function EntityList({ entities }: EntityCardsListProps) {
 
 interface ComponentDetailsProps {
   name: string
-  component: object
+  component: { [key: string]: any }
 }
 
 // TODO: add case for object types (arrays are included as objects too)
@@ -94,7 +94,6 @@ function ComponentDetails({ name, component }: ComponentDetailsProps) {
       <div>
         {attributes.map((attr) => (
           <p key={attr} className="ml-3 text-muted-foreground font-medium">
-            {/* @ts-ignore */}
             {attr}: {formatAttribute(component[attr])}
           </p>
         ))}

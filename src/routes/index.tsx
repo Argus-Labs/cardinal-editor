@@ -9,7 +9,6 @@ import { EditEntityGroupSheet, NewEntityGroupSheet } from '@/components/entity-g
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
 import { stateQueryOptions } from '@/lib/query-options';
-import { Entity } from '@/lib/types';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -17,7 +16,7 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
-  const { data: entities } = useQuery<Entity[]>(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
   const { config, setConfig } = useConfig()
   const { view, entityGroups } = config
 

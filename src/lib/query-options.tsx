@@ -1,3 +1,5 @@
+import { Entity, WorldResponse } from "./types"
+
 interface cardinalQueryOptionsProps {
   cardinalUrl: string,
   isCardinalConnected: boolean
@@ -10,7 +12,7 @@ export const stateQueryOptions = ({ cardinalUrl, isCardinalConnected }: cardinal
       method: 'POST',
       body: '{}'
     })
-    return await res.json()
+    return res.json() as Promise<Entity[]>
   },
   refetchInterval: 1000,
   enabled: isCardinalConnected,
@@ -20,7 +22,7 @@ export const worldQueryOptions = ({ cardinalUrl, isCardinalConnected }: cardinal
   queryKey: ['world'],
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}/debug/world`)
-    return await res.json()
+    return res.json() as Promise<WorldResponse>
   },
   refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
   enabled: isCardinalConnected,
@@ -41,7 +43,7 @@ export const lastQueryOptions = ({ cardinalUrl, isCardinalConnected, ns, name, b
       method: 'POST',
       body: JSON.stringify(body)
     })
-    return await res.json()
+    return res.json()
   },
   enabled: isCardinalConnected
 })

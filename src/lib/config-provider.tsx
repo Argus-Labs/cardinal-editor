@@ -40,7 +40,7 @@ export function ConfigProvider({ children, ...props }: ConfigProviderProps) {
       localStorage.setItem(storageKey, JSON.stringify(defaultValue))
       return defaultValue
     }
-    return JSON.parse(config)
+    return JSON.parse(config) as Config
   })
 
   const value = {

@@ -37,7 +37,9 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
     }
 
     ping()
-    const intervalId = setInterval(ping, 1000)
+      .then(() => console.log('Connected to Cardinal'))
+      .catch((error) => console.log(error))
+    const intervalId = setInterval(() => void ping(), 1000)
 
     return () => clearInterval(intervalId)
   }, [cardinalUrl])

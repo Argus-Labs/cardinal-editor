@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { MessageOrQuery, WorldResponse } from '@/lib/types'
+import { MessageOrQuery } from '@/lib/types'
 import { lastQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { Toaster } from '@/components/ui/toaster'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
@@ -22,12 +22,12 @@ export const Route = createRootRoute({
 
 function Root() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
-  const { data } = useQuery<WorldResponse>(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
 
   // HACK: filter out messages/queries that don't use /{tx,query}/game/... endpoints
   // until we get the full endpoint from /debug/world or if we decided not to even
   // send them from the server.
-  const builtin: any = {
+  const builtin: { messages: { [key: string]: boolean }, queries: { [key: string]: boolean } } = {
     messages: {
       'create-persona': true
     },
@@ -148,7 +148,7 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
   const queryClient = useQueryClient()
 
   const formatName = (name: string) => {
-    let s = name.replace(/-/g, ' ')
+    const s = name.replace(/-/g, ' ')
     return s.charAt(0).toUpperCase() + s.slice(1)
   }
   const handleClick = async () => {
@@ -165,7 +165,7 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
       signature: "",
     }
     const body = type === 'message' ? { ...base, body: fields } : fields
-    queryClient.fetchQuery(lastQueryOptions({
+    await queryClient.fetchQuery(lastQueryOptions({
       cardinalUrl, isCardinalConnected, ns, body,
       name: msgOrQry.name
     }))
@@ -201,7 +201,7 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
               />
             </div>
           ))}
-          <Button onClick={handleClick} className="w-full h-8">Send</Button>
+          <Button onClick={() => void handleClick()} className="w-full h-8">Send</Button>
         </AccordionContent>
       </AccordionItem>
     </Accordion>
