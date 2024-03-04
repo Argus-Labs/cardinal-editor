@@ -1,20 +1,85 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
+import { useConfig } from "@/lib/config-provider"
 import { Entity } from "@/lib/types"
+import { Edit } from "lucide-react"
+import { Button } from "./ui/button"
 
 interface EntityViewsProps {
+  view: string,
   entities: Entity[]
 }
 
 // TODO: make this responsive, along with the sidebar
-export function EntityCards({ entities }: EntityViewsProps) {
+export function EntityView({ view, entities }: EntityViewsProps) {
+  const { config: { entityGroups } } = useConfig()
+
+  // TODO: this is probably very inefficient. come up with a better filter algorithm
+  const grouped = new Set()
+  const filtered = entityGroups.map((a) => ({
+    ...a,
+    entities: entities.filter((e) => {
+      const exists = a.components.filter((c) => e.components[c]).length > 0
+      if (exists) grouped.add(e.id)
+      return exists
+    })
+  }))
+  const ungrouped = entities.filter((e) => !grouped.has(e.id))
+
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="space-y-4">
+        {filtered.map(({ name, components, entities }) => (
+          <div key={name} className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-1">
+                <h2 className="font-semibold">{name}</h2>
+                <Button variant="ghost" size="icon" className="size-8">
+                  <Edit size={16} />
+                </Button>
+                <p className="ml-auto text-muted-foreground text-xs font-medium">
+                  {entities.length} results
+                </p>
+              </div>
+              {components.map((c) => (
+                <Badge key={c} className="bg-background text-foreground border border-border hover:bg-background">
+                  {c}
+                </Badge>
+              ))}
+              <hr className="border-border" />
+            </div>
+            {view === 'card' ? <EntityCards entities={entities} /> : <EntityList entities={entities} />}
+          </div>
+        ))}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">Ungrouped</h2>
+              <p className="text-muted-foreground text-xs font-medium">
+                {ungrouped.length} results
+              </p>
+            </div>
+            <hr className="border-border" />
+          </div>
+          {view === 'card' ? <EntityCards entities={ungrouped} /> : <EntityList entities={ungrouped} />}
+        </div>
+      </div>
+    </>
+  )
+}
+
+interface EntityCardsListProps {
+  entities: Entity[]
+}
+
+export function EntityCards({ entities }: EntityCardsListProps) {
+  return (
+    <>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 3xl:flex 3xl:flex-wrap">
         {entities.map((entity) => (
           <EntityCard key={entity.id} entity={entity} />
         ))}
       </div>
-
     </>
   )
 }
@@ -26,7 +91,7 @@ interface EntityCardProps {
 export function EntityCard({ entity }: EntityCardProps) {
   return (
     <>
-      <div className="bg-background border border-border rounded-lg font-mono text-sm">
+      <div className="3xl:min-w-96 bg-background border border-border rounded-lg font-mono text-sm">
         <div className="px-3 py-2 font-bold border-b border-border">
           Entity {entity.id}
         </div>
@@ -40,7 +105,7 @@ export function EntityCard({ entity }: EntityCardProps) {
   )
 }
 
-export function EntityList({ entities }: EntityViewsProps) {
+export function EntityList({ entities }: EntityCardsListProps) {
   return (
     <>
       <Accordion type="multiple" className="font-mono space-y-1">

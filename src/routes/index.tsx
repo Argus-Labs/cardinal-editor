@@ -2,11 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react';
 
-import { EntityCards, EntityList } from '@/components/entity-views';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EntityView } from '@/components/entity-views';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCardinal } from '@/lib/cardinal-provider';
 import { useConfig } from '@/lib/config-provider';
+import { EntityGroupSheet } from '@/components/entity-group-sheet';
+import { stateQueryOptions } from '@/lib/query-options';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -14,19 +15,9 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
-  const { data: entities } = useQuery({
-    queryKey: ['state'],
-    queryFn: async () => {
-      const res = await fetch(`${cardinalUrl}/query/debug/state`, {
-        method: 'POST',
-        body: '{}'
-      })
-      return await res.json()
-    },
-    refetchInterval: 1000,
-    enabled: isCardinalConnected,
-  })
+  const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
   const { config, setConfig } = useConfig()
+
   const hasNoEntities = !(entities && entities.length > 0)
 
   const handleTabSwitch = (view: string) => {
@@ -35,19 +26,21 @@ function Index() {
 
   return (
     <>
-      <Tabs defaultValue={config.view} onValueChange={handleTabSwitch} className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Entities</h1>
           <div className="flex items-center gap-4">
-            <TabsList className="bg-background border">
-              <TabsTrigger value="card" className="data-[state=active]:bg-muted px-2">
-                <LayoutGrid size={20} />
-              </TabsTrigger>
-              <TabsTrigger value="list" className="data-[state=active]:bg-muted px-2">
-                <List size={20} />
-              </TabsTrigger>
-            </TabsList>
-            <Button>New archetype</Button>
+            <Tabs value={config.view} onValueChange={handleTabSwitch} className="space-y-6">
+              <TabsList className="bg-background border">
+                <TabsTrigger value="card" className="data-[state=active]:bg-muted px-2">
+                  <LayoutGrid size={20} />
+                </TabsTrigger>
+                <TabsTrigger value="list" className="data-[state=active]:bg-muted px-2">
+                  <List size={20} />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <EntityGroupSheet />
           </div>
         </div>
         {!isCardinalConnected ? (
@@ -68,15 +61,10 @@ function Index() {
           </div>
         ) : (
           <>
-            <TabsContent value="card">
-              <EntityCards entities={entities} />
-            </TabsContent>
-            <TabsContent value="list">
-              <EntityList entities={entities} />
-            </TabsContent>
+            <EntityView view={config.view} entities={entities} />
           </>
         )}
-      </Tabs>
+      </div>
     </>
   )
 }
