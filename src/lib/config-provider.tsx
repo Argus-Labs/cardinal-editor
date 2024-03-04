@@ -1,20 +1,20 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState } from 'react'
 
 interface EntityGroup {
-  name: string,
-  components: string[],
+  name: string
+  components: string[]
 }
 
 // yes, enums would work here. it just requires more work and can be deffered for now
 interface Config {
-  view: string, // 'card' | 'list'
+  view: string // 'card' | 'list'
   entityGroups: EntityGroup[]
 }
 
 // TODO: separate items for view/entiy group
 interface ConfigProviderState {
-  config: Config,
-  setConfig: (config: Config) => void,
+  config: Config
+  setConfig: (config: Config) => void
 }
 
 interface ConfigProviderProps {
@@ -40,7 +40,7 @@ export function ConfigProvider({ children, ...props }: ConfigProviderProps) {
       localStorage.setItem(storageKey, JSON.stringify(defaultValue))
       return defaultValue
     }
-    return JSON.parse(config)
+    return JSON.parse(config) as Config
   })
 
   const value = {
@@ -48,7 +48,7 @@ export function ConfigProvider({ children, ...props }: ConfigProviderProps) {
     setConfig: (config: Config) => {
       localStorage.setItem(storageKey, JSON.stringify(config))
       setConfig(config)
-    }
+    },
   }
 
   return (

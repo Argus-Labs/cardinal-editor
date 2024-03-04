@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 interface CardinalProviderState {
-  cardinalUrl: string,
-  setCardinalUrl: (url: string) => void,
+  cardinalUrl: string
+  setCardinalUrl: (url: string) => void
   isCardinalConnected: boolean
 }
 
 interface CardinalProviderProps {
-  children: React.ReactNode,
+  children: React.ReactNode
 }
 
 const storageKey = 'cardinal-url'
@@ -22,7 +22,7 @@ const CardinalProviderContext = createContext(initialState)
 
 export function CardinalProvider({ children, ...props }: CardinalProviderProps) {
   const [cardinalUrl, setCardinalUrl] = useState(
-    () => localStorage.getItem(storageKey) || defaultCardinalUrl
+    () => localStorage.getItem(storageKey) || defaultCardinalUrl,
   )
   const [isCardinalConnected, setIsCardinalConnected] = useState(false)
 
@@ -37,7 +37,9 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
     }
 
     ping()
-    const intervalId = setInterval(ping, 1000)
+      .then(() => console.log('Connected to Cardinal'))
+      .catch((error) => console.log(error))
+    const intervalId = setInterval(() => void ping(), 1000)
 
     return () => clearInterval(intervalId)
   }, [cardinalUrl])

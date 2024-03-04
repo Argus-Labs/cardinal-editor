@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
-import { ImperativePanelHandle } from 'react-resizable-panels';
-import { ResizablePanel } from './ui/resizable';
-import { Button } from './ui/button';
-import { ChevronsDown, ChevronsUp } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query'
+import { ChevronsDown, ChevronsUp } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ImperativePanelHandle } from 'react-resizable-panels'
+
+import { Button } from '@/components/ui/button'
+import { ResizablePanel } from '@/components/ui/resizable'
 
 export function BottomBar() {
-  const ref = useRef<ImperativePanelHandle>(null);
+  const ref = useRef<ImperativePanelHandle>(null)
   const [collapsed, setCollapsed] = useState(true)
-  const { data } = useQuery<any>({ queryKey: ['last-query'], initialData: null })
+  const { data } = useQuery({ queryKey: ['last-query'], initialData: null })
 
   useEffect(() => {
     const panel = ref.current

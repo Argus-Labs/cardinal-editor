@@ -1,5 +1,7 @@
 import { Check, X, ChevronsUpDown } from 'lucide-react'
+import { useState } from 'react'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -8,29 +10,28 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
-
 
 export type OptionType = {
-  label: string;
-  value: string;
+  label: string
+  value: string
 }
 
 interface MultiSelectProps {
-  options: OptionType[];
-  selected: string[];
-  onChange: React.Dispatch<React.SetStateAction<string[]>>;
-  className?: string;
+  options: OptionType[]
+  selected: string[]
+  onChange: React.Dispatch<React.SetStateAction<string[]>>
+  className?: string
 }
 
-export function MultiSelect({ options, selected, onChange, className, ...props }: MultiSelectProps) {
+export function MultiSelect({
+  options,
+  selected,
+  onChange,
+  className,
+  ...props
+}: MultiSelectProps) {
   const [open, setOpen] = useState(false)
 
   const handleUnselect = (item: string) => {
@@ -44,7 +45,7 @@ export function MultiSelect({ options, selected, onChange, className, ...props }
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-full justify-between ${selected.length > 1 ? "h-full" : "h-10"}`}
+          className={`w-full justify-between ${selected.length > 1 ? 'h-full' : 'h-10'}`}
           onClick={() => setOpen(!open)}
         >
           Select components
@@ -58,13 +59,13 @@ export function MultiSelect({ options, selected, onChange, className, ...props }
             <button
               className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleUnselect(item);
+                if (e.key === 'Enter') {
+                  handleUnselect(item)
                 }
               }}
               onMouseDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
+                e.preventDefault()
+                e.stopPropagation()
               }}
               onClick={() => handleUnselect(item)}
             >
@@ -77,7 +78,7 @@ export function MultiSelect({ options, selected, onChange, className, ...props }
         <Command className={className}>
           <CommandInput placeholder="Search ..." />
           <CommandEmpty>No item found.</CommandEmpty>
-          <CommandGroup className='max-h-64 overflow-auto'>
+          <CommandGroup className="max-h-64 overflow-auto">
             {options.map((option) => (
               <CommandItem
                 key={option.value}
@@ -85,16 +86,15 @@ export function MultiSelect({ options, selected, onChange, className, ...props }
                   onChange(
                     selected.includes(option.value)
                       ? selected.filter((item) => item !== option.value)
-                      : [...selected, option.value]
+                      : [...selected, option.value],
                   )
                   setOpen(true)
                 }}
               >
                 <Check
                   className={cn(
-                    "mr-2 size-4",
-                    selected.includes(option.value) ?
-                      "opacity-100" : "opacity-0"
+                    'mr-2 size-4',
+                    selected.includes(option.value) ? 'opacity-100' : 'opacity-0',
                   )}
                 />
                 {option.label}
