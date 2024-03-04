@@ -28,6 +28,8 @@ export const Route = createRootRoute({
 function Root() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
   const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const queryClient = useQueryClient()
+  const [fetching, setFetching] = useState(false)
 
   // HACK: filter out messages/queries that don't use /{tx,query}/game/... endpoints
   // until we get the full endpoint from /debug/world or if we decided not to even
@@ -57,6 +59,12 @@ function Root() {
     },
   ]
 
+  const refetchWorld = () => {
+    setFetching(true)
+    queryClient.fetchQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+    setTimeout(() => setFetching(false), 900)
+  }
+
   return (
     <>
       <header className="border-b">
@@ -75,12 +83,10 @@ function Root() {
               onChange={(e) => setCardinalUrl(e.target.value)}
               className="h-8"
             />
-            <div
-              className={cn(
-                'size-2 rounded-full flex-shrink-0',
-                isCardinalConnected ? 'bg-green-500' : 'bg-red-500',
-              )}
-            />
+            <Button variant="outline" size="icon" className="size-8 flex-shrink-0" title="Refresh world" onClick={refetchWorld}>
+              <RefreshCw size={16} className={cn(fetching && 'animate-spin')} />
+            </Button>
+            <div className={cn("size-2 rounded-full flex-shrink-0", isCardinalConnected ? "bg-green-500" : "bg-red-500")} />
           </div>
         </nav>
       </header>

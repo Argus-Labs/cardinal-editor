@@ -30,7 +30,6 @@ export const worldQueryOptions = ({
     const res = await fetch(`${cardinalUrl}/debug/world`)
     return res.json() as Promise<WorldResponse>
   },
-  refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
   enabled: isCardinalConnected,
 })
 
