@@ -1,5 +1,9 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
+import { useConfig } from "@/lib/config-provider"
 import { Entity } from "@/lib/types"
+import { Edit } from "lucide-react"
+import { Button } from "./ui/button"
 
 interface EntityCardsListProps {
   entities: Entity[]

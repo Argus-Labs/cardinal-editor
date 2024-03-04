@@ -142,3 +142,74 @@ function SideBarItem({ item }: SideBarItemProps) {
     </>
   )
 }
+
+interface SideBarItemProps {
+  item: {
+    title: string,
+    icon: React.ReactNode,
+    items: MessageOrQuery[]
+  }
+}
+
+function SideBarItem({ item }: SideBarItemProps) {
+  const items = item.items
+  const formatName = (name: string) => {
+    let s = name.replace(/-/g, ' ')
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+
+  return (
+    <>
+      <Accordion collapsible type="single" defaultValue="default">
+        <AccordionItem value="default" className="border-0">
+          <AccordionTrigger className="px-2">
+            <p className="flex items-center gap-2 font-bold">{item.icon} {item.title}</p>
+          </AccordionTrigger>
+          <AccordionContent className="space-y-2">
+            {items.length > 0 ? (
+              items.map((item, i) => (
+                <Accordion
+                  collapsible
+                  key={i}
+                  type="single"
+                  className="bg-muted border border-border rounded-lg"
+                >
+                  <AccordionItem value="default" className="border-0 [&_.params]:data-[state=open]:hidden">
+                    <AccordionTrigger
+                      title={formatName(item.name)}
+                      className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
+                    >
+                      <p className="text-sm text-left max-w-[85%] truncate">{formatName(item.name)}</p>
+                    </AccordionTrigger>
+                    <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
+                      {Object.keys(item.fields).join(', ')}
+                    </div>
+                    <AccordionContent className="p-2 space-y-2">
+                      {Object.keys(item.fields).map((param) => (
+                        <div key={param} className="space-y-1">
+                          <p className="font-medium space-x-2">
+                            <span>{param}</span>
+                            <span className="text-muted-foreground font-normal">{item.fields[param]}</span>
+                          </p>
+                          <Input className="h-8" />
+                        </div>
+                      ))}
+                      <Button className="w-full h-8">Send</Button>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ))
+            ) : (
+              <div className="flex flex-col gap-4 items-center bg-muted text-muted-foreground py-4 rounded-lg">
+                <BookDashed size={24} strokeWidth={2.5} />
+                <div className="space-y-2 text-center">
+                  <p className="text-xs font-semibold">No {item.title} Found</p>
+                </div>
+              </div>
+            )}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </>
+  )
+}
