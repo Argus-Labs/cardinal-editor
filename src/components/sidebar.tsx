@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { lastQueryOptions, worldQueryOptions } from '@/lib/query-options'
-import { MessageOrQuery, WorldResponse } from '@/lib/types'
+import { WorldField, WorldResponse } from '@/lib/types'
 
 export function Sidebar() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
@@ -64,7 +64,7 @@ interface SideBarItemProps {
     title: string
     type: string
     icon: React.ReactNode
-    items: MessageOrQuery[]
+    items: WorldField[]
   }
 }
 
@@ -100,7 +100,7 @@ function SideBarItem({ item }: SideBarItemProps) {
 
 interface MessageQueryAccordionProps {
   type: string
-  msgOrQry: MessageOrQuery
+  msgOrQry: WorldField
 }
 
 function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {

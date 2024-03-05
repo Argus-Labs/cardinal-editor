@@ -27,7 +27,7 @@ export const worldQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['world'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/debug/world`)
+    const res = await fetch(`${cardinalUrl}/world`)
     return res.json() as Promise<WorldResponse>
   },
   enabled: isCardinalConnected,

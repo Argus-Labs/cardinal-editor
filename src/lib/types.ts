@@ -7,7 +7,7 @@ export interface Entity {
   components: Components
 }
 
-export interface MessageOrQuery {
+export interface WorldField {
   name: string
   fields: {
     [param: string]: string
@@ -15,7 +15,7 @@ export interface MessageOrQuery {
 }
 
 export interface WorldResponse {
-  components: string[]
-  messages: MessageOrQuery[]
-  queries: MessageOrQuery[]
+  components: WorldField[]
+  messages: WorldField[]
+  queries: WorldField[]
 }

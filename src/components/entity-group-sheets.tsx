@@ -37,17 +37,17 @@ import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { useConfig } from '@/lib/config-provider'
 import { worldQueryOptions } from '@/lib/query-options'
-import { Entity } from '@/lib/types'
+import { Entity, WorldField } from '@/lib/types'
 
-// TODO: update this when registered components endpoint is done
-const sampleEntity = (components: string[]): Entity => {
+const sampleEntity = (selected: string[], components: WorldField[]): Entity => {
+  const componentsMap: { [key: string]: string } = components.reduce((acc, c) => ({ ...acc, [c.name]: c.fields }), {})
   return {
     id: 0,
-    components: components.reduce((acc, c) => ({ ...acc, [c]: { attribute: 'dummy data' } }), {}),
+    components: selected.reduce((acc, c) => ({ ...acc, [c]: componentsMap[c] }), {}),
   }
 }
 
-// TODO: consider zod for form vaidation
+// TODO: consider zod for form validation
 export function NewEntityGroupSheet() {
   const cardinal = useCardinal()
   const { data } = useQuery(worldQueryOptions(cardinal))
@@ -58,7 +58,8 @@ export function NewEntityGroupSheet() {
   const [selected, setSelected] = useState<string[]>([])
   const [selectedError, setSelectedError] = useState('')
 
-  const components = data?.components.map((c) => ({ label: c, value: c })) ?? []
+  const components = data?.components ?? []
+  const options = components.map((c) => ({ label: c.name, value: c.name })) ?? []
   const hasSelectedComponents = selected && selected.length > 0
   const accordionValue = hasSelectedComponents ? 'default' : ''
 
@@ -115,7 +116,7 @@ export function NewEntityGroupSheet() {
               </div>
               <div className="space-y-1">
                 <Label>Components</Label>
-                <MultiSelect options={components} selected={selected} onChange={setSelected} />
+                <MultiSelect options={options} selected={selected} onChange={setSelected} />
                 <small className="text-destructive">{selectedError}</small>
               </div>
               <Accordion
@@ -127,7 +128,7 @@ export function NewEntityGroupSheet() {
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected)} />}
+                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected, components)} />}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -162,7 +163,8 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
   const [selected, setSelected] = useState<string[]>(entityGroup.components)
   const [selectedError, setSelectedError] = useState('')
 
-  const components = data?.components.map((c) => ({ label: c, value: c })) ?? []
+  const components = data?.components ?? []
+  const options = components.map((c) => ({ label: c.name, value: c.name })) ?? []
   const hasSelectedComponents = selected && selected.length > 0
   const accordionValue = hasSelectedComponents ? 'default' : ''
 
@@ -228,7 +230,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
               </div>
               <div className="space-y-1">
                 <Label>Components</Label>
-                <MultiSelect options={components} selected={selected} onChange={setSelected} />
+                <MultiSelect options={options} selected={selected} onChange={setSelected} />
                 <small className="text-destructive">{selectedError}</small>
               </div>
               <Accordion
@@ -240,7 +242,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected)} />}
+                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected, components)} />}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
