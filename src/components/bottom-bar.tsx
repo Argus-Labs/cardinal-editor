@@ -53,9 +53,9 @@ export function BottomBar() {
           </div>
         ) : (
           <div className="flex flex-col gap-4 items-center justify-center h-full">
-            <Braces size={40} strokeWidth={2.5} className="text-muted-foreground flex-shrink-0" />
+            <Braces size={36} strokeWidth={2.5} className="text-muted-foreground flex-shrink-0" />
             <div className="space-y-2 text-center">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 No results.
                 <br />
                 You can send messages and queries from the sidebar.
