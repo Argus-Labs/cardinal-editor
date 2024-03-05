@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ChevronsDown, ChevronsUp } from 'lucide-react'
+import { Braces, ChevronsDown, ChevronsUp } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { ImperativePanelHandle } from 'react-resizable-panels'
 
@@ -46,10 +46,21 @@ export function BottomBar() {
           {collapsed ? <ChevronsUp size={20} /> : <ChevronsDown size={20} />}
         </Button>
       </div>
-      <div className="max-h-[calc(100%-4rem)] overflow-y-auto bg-muted px-3 py-1 rounder border border-border">
-        {data && (
+      <div className="h-[calc(100%-4rem)] overflow-y-auto bg-muted px-3 py-1 rounder border border-border">
+        {data ? (
           <div className="font-mono text-xs whitespace-pre-wrap">
             {JSON.stringify(data, null, 2)}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <Braces size={36} strokeWidth={2.5} className="text-muted-foreground flex-shrink-0" />
+            <div className="space-y-2 text-center">
+              <p className="text-muted-foreground text-sm">
+                No results.
+                <br />
+                You can send messages and queries from the sidebar.
+              </p>
+            </div>
           </div>
         )}
       </div>
