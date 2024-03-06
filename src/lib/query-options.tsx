@@ -15,6 +15,9 @@ export const stateQueryOptions = ({
       method: 'POST',
       body: '{}',
     })
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}/query/debug/state`)
+    }
     return res.json() as Promise<Entity[]>
   },
   refetchInterval: 1000,
@@ -28,6 +31,9 @@ export const worldQueryOptions = ({
   queryKey: ['world'],
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}/world`)
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}/world`)
+    }
     return res.json() as Promise<WorldResponse>
   },
   enabled: isCardinalConnected,
@@ -54,6 +60,9 @@ export const lastQueryOptions = ({
       method: 'POST',
       body: JSON.stringify(body),
     })
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}/${ns}/game/${name}`)
+    }
     return res.json()
   },
   enabled: isCardinalConnected,

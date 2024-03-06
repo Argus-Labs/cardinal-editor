@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Braces, ChevronsDown, ChevronsUp } from 'lucide-react'
+import { Braces, ChevronsDown, ChevronsUp, XCircle } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { ImperativePanelHandle } from 'react-resizable-panels'
 
@@ -9,14 +9,14 @@ import { ResizablePanel } from '@/components/ui/resizable'
 export function BottomBar() {
   const ref = useRef<ImperativePanelHandle>(null)
   const [collapsed, setCollapsed] = useState(true)
-  const { data } = useQuery({ queryKey: ['last-query'], initialData: null })
+  const { data, isError, error } = useQuery({ queryKey: ['last-query'], enabled: false })
 
   useEffect(() => {
     const panel = ref.current
-    if (data && panel) {
-      panel.resize(65)
+    if (panel && (data || error)) {
+      panel.resize(30)
     }
-  }, [data])
+  }, [data, error])
 
   const handleExpand = () => {
     const panel = ref.current
@@ -47,11 +47,18 @@ export function BottomBar() {
         </Button>
       </div>
       <div className="h-[calc(100%-4rem)] overflow-y-auto bg-muted px-3 py-1 rounder border border-border">
-        {data ? (
-          <div className="font-mono text-xs whitespace-pre-wrap">
-            {JSON.stringify(data, null, 2)}
+        {isError ? (
+          <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <XCircle size={36} strokeWidth={2.5} className="text-muted-foreground flex-shrink-0" />
+            <div className="space-y-2 text-center">
+              <p className="text-muted-foreground text-sm">
+                Error fetching data.
+                <br />
+                {error.message}
+              </p>
+            </div>
           </div>
-        ) : (
+        ) : !data ? (
           <div className="flex flex-col gap-4 items-center justify-center h-full">
             <Braces size={36} strokeWidth={2.5} className="text-muted-foreground flex-shrink-0" />
             <div className="space-y-2 text-center">
@@ -61,6 +68,10 @@ export function BottomBar() {
                 You can send messages and queries from the sidebar.
               </p>
             </div>
+          </div>
+        ) : (
+          <div className="font-mono text-xs whitespace-pre-wrap">
+            {JSON.stringify(data, null, 2)}
           </div>
         )}
       </div>

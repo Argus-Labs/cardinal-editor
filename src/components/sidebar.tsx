@@ -25,6 +25,7 @@ export function Sidebar() {
   const builtin: any = {
     messages: {
       'create-persona': true,
+      'authorize-persona-address': true,
     },
     queries: {
       signer: true,
@@ -78,7 +79,7 @@ function SideBarItem({ item }: SideBarItemProps) {
               {item.icon} {item.title}
             </p>
           </AccordionTrigger>
-          <AccordionContent className="space-y-2">
+          <AccordionContent>
             {item.items.length === 0 ? (
               <div className="flex flex-col gap-4 items-center bg-muted text-muted-foreground py-4 rounded-lg">
                 <BookDashed size={24} strokeWidth={2.5} />
@@ -87,9 +88,11 @@ function SideBarItem({ item }: SideBarItemProps) {
                 </div>
               </div>
             ) : (
-              item.items.map((msgOrQry, i) => (
-                <MessageQueryAccordion key={i} type={item.type} msgOrQry={msgOrQry} />
-              ))
+              <Accordion collapsible type="single" className="space-y-2">
+                {item.items.map((msgOrQry, i) => (
+                  <MessageQueryAccordion key={i} type={item.type} msgOrQry={msgOrQry} />
+                ))}
+              </Accordion>
             )}
           </AccordionContent>
         </AccordionItem>
@@ -139,36 +142,34 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
   }
 
   return (
-    <Accordion collapsible type="single" className="bg-muted border border-border rounded-lg">
-      <AccordionItem value="default" className="border-0 [&_.params]:data-[state=open]:hidden">
-        <AccordionTrigger
-          title={formatName(msgOrQry.name)}
-          className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
-        >
-          <p className="text-sm text-left max-w-[85%] truncate">{formatName(msgOrQry.name)}</p>
-        </AccordionTrigger>
-        <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
-          {Object.keys(msgOrQry.fields).join(', ')}
-        </div>
-        <AccordionContent className="p-2 space-y-2">
-          {Object.keys(msgOrQry.fields).map((param) => (
-            <div key={param} className="space-y-1">
-              <p className="font-medium space-x-2">
-                <span>{param}</span>
-                <span className="text-muted-foreground font-normal">{msgOrQry.fields[param]}</span>
-              </p>
-              <Input
-                value={fields[param]}
-                onChange={(e) => setFields({ ...fields, [param]: e.target.value })}
-                className="h-8"
-              />
-            </div>
-          ))}
-          <Button onClick={handleClick} className="w-full h-8">
-            Send
-          </Button>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <AccordionItem value={msgOrQry.name} className="bg-muted border border-border rounded-lg [&_.params]:data-[state=open]:hidden">
+      <AccordionTrigger
+        title={formatName(msgOrQry.name)}
+        className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
+      >
+        <p className="text-sm text-left max-w-[85%] truncate">{formatName(msgOrQry.name)}</p>
+      </AccordionTrigger>
+      <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
+        {Object.keys(msgOrQry.fields).join(', ')}
+      </div>
+      <AccordionContent className="p-2 space-y-2">
+        {Object.keys(msgOrQry.fields).map((param) => (
+          <div key={param} className="space-y-1">
+            <p className="font-medium space-x-2">
+              <span>{param}</span>
+              <span className="text-muted-foreground font-normal">{msgOrQry.fields[param]}</span>
+            </p>
+            <Input
+              value={fields[param]}
+              onChange={(e) => setFields({ ...fields, [param]: e.target.value })}
+              className="h-8"
+            />
+          </div>
+        ))}
+        <Button onClick={handleClick} className="w-full h-8">
+          Send
+        </Button>
+      </AccordionContent>
+    </AccordionItem>
   )
 }
