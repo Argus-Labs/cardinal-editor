@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { BookDashed, MessageSquareCode, SearchCode } from 'lucide-react'
+import { BookDashed, MessageSquareCode, SearchCode, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -11,13 +11,19 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { lastQueryOptions, worldQueryOptions } from '@/lib/query-options'
-import { WorldField, WorldResponse } from '@/lib/types'
+import { useConfig } from '@/lib/config-provider'
+import { lastQueryOptions, personaQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { WorldField } from '@/lib/types'
+
 
 export function Sidebar() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
-  const { data } = useQuery<WorldResponse>(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const { config, setConfig } = useConfig()
+  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const queryClient = useQueryClient()
+  const [personaError, setPersonaError] = useState('')
 
   // HACK: filter out messages/queries that don't use /{tx,query}/game/... endpoints
   // until we get the full endpoint from /debug/world or if we decided not to even
@@ -48,9 +54,53 @@ export function Sidebar() {
     },
   ]
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // @ts-ignore
+    const personaTag: string = e.target.persona.value
+    if (!personaTag || personaTag.length < 3 || personaTag.length > 16 || !personaTag.match(/^[^\W]+$/)) {
+      // TODO: more specific error messages
+      setPersonaError('Invalid persona tag')
+      return
+    }
+    const account = createPersonaAccount(personaTag)
+    const { privateKey, address } = account
+    // TODO: don't hardcode namespace, figure out how to get it from cardinal
+    const namespace = 'world-1'
+    const nonce = 0 // new accounts will always start with 0 as the nonce
+    const message = `${personaTag}${namespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
+    const signature = await account.sign(message)
+    const body = {
+      personaTag,
+      namespace,
+      nonce,
+      signature,
+      body: { personaTag, signerAddress: account.address },
+    }
+    // TODO: query error handling
+    queryClient.fetchQuery(personaQueryOptions({ cardinalUrl, isCardinalConnected, body }))
+    const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
+    setConfig({ ...config, personas: [...config.personas, newPersona] })
+  }
+
   return (
     <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 border-r text-sm">
       <div>
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <label htmlFor="create-persona" className="flex items-center gap-2 font-bold p-2">
+            <UserPlus size={20} strokeWidth={2.1} />
+            Create persona
+          </label>
+          <Input
+            id="create-persona"
+            name="persona"
+            placeholder="PersonaTag"
+            className="h-8"
+            onChange={() => setPersonaError('')}
+          />
+          {personaError && <small className="text-xs text-destructive">{personaError}</small>}
+          <Button className="h-8 w-full">Create</Button>
+        </form>
         {sidebarItems.map((item, i) => (
           <SideBarItem key={i} item={item} />
         ))}
@@ -124,7 +174,7 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
     }
     const ns = type === 'message' ? 'tx' : 'query'
     const base = {
-      personaTag: '', // this is required!
+      personaTag: 'CoolMage', // this is required!
       namespace: '',
       nonce: 0,
       signature: '',
@@ -142,7 +192,10 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
   }
 
   return (
-    <AccordionItem value={msgOrQry.name} className="bg-muted border border-border rounded-lg [&_.params]:data-[state=open]:hidden">
+    <AccordionItem
+      value={msgOrQry.name}
+      className="bg-muted border border-border rounded-lg [&_.params]:data-[state=open]:hidden"
+    >
       <AccordionTrigger
         title={formatName(msgOrQry.name)}
         className="p-2 max-w-full rounded-lg border-border data-[state=closed]:border-b data-[state=closed]:bg-background"
@@ -156,10 +209,11 @@ function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
         {Object.keys(msgOrQry.fields).map((param) => (
           <div key={param} className="space-y-1">
             <p className="font-medium space-x-2">
-              <span>{param}</span>
+              <label htmlFor={msgOrQry.name}>{param}</label>
               <span className="text-muted-foreground font-normal">{msgOrQry.fields[param]}</span>
             </p>
             <Input
+              id={msgOrQry.name}
               value={fields[param]}
               onChange={(e) => setFields({ ...fields, [param]: e.target.value })}
               className="h-8"
