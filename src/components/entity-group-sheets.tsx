@@ -40,7 +40,10 @@ import { worldQueryOptions } from '@/lib/query-options'
 import { Entity, WorldField } from '@/lib/types'
 
 const sampleEntity = (selected: string[], components: WorldField[]): Entity => {
-  const componentsMap: { [key: string]: string } = components.reduce((acc, c) => ({ ...acc, [c.name]: c.fields }), {})
+  const componentsMap: { [key: string]: string } = components.reduce(
+    (acc, c) => ({ ...acc, [c.name]: c.fields }),
+    {},
+  )
   return {
     id: 0,
     components: selected.reduce((acc, c) => ({ ...acc, [c]: componentsMap[c] }), {}),
@@ -67,6 +70,7 @@ export function NewEntityGroupSheet() {
     if (entityGroupName.length === 0) {
       e.preventDefault()
       setEntityGroupError('Please enter a name for the entity group')
+      return
     }
     if (selected.length === 0) {
       e.preventDefault()
@@ -128,7 +132,9 @@ export function NewEntityGroupSheet() {
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected, components)} />}
+                    {hasSelectedComponents && (
+                      <EntityCard entity={sampleEntity(selected, components)} />
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -242,7 +248,9 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
                 <AccordionItem value="default" className="border-0 space-y-2">
                   <AccordionTrigger className="py-2 text-sm">Sample entities</AccordionTrigger>
                   <AccordionContent>
-                    {hasSelectedComponents && <EntityCard entity={sampleEntity(selected, components)} />}
+                    {hasSelectedComponents && (
+                      <EntityCard entity={sampleEntity(selected, components)} />
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
