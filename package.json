@@ -28,7 +28,8 @@
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.0.11",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "^2.7.20"
   },
   "devDependencies": {
     "@tanstack/router-vite-plugin": "^1.16.5",
