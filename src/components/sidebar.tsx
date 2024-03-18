@@ -75,7 +75,7 @@ export function Sidebar() {
       namespace,
       nonce,
       signature,
-      body: { personaTag, signerAddress: account.address },
+      body: { personaTag, signerAddress: address },
     }
     // TODO: query error handling
     queryClient.fetchQuery(personaQueryOptions({ cardinalUrl, isCardinalConnected, body }))
@@ -156,6 +156,7 @@ interface MessageQueryAccordionProps {
   msgOrQry: WorldField
 }
 
+// TODO: separate query & message components, factor sidebar items into separate files
 function MessageQueryAccordion({ type, msgOrQry }: MessageQueryAccordionProps) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const [fields, setFields] = useState<{ [param: string]: string }>(
