@@ -32,10 +32,12 @@ interface ConfigProviderProps {
 const storageKey = 'ce-config'
 const defaultValue: Config = {
   view: 'card',
-  entityGroups: [{
-    name: 'Personas',
-    components: ['SignerComponent']
-  }],
+  entityGroups: [
+    {
+      name: 'Personas',
+      components: ['SignerComponent'],
+    },
+  ],
   personas: [],
 }
 const initialState: ConfigProviderState = {

@@ -21,13 +21,13 @@ export function BottomBar() {
   const handleExpand = () => {
     const panel = ref.current
     if (panel) {
-      setCollapsed(!(panel.getSize() >= 65))
+      setCollapsed(panel.getSize() <= 3)
     }
   }
   const expandBottomBar = () => {
     const panel = ref.current
     if (panel) {
-      panel.resize(panel.getSize() >= 65 ? 3 : 65)
+      panel.resize(panel.getSize() > 3 ? 3 : 65)
     }
   }
 

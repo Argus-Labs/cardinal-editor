@@ -1,9 +1,9 @@
+import { secp256k1 } from '@noble/curves/secp256k1'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { keccak256, toHex } from 'viem/utils'
-import { secp256k1 } from '@noble/curves/secp256k1'
 
 // -------------------------------------------------------------------------- //
-// copied source from viem directly instead of importing from node_modules, as doing that 
+// copied source from viem directly instead of importing from node_modules, as doing that
 // causes typescript errors that can't be fixed.
 // TODO: remove this once pkg.world.dev/sign package follows eip-712
 type Hex = `0x${string}`
@@ -41,10 +41,7 @@ function size_(value: Hex | ByteArray) {
   return value.length
 }
 
-function assertSize(
-  hexOrBytes: Hex | ByteArray,
-  { size }: { size: number },
-): void {
+function assertSize(hexOrBytes: Hex | ByteArray, { size }: { size: number }): void {
   if (size_(hexOrBytes) > size)
     throw new Error(`Size cannot exceed ${size} bytes. Given size: ${size_(hexOrBytes)} bytes.`)
 }
@@ -70,16 +67,10 @@ function signatureToHex({ r, s, v, yParity }: Signature): Hex {
     if (v === 28n || yParity === 1) return '1c'
     throw new Error('Invalid v value')
   })()
-  return `0x${new secp256k1.Signature(
-    hexToBigInt(r),
-    hexToBigInt(s),
-  ).toCompactHex()}${vHex}`
+  return `0x${new secp256k1.Signature(hexToBigInt(r), hexToBigInt(s)).toCompactHex()}${vHex}`
 }
 
-async function sign({
-  hash,
-  privateKey,
-}: SignParameters): Promise<SignReturnType> {
+async function sign({ hash, privateKey }: SignParameters): Promise<SignReturnType> {
   const { r, s, recovery } = secp256k1.sign(hash.slice(2), privateKey.slice(2))
   return {
     r: toHex(r),
