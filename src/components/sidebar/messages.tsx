@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode } from 'lucide-react'
 import { useState } from 'react'
 
@@ -9,7 +10,19 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { accountFromPersona } from '@/lib/account'
+import { useCardinal } from '@/lib/cardinal-provider'
+import { useConfig } from '@/lib/config-provider'
+import { lastMessageQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
+import { Persona } from '@/lib/types'
 
 import { formatName } from './utils'
 
@@ -53,11 +66,48 @@ interface MessageProp {
 }
 
 function Message({ message }: MessageProp) {
+  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const queryClient = useQueryClient()
+  const { config, setConfig } = useConfig()
+  const [persona, setPersona] = useState<Persona>()
   const [fields, setFields] = useState<{ [param: string]: string }>(
     Object.keys(message.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {}),
   )
 
-  const handleClick = () => true
+  const handleValueChange = (value: string) => {
+    const persona = config.personas.filter((p) => p.personaTag === value)[0]
+    setPersona(persona)
+  }
+
+  const handleClick = async () => {
+    if (!persona) return
+    const account = accountFromPersona(persona)
+    const { personaTag, nonce } = persona
+    const namespace = 'world-1'
+    const msg = `${personaTag}${namespace}${nonce + 1}${JSON.stringify(fields)}`
+    const signature = await account.sign(msg)
+    const body = {
+      personaTag,
+      namespace,
+      nonce: nonce + 1,
+      signature,
+      body: fields,
+    }
+    queryClient.fetchQuery(
+      lastMessageQueryOptions({
+        cardinalUrl,
+        isCardinalConnected,
+        name: message.name,
+        body,
+      }),
+    )
+    setConfig({
+      ...config,
+      personas: config.personas.map((p) => {
+        return p === persona ? { ...p, nonce: p.nonce + 1 } : p
+      }),
+    })
+  }
 
   return (
     <AccordionItem
@@ -74,6 +124,20 @@ function Message({ message }: MessageProp) {
         {Object.keys(message.fields).join(', ')}
       </div>
       <AccordionContent className="p-2 space-y-2">
+        <Select required disabled={config.personas.length === 0} onValueChange={handleValueChange}>
+          <SelectTrigger className="h-8">
+            <SelectValue
+              placeholder={config.personas.length === 0 ? 'No personas found' : 'Select persona'}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {config.personas.map(({ personaTag }) => (
+              <SelectItem key={personaTag} value={personaTag}>
+                {personaTag}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {Object.keys(message.fields).map((param) => (
           <div key={param} className="space-y-1">
             <p className="font-medium space-x-2">

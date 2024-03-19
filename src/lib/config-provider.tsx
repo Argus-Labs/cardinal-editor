@@ -1,15 +1,10 @@
 import { createContext, useContext, useState } from 'react'
 
+import { Persona } from '@/lib/types'
+
 interface EntityGroup {
   name: string
   components: string[]
-}
-
-interface Persona {
-  personaTag: string
-  privateKey: string
-  address: string
-  nonce: number
 }
 
 // yes, enums would work here. it just requires more work and can be deffered for now
