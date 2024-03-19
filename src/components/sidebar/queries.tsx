@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, SearchCode } from 'lucide-react'
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import {
   Accordion,
@@ -9,6 +9,14 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { lastQueryQueryOptions } from '@/lib/query-options'
@@ -58,17 +66,16 @@ interface QueryProp {
 function Query({ query }: QueryProp) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const queryClient = useQueryClient()
-  const [fields, setFields] = useState<{ [param: string]: string }>(
-    Object.keys(query.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {}),
-  )
+  const form = useForm()
 
-  const handleClick = async () => {
+  // @ts-ignore
+  const handleSubmit = async (values) => {
     queryClient.fetchQuery(
       lastQueryQueryOptions({
         cardinalUrl,
         isCardinalConnected,
         name: query.name,
-        body: fields,
+        body: values,
       }),
     )
   }
@@ -87,24 +94,33 @@ function Query({ query }: QueryProp) {
       <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
         {Object.keys(query.fields).join(', ')}
       </div>
-      <AccordionContent className="p-2 space-y-2">
-        {Object.keys(query.fields).map((param) => (
-          <div key={param} className="space-y-1">
-            <p className="font-medium space-x-2">
-              <label htmlFor={query.name}>{param}</label>
-              <span className="text-muted-foreground font-normal">{query.fields[param]}</span>
-            </p>
-            <Input
-              id={query.name}
-              value={fields[param]}
-              onChange={(e) => setFields({ ...fields, [param]: e.target.value })}
-              className="h-8"
-            />
-          </div>
-        ))}
-        <Button onClick={handleClick} className="w-full h-8">
-          Send
-        </Button>
+      <AccordionContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="p-2 space-y-2">
+            {Object.keys(query.fields).map((param) => (
+              <FormField
+                key={param}
+                control={form.control}
+                name={param}
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormLabel className="font-medium space-x-2">
+                      <span>{param}</span>
+                      <span className="text-muted-foreground font-normal">
+                        {query.fields[param]}
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input required className="h-8" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+            <Button className="w-full h-8">Send</Button>
+          </form>
+        </Form>
       </AccordionContent>
     </AccordionItem>
   )

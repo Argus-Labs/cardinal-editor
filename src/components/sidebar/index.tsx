@@ -29,7 +29,7 @@ export function Sidebar() {
   const queries = data?.queries.filter((q) => !builtin.queries[q.name]) ?? []
 
   return (
-    <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 border-r text-sm">
+    <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 w-64 border-r text-sm">
       <div className="space-y-2">
         <CreatePersona />
         <SidebarMessages messages={messages} />
