@@ -35,7 +35,7 @@ const formSchema = z.object({
 
 export function CreatePersona() {
   const { config, setConfig } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, cardinalNamespace } = useCardinal()
   const queryClient = useQueryClient()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,16 +44,14 @@ export function CreatePersona() {
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {
     const account = createPersonaAccount(personaTag)
     const { privateKey, address } = account
-    // TODO: don't hardcode namespace, figure out how to get it from cardinal
-    const namespace = 'world-1'
     const nonce = 0 // new accounts will always start with 0 as the nonce
-    const message = `${personaTag}${namespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
+    const message = `${personaTag}${cardinalNamespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
     const signature = await account.sign(message)
     const body = {
       personaTag,
-      namespace,
       nonce,
       signature,
+      namespace: cardinalNamespace,
       body: { personaTag, signerAddress: address },
     }
     // TODO: query error handling

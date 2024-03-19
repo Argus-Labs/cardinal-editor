@@ -74,7 +74,7 @@ interface MessageProp {
 
 function Message({ message }: MessageProp) {
   const { config, setConfig } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, cardinalNamespace } = useCardinal()
   const queryClient = useQueryClient()
   const form = useForm()
 
@@ -83,13 +83,12 @@ function Message({ message }: MessageProp) {
     const { persona: personaTag, ...fields } = values
     const persona = config.personas.filter((p) => p.personaTag === personaTag)[0]
     const account = accountFromPersona(persona)
-    const namespace = 'world-1'
-    const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
+    const msg = `${personaTag}${cardinalNamespace}${persona.nonce}${JSON.stringify(fields)}`
     const signature = await account.sign(msg)
     const body = {
       personaTag,
-      namespace,
       signature,
+      namespace: cardinalNamespace,
       nonce: persona.nonce,
       body: fields,
     }
