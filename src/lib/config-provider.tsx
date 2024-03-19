@@ -5,10 +5,18 @@ interface EntityGroup {
   components: string[]
 }
 
+interface Persona {
+  personaTag: string
+  privateKey: string
+  address: string
+  nonce: number
+}
+
 // yes, enums would work here. it just requires more work and can be deffered for now
 interface Config {
   view: string // 'card' | 'list'
   entityGroups: EntityGroup[]
+  personas: Persona[]
 }
 
 // TODO: separate items for view/entiy group
@@ -24,7 +32,13 @@ interface ConfigProviderProps {
 const storageKey = 'ce-config'
 const defaultValue: Config = {
   view: 'card',
-  entityGroups: [],
+  entityGroups: [
+    {
+      name: 'Personas',
+      components: ['SignerComponent'],
+    },
+  ],
+  personas: [],
 }
 const initialState: ConfigProviderState = {
   config: defaultValue,

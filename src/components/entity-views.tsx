@@ -98,7 +98,7 @@ function ComponentDetails({ name, component }: ComponentDetailsProps) {
       </summary>
       <div>
         {attributes.map((attr) => (
-          <p key={attr} className="ml-3 text-muted-foreground font-medium">
+          <p key={attr} className="ml-3 text-muted-foreground font-medium break-all">
             {attr}: {formatAttribute(component[attr])}
           </p>
         ))}
