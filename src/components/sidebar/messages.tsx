@@ -1,5 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode } from 'lucide-react'
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import {
   Accordion,
@@ -8,7 +9,26 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { accountFromPersona } from '@/lib/account'
+import { useCardinal } from '@/lib/cardinal-provider'
+import { useConfig } from '@/lib/config-provider'
+import { lastMessageQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
 import { formatName } from './utils'
@@ -53,11 +73,41 @@ interface MessageProp {
 }
 
 function Message({ message }: MessageProp) {
-  const [fields, setFields] = useState<{ [param: string]: string }>(
-    Object.keys(message.fields).reduce((acc, i) => ({ ...acc, [i]: '' }), {}),
-  )
+  const { config, setConfig } = useConfig()
+  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const queryClient = useQueryClient()
+  const form = useForm()
 
-  const handleClick = () => true
+  // @ts-ignore
+  const handleSubmit = async (values) => {
+    const { persona: personaTag, ...fields } = values
+    const persona = config.personas.filter((p) => p.personaTag === personaTag)[0]
+    const account = accountFromPersona(persona)
+    const namespace = 'world-1'
+    const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
+    const signature = await account.sign(msg)
+    const body = {
+      personaTag,
+      namespace,
+      signature,
+      nonce: persona.nonce,
+      body: fields,
+    }
+    queryClient.fetchQuery(
+      lastMessageQueryOptions({
+        cardinalUrl,
+        isCardinalConnected,
+        name: message.name,
+        body,
+      }),
+    )
+    setConfig({
+      ...config,
+      personas: config.personas.map((p) => {
+        return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
+      }),
+    })
+  }
 
   return (
     <AccordionItem
@@ -73,24 +123,66 @@ function Message({ message }: MessageProp) {
       <div className="params px-2 py-0.5 font-medium text-xs text-muted-foreground truncate">
         {Object.keys(message.fields).join(', ')}
       </div>
-      <AccordionContent className="p-2 space-y-2">
-        {Object.keys(message.fields).map((param) => (
-          <div key={param} className="space-y-1">
-            <p className="font-medium space-x-2">
-              <label htmlFor={message.name}>{param}</label>
-              <span className="text-muted-foreground font-normal">{message.fields[param]}</span>
-            </p>
-            <Input
-              id={message.name}
-              value={fields[param]}
-              onChange={(e) => setFields({ ...fields, [param]: e.target.value })}
-              className="h-8"
+      <AccordionContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="p-2 space-y-2">
+            <FormField
+              control={form.control}
+              name="persona"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel>Persona tag</FormLabel>
+                  <Select
+                    required
+                    disabled={config.personas.length === 0}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-8">
+                        <SelectValue
+                          placeholder={
+                            config.personas.length === 0 ? 'No personas found' : 'Select persona'
+                          }
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {config.personas.map(({ personaTag }) => (
+                        <SelectItem key={personaTag} value={personaTag}>
+                          {personaTag}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        ))}
-        <Button onClick={handleClick} className="w-full h-8">
-          Send
-        </Button>
+            {Object.keys(message.fields).map((param) => (
+              <FormField
+                key={param}
+                control={form.control}
+                name={param}
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormLabel className="font-medium space-x-2">
+                      <span>{param}</span>
+                      <span className="text-muted-foreground font-normal">
+                        {message.fields[param]}
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input required className="h-8" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+            <Button className="w-full h-8">Send</Button>
+          </form>
+        </Form>
       </AccordionContent>
     </AccordionItem>
   )

@@ -24,6 +24,8 @@ function Root() {
   // where the state is persisted accross restarts. this is needed to keep track of the last nonce
   // used by each signer.
   useEffect(() => {
+    // this check is needed because useEffect can run before entities are fetched
+    if (!entities) return
     const personas = config.personas.filter((p) => {
       const match = entities?.filter((e) => {
         const signer = e.components['SignerComponent']
@@ -34,7 +36,7 @@ function Root() {
       return match && match.length !== 0
     })
     setConfig({ ...config, personas: personas })
-  }, [])
+  }, [entities])
 
   return (
     <>

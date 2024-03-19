@@ -2,6 +2,8 @@ import { secp256k1 } from '@noble/curves/secp256k1'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { keccak256, toHex } from 'viem/utils'
 
+import { Persona } from '@/lib/types'
+
 // -------------------------------------------------------------------------- //
 // copied source from viem directly instead of importing from node_modules, as doing that
 // causes typescript errors that can't be fixed.
@@ -99,6 +101,17 @@ export const createPersonaAccount = (personaTag: string) => {
     sign: async (msg: string) => {
       const signature = await customSign(msg, privateKey)
       return signature.slice(2) // remove `0x` from hex string
+    },
+  }
+}
+
+export const accountFromPersona = (persona: Persona) => {
+  const privateKey = persona.privateKey as `0x{string}`
+  return {
+    ...persona,
+    sign: async (msg: string) => {
+      const signature = await customSign(msg, privateKey)
+      return signature.slice(2)
     },
   }
 }
