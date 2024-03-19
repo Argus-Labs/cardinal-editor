@@ -84,12 +84,12 @@ function Message({ message }: MessageProp) {
     const account = accountFromPersona(persona)
     const { personaTag, nonce } = persona
     const namespace = 'world-1'
-    const msg = `${personaTag}${namespace}${nonce + 1}${JSON.stringify(fields)}`
+    const msg = `${personaTag}${namespace}${nonce}${JSON.stringify(fields)}`
     const signature = await account.sign(msg)
     const body = {
       personaTag,
       namespace,
-      nonce: nonce + 1,
+      nonce,
       signature,
       body: fields,
     }
@@ -104,9 +104,11 @@ function Message({ message }: MessageProp) {
     setConfig({
       ...config,
       personas: config.personas.map((p) => {
-        return p === persona ? { ...p, nonce: p.nonce + 1 } : p
+        return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
       }),
     })
+    // this is needed if user doesn't switch personas
+    setPersona({ ...persona, nonce: nonce + 1 })
   }
 
   return (
