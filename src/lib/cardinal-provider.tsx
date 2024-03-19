@@ -11,9 +11,9 @@ interface CardinalProviderProps {
 }
 
 const storageKey = 'cardinal-url'
-const defaultCardinalUrl = 'http://localhost:3333'
+const defaultCardinalUrl = 'http://localhost:4040'
 const initialState: CardinalProviderState = {
-  cardinalUrl: 'http://localhost:3333',
+  cardinalUrl: defaultCardinalUrl,
   setCardinalUrl: () => null,
   isCardinalConnected: false,
 }
