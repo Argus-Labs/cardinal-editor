@@ -46,7 +46,7 @@ export function CreatePersona() {
     const { privateKey, address } = account
     const nonce = 0 // new accounts will always start with 0 as the nonce
     const message = `${personaTag}${cardinalNamespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
-    const signature = await account.sign(message)
+    const signature = account.sign(message)
     const body = {
       personaTag,
       nonce,
@@ -55,7 +55,7 @@ export function CreatePersona() {
       body: { personaTag, signerAddress: address },
     }
     // TODO: query error handling
-    queryClient.fetchQuery(personaQueryOptions({ cardinalUrl, isCardinalConnected, body }))
+    await queryClient.fetchQuery(personaQueryOptions({ cardinalUrl, isCardinalConnected, body }))
     const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
     setConfig({ ...config, personas: [...config.personas, newPersona] })
   }
@@ -63,7 +63,7 @@ export function CreatePersona() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
         className="space-y-2 bg-muted border border-border rounded-lg p-2"
       >
         <FormField

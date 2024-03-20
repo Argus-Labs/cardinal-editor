@@ -8,25 +8,12 @@ import { SidebarMessages } from './messages'
 import { CreatePersona } from './persona'
 import { SidebarQueries } from './queries'
 
-// TODO: filter using url when world-915 is done
-const builtin: any = {
-  messages: {
-    'create-persona': true,
-    'authorize-persona-address': true,
-  },
-  queries: {
-    signer: true,
-    state: true,
-    list: true,
-  },
-}
-
 export function Sidebar() {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
 
-  const messages = data?.messages.filter((m) => !builtin.messages[m.name]) ?? []
-  const queries = data?.queries.filter((q) => !builtin.queries[q.name]) ?? []
+  const messages = data?.messages ?? []
+  const queries = data?.queries ?? []
 
   return (
     <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 w-64 border-r text-sm">

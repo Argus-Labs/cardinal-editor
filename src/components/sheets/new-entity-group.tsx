@@ -95,7 +95,7 @@ export function NewEntityGroupSheet() {
       <SheetContent>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
             className="h-full flex flex-col justify-between"
           >
             <div>
@@ -143,8 +143,8 @@ export function NewEntityGroupSheet() {
                                     return checked
                                       ? field.onChange([...field.value, o.value])
                                       : field.onChange(
-                                          field.value?.filter((value) => value !== o.value),
-                                        )
+                                        field.value?.filter((value) => value !== o.value),
+                                      )
                                   }}
                                 >
                                   {o.label}

@@ -117,7 +117,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
       <SheetContent>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleEdit)}
+            onSubmit={(e) => void form.handleSubmit(handleEdit)(e)}
             className="h-full flex flex-col justify-between"
           >
             <div>
@@ -161,8 +161,8 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
                                     return checked
                                       ? field.onChange([...field.value, o.value])
                                       : field.onChange(
-                                          field.value?.filter((value) => value !== o.value),
-                                        )
+                                        field.value?.filter((value) => value !== o.value),
+                                      )
                                   }}
                                 >
                                   {o.label}

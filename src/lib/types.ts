@@ -1,5 +1,7 @@
 export interface Components {
-  [name: string]: object
+  [name: string]: {
+    [property: string]: any
+  }
 }
 
 export interface Entity {
