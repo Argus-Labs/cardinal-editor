@@ -66,18 +66,23 @@ interface QueryProp {
 function Query({ query }: QueryProp) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const queryClient = useQueryClient()
+  // TODO: fix uncontrolled component error by adding default values here, tho we need to set the
+  // schema first to do this. same goes to the useForm in ./messages.tsx
   const form = useForm()
 
   // @ts-ignore
   const handleSubmit = (values) => {
-    queryClient.fetchQuery(
-      lastQueryQueryOptions({
-        cardinalUrl,
-        isCardinalConnected,
-        name: query.name,
-        body: values as object,
-      }),
-    ).then(() => true).catch((e) => console.log(e))
+    queryClient
+      .fetchQuery(
+        lastQueryQueryOptions({
+          cardinalUrl,
+          isCardinalConnected,
+          name: query.name,
+          body: values as object,
+        }),
+      )
+      .then(() => true)
+      .catch((e) => console.log(e))
   }
 
   return (

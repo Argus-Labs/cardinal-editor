@@ -56,6 +56,7 @@ export function NewEntityGroupSheet() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       components: [],
     },
   })
@@ -143,8 +144,8 @@ export function NewEntityGroupSheet() {
                                     return checked
                                       ? field.onChange([...field.value, o.value])
                                       : field.onChange(
-                                        field.value?.filter((value) => value !== o.value),
-                                      )
+                                          field.value?.filter((value) => value !== o.value),
+                                        )
                                   }}
                                 >
                                   {o.label}

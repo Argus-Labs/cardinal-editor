@@ -39,6 +39,9 @@ export function CreatePersona() {
   const queryClient = useQueryClient()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      personaTag: '',
+    },
   })
 
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {

@@ -161,8 +161,8 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
                                     return checked
                                       ? field.onChange([...field.value, o.value])
                                       : field.onChange(
-                                        field.value?.filter((value) => value !== o.value),
-                                      )
+                                          field.value?.filter((value) => value !== o.value),
+                                        )
                                   }}
                                 >
                                   {o.label}

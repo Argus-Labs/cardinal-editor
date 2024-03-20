@@ -14,7 +14,7 @@ interface CardinalProviderProps {
 // TODO: consider whether to put cardinal url/port in .env too
 const storageKey = 'cardinal-url'
 const defaultCardinalUrl = 'http://localhost:4040'
-const defaultCardinalNamespace = import.meta.env.CARDINAL_NAMESPACE as string || 'world-1'
+const defaultCardinalNamespace = (import.meta.env.CARDINAL_NAMESPACE as string) || 'world-1'
 const initialState: CardinalProviderState = {
   cardinalUrl: defaultCardinalUrl,
   setCardinalUrl: () => null,
