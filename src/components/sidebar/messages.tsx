@@ -80,17 +80,17 @@ function Message({ message }: MessageProp) {
 
   // @ts-ignore
   const handleSubmit = async (values) => {
-    const { persona: personaTag, ...fields } = values as object
+    const { persona: personaTag, ...fields } = values as { [k: string]: string }
     const persona = config.personas.filter((p) => p.personaTag === personaTag)[0]
     const account = accountFromPersona(persona)
     const msg = `${personaTag}${cardinalNamespace}${persona.nonce}${JSON.stringify(fields)}`
     const signature = account.sign(msg)
     const body = {
-      personaTag: personaTag as string,
+      personaTag: personaTag,
       signature,
       namespace: cardinalNamespace,
       nonce: persona.nonce,
-      body: fields as object,
+      body: fields,
     }
     await queryClient.fetchQuery(
       lastMessageQueryOptions({
