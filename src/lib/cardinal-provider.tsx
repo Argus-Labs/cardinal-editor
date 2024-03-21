@@ -53,7 +53,7 @@ const defaultConfig: Config = {
   personas: defaultPersonas,
 }
 const defaultProject: Projects = {
-  __CARDINAL_PROJECT_ID__: defaultConfig,
+  [__CARDINAL_PROJECT_ID__]: defaultConfig,
 }
 const initialState: CardinalProviderState = {
   ...defaultConfig,
