@@ -14,9 +14,9 @@ export function Header() {
   const [fetching, setFetching] = useState(false)
   const queryClient = useQueryClient()
 
-  const refetchWorld = () => {
+  const refetchWorld = async () => {
     setFetching(true)
-    queryClient.fetchQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+    await queryClient.fetchQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
     setTimeout(() => setFetching(false), 900)
   }
 
@@ -40,7 +40,7 @@ export function Header() {
             size="icon"
             className="size-8 flex-shrink-0"
             title="Refresh world"
-            onClick={refetchWorld}
+            onClick={() => void refetchWorld()}
           >
             <RefreshCw size={16} className={cn(fetching && 'animate-spin')} />
           </Button>

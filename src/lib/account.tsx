@@ -72,7 +72,7 @@ function signatureToHex({ r, s, v, yParity }: Signature): Hex {
   return `0x${new secp256k1.Signature(hexToBigInt(r), hexToBigInt(s)).toCompactHex()}${vHex}`
 }
 
-async function sign({ hash, privateKey }: SignParameters): Promise<SignReturnType> {
+function sign({ hash, privateKey }: SignParameters): SignReturnType {
   const { r, s, recovery } = secp256k1.sign(hash.slice(2), privateKey.slice(2))
   return {
     r: toHex(r),
@@ -85,8 +85,8 @@ async function sign({ hash, privateKey }: SignParameters): Promise<SignReturnTyp
 
 // we need this because world-engine doesn't follow any signing formats, e.g. eip-191 or eip-712.
 // the plan is to use eip-712, (viem's signTypedData), but until that's implemented, we'll be using this
-async function customSign(msg: string, privateKey: `0x${string}`) {
-  const signature = await sign({ hash: keccak256(toHex(msg)), privateKey })
+function customSign(msg: string, privateKey: `0x${string}`) {
+  const signature = sign({ hash: keccak256(toHex(msg)), privateKey })
   return signatureToHex(signature)
 }
 
@@ -98,8 +98,8 @@ export const createPersonaAccount = (personaTag: string) => {
     personaTag,
     privateKey,
     address,
-    sign: async (msg: string) => {
-      const signature = await customSign(msg, privateKey)
+    sign: (msg: string) => {
+      const signature = customSign(msg, privateKey)
       return signature.slice(2) // remove `0x` from hex string
     },
   }
@@ -109,8 +109,8 @@ export const accountFromPersona = (persona: Persona) => {
   const privateKey = persona.privateKey as `0x{string}`
   return {
     ...persona,
-    sign: async (msg: string) => {
-      const signature = await customSign(msg, privateKey)
+    sign: (msg: string) => {
+      const signature = customSign(msg, privateKey)
       return signature.slice(2)
     },
   }

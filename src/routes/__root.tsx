@@ -30,7 +30,6 @@ function Root() {
       const match = entities?.filter((e) => {
         const signer = e.components['SignerComponent']
         if (!signer) return false
-        // @ts-ignore
         return signer['PersonaTag'] === p.personaTag && signer['SignerAddress'] === p.address
       })
       return match && match.length !== 0

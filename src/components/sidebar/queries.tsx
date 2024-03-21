@@ -66,18 +66,23 @@ interface QueryProp {
 function Query({ query }: QueryProp) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const queryClient = useQueryClient()
+  // TODO: fix uncontrolled component error by adding default values here, tho we need to set the
+  // schema first to do this. same goes to the useForm in ./messages.tsx
   const form = useForm()
 
   // @ts-ignore
-  const handleSubmit = async (values) => {
-    queryClient.fetchQuery(
-      lastQueryQueryOptions({
-        cardinalUrl,
-        isCardinalConnected,
-        name: query.name,
-        body: values,
-      }),
-    )
+  const handleSubmit = (values) => {
+    queryClient
+      .fetchQuery(
+        lastQueryQueryOptions({
+          cardinalUrl,
+          isCardinalConnected,
+          name: query.name,
+          body: values as object,
+        }),
+      )
+      .then(() => true)
+      .catch((e) => console.log(e))
   }
 
   return (
@@ -96,7 +101,8 @@ function Query({ query }: QueryProp) {
       </div>
       <AccordionContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="p-2 space-y-2">
+          {/* src: https://github.com/orgs/react-hook-form/discussions/8622 */}
+          <form onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)} className="p-2 space-y-2">
             {Object.keys(query.fields).map((param) => (
               <FormField
                 key={param}

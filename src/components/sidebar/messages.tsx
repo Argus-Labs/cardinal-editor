@@ -74,26 +74,25 @@ interface MessageProp {
 
 function Message({ message }: MessageProp) {
   const { config, setConfig } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, cardinalNamespace } = useCardinal()
   const queryClient = useQueryClient()
   const form = useForm()
 
   // @ts-ignore
   const handleSubmit = async (values) => {
-    const { persona: personaTag, ...fields } = values
+    const { persona: personaTag, ...fields } = values as { [k: string]: string }
     const persona = config.personas.filter((p) => p.personaTag === personaTag)[0]
     const account = accountFromPersona(persona)
-    const namespace = 'world-1'
-    const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
-    const signature = await account.sign(msg)
+    const msg = `${personaTag}${cardinalNamespace}${persona.nonce}${JSON.stringify(fields)}`
+    const signature = account.sign(msg)
     const body = {
-      personaTag,
-      namespace,
+      personaTag: personaTag,
       signature,
+      namespace: cardinalNamespace,
       nonce: persona.nonce,
       body: fields,
     }
-    queryClient.fetchQuery(
+    await queryClient.fetchQuery(
       lastMessageQueryOptions({
         cardinalUrl,
         isCardinalConnected,
@@ -125,7 +124,7 @@ function Message({ message }: MessageProp) {
       </div>
       <AccordionContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="p-2 space-y-2">
+          <form onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)} className="p-2 space-y-2">
             <FormField
               control={form.control}
               name="persona"
@@ -135,7 +134,7 @@ function Message({ message }: MessageProp) {
                   <Select
                     required
                     disabled={config.personas.length === 0}
-                    defaultValue={field.value}
+                    defaultValue={field.value as string}
                     onValueChange={field.onChange}
                   >
                     <FormControl>

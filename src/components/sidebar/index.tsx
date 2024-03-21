@@ -9,7 +9,7 @@ import { CreatePersona } from './persona'
 import { SidebarQueries } from './queries'
 
 // TODO: filter using url when world-915 is done
-const builtin: any = {
+const builtin: { [key: string]: { [key: string]: boolean } } = {
   messages: {
     'create-persona': true,
     'authorize-persona-address': true,
