@@ -65,7 +65,7 @@ export function ConfigProvider({ children, ...props }: ConfigProviderProps) {
       localStorage.setItem(storageKey, JSON.stringify(defaultProject))
       return defaultConfig
     }
-    const config: Projects = JSON.parse(rawConfig)
+    const config = JSON.parse(rawConfig) as Projects
     if (!config[__CARDINAL_PROJECT_ID__]) {
       localStorage.setItem(storageKey, JSON.stringify({ ...config, ...defaultProject }))
       return defaultConfig
@@ -74,7 +74,7 @@ export function ConfigProvider({ children, ...props }: ConfigProviderProps) {
   })
 
   const setConfigItem = (key: string, value: ConfigItem) => {
-    const projects = JSON.parse(localStorage.getItem(storageKey)!)
+    const projects = JSON.parse(localStorage.getItem(storageKey)!) as Projects
     const newConfig = { ...projects[__CARDINAL_PROJECT_ID__], [key]: value }
     const newProjects = { ...projects, [__CARDINAL_PROJECT_ID__]: newConfig }
     localStorage.setItem(storageKey, JSON.stringify(newProjects))
