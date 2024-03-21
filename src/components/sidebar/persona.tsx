@@ -34,7 +34,7 @@ const formSchema = z.object({
 })
 
 export function CreatePersona() {
-  const { config, setConfig } = useConfig()
+  const { personas, setPersonas } = useConfig()
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
@@ -61,7 +61,7 @@ export function CreatePersona() {
     // TODO: query error handling
     await queryClient.fetchQuery(personaQueryOptions({ cardinalUrl, isCardinalConnected, body }))
     const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
-    setConfig({ ...config, personas: [...config.personas, newPersona] })
+    setPersonas([...personas, newPersona])
   }
 
   return (

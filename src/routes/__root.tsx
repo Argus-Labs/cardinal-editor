@@ -16,7 +16,7 @@ export const Route = createRootRoute({
 })
 
 function Root() {
-  const { config, setConfig } = useConfig()
+  const { personas, setPersonas } = useConfig()
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const { data: entities } = useQuery(syncStateQueryOptions({ cardinalUrl, isCardinalConnected }))
 
@@ -26,7 +26,7 @@ function Root() {
   useEffect(() => {
     // this check is needed because useEffect can run before entities are fetched
     if (!entities) return
-    const personas = config.personas.filter((p) => {
+    const newPersonas = personas.filter((p) => {
       const match = entities?.filter((e) => {
         const signer = e.components['SignerComponent']
         if (!signer) return false
@@ -34,7 +34,7 @@ function Root() {
       })
       return match && match.length !== 0
     })
-    setConfig({ ...config, personas: personas })
+    setPersonas(newPersonas)
   }, [entities])
 
   return (

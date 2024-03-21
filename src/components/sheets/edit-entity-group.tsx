@@ -68,7 +68,7 @@ interface EditEntityGroupProps {
 export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
   const cardinal = useCardinal()
   const { data } = useQuery(worldQueryOptions(cardinal))
-  const { config, setConfig } = useConfig()
+  const { entityGroups, setEntityGroups } = useConfig()
   const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -88,10 +88,10 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
     )
   }
   const handleEdit = (values: z.infer<typeof formSchema>) => {
-    const newEntityGroups = config.entityGroups.map((eg) =>
+    const newEntityGroups = entityGroups.map((eg) =>
       eg.name === originalName ? { ...values } : eg,
     )
-    setConfig({ ...config, entityGroups: newEntityGroups })
+    setEntityGroups(newEntityGroups)
     form.reset()
     setOpen(false)
     toast({
@@ -99,8 +99,8 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
     })
   }
   const handleDelete = () => {
-    const newEntityGroups = config.entityGroups.filter((eg) => eg.name !== originalName)
-    setConfig({ ...config, entityGroups: newEntityGroups })
+    const newEntityGroups = entityGroups.filter((eg) => eg.name !== originalName)
+    setEntityGroups(newEntityGroups)
     setOpen(false)
     toast({
       title: 'Successfully deleted entity group',

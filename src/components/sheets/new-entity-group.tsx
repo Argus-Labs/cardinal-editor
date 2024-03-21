@@ -51,7 +51,7 @@ const formSchema = z.object({
 export function NewEntityGroupSheet() {
   const cardinal = useCardinal()
   const { data } = useQuery(worldQueryOptions(cardinal))
-  const { config, setConfig } = useConfig()
+  const { entityGroups, setEntityGroups } = useConfig()
   const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,14 +73,14 @@ export function NewEntityGroupSheet() {
     )
   }
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    if (config.entityGroups.filter((eg) => eg.name === values.name).length > 0) {
+    if (entityGroups.filter((eg) => eg.name === values.name).length > 0) {
       form.setError('name', {
         type: 'custom',
         message: `"${values.name}" already exists, please use a different name`,
       })
       return
     }
-    setConfig({ ...config, entityGroups: [...config.entityGroups, values] })
+    setEntityGroups([...entityGroups, values])
     form.reset()
     setOpen(false)
     toast({
