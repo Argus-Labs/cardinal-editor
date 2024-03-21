@@ -20,6 +20,7 @@ export interface WorldResponse {
   components: WorldField[]
   messages: WorldField[]
   queries: WorldField[]
+  namespace: string
 }
 
 export interface Persona {
