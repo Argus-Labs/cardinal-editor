@@ -22,8 +22,8 @@ const builtin: { [key: string]: { [key: string]: boolean } } = {
 }
 
 export function Sidebar() {
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
-  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const cardinal = useCardinal()
+  const { data } = useQuery(worldQueryOptions(cardinal))
 
   const messages = data?.messages.filter((m) => !builtin.messages[m.name]) ?? []
   const queries = data?.queries.filter((q) => !builtin.queries[q.name]) ?? []

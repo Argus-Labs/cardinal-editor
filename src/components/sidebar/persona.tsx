@@ -15,7 +15,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { personaQueryOptions, worldQueryOptions } from '@/lib/query-options'
 
 const formSchema = z.object({
@@ -34,8 +33,7 @@ const formSchema = z.object({
 })
 
 export function CreatePersona() {
-  const { personas, setPersonas } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, personas, setPersonas } = useCardinal()
   const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm<z.infer<typeof formSchema>>({

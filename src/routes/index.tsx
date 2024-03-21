@@ -8,7 +8,6 @@ import { NewEntityGroupSheet } from '@/components/sheets/new-entity-group'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { stateQueryOptions } from '@/lib/query-options'
 
 export const Route = createFileRoute('/')({
@@ -16,9 +15,8 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, view, setView, entityGroups } = useCardinal()
   const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
-  const { view, setView, entityGroups } = useConfig()
 
   const hasNoEntities = !(entities && entities.length > 0)
   // TODO: this is probably very inefficient. come up with a better filter algorithm

@@ -33,7 +33,6 @@ import {
 } from '@/components/ui/sheet'
 import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { worldQueryOptions } from '@/lib/query-options'
 
 import { SampleEntities } from './sample-entities'
@@ -49,9 +48,8 @@ const formSchema = z.object({
 })
 
 export function NewEntityGroupSheet() {
-  const cardinal = useCardinal()
-  const { data } = useQuery(worldQueryOptions(cardinal))
-  const { entityGroups, setEntityGroups } = useConfig()
+  const { cardinalUrl, isCardinalConnected, entityGroups, setEntityGroups } = useCardinal()
+  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

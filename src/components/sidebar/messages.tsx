@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/select'
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { lastMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
@@ -73,8 +72,7 @@ interface MessageProp {
 }
 
 function Message({ message }: MessageProp) {
-  const { personas, setPersonas } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, personas, setPersonas } = useCardinal()
   const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm()

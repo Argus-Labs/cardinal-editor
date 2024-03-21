@@ -8,7 +8,6 @@ import { Sidebar } from '@/components/sidebar'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Toaster } from '@/components/ui/toaster'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { syncStateQueryOptions } from '@/lib/query-options'
 
 export const Route = createRootRoute({
@@ -16,8 +15,7 @@ export const Route = createRootRoute({
 })
 
 function Root() {
-  const { personas, setPersonas } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { personas, setPersonas, cardinalUrl, isCardinalConnected } = useCardinal()
   const { data: entities } = useQuery(syncStateQueryOptions({ cardinalUrl, isCardinalConnected }))
 
   // syncs local personas with cardinal's. this is needed for running with `world cardinal start`,
