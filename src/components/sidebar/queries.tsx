@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { lastQueryQueryOptions } from '@/lib/query-options'
+import { lastCQLQueryOptions, lastQueryQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
 import { formatName } from './utils'
@@ -29,6 +29,13 @@ interface SidebarQueriesProps {
 }
 
 export function SidebarQueries({ queries }: SidebarQueriesProps) {
+  const cql: WorldField = {
+    name: 'CQL',
+    fields: {
+      CQL: 'string',
+    },
+  }
+
   return (
     <Accordion collapsible type="single" defaultValue="default">
       <AccordionItem value="default" className="border-0">
@@ -48,6 +55,7 @@ export function SidebarQueries({ queries }: SidebarQueriesProps) {
             </div>
           ) : (
             <Accordion collapsible type="single" className="space-y-2">
+              <Query query={cql} isCQL={true} />
               {queries.map((q, i) => (
                 <Query key={i} query={q} />
               ))}
@@ -59,11 +67,14 @@ export function SidebarQueries({ queries }: SidebarQueriesProps) {
   )
 }
 
+// the isCQL boolean field is probably a bad component design, but it works.
+// consider refactoring this later to be cleaner
 interface QueryProp {
   query: WorldField
+  isCQL?: boolean
 }
 
-function Query({ query }: QueryProp) {
+function Query({ query, isCQL }: QueryProp) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const queryClient = useQueryClient()
   // TODO: fix uncontrolled component error by adding default values here, tho we need to set the
@@ -72,15 +83,17 @@ function Query({ query }: QueryProp) {
 
   // @ts-ignore
   const handleSubmit = (values) => {
+    const queryOptionProps = {
+      cardinalUrl,
+      isCardinalConnected,
+      name: query.name,
+      body: values as object,
+    }
+    const queryOptions = isCQL
+      ? lastCQLQueryOptions(queryOptionProps)
+      : lastQueryQueryOptions(queryOptionProps)
     queryClient
-      .fetchQuery(
-        lastQueryQueryOptions({
-          cardinalUrl,
-          isCardinalConnected,
-          name: query.name,
-          body: values as object,
-        }),
-      )
+      .fetchQuery(queryOptions)
       .then(() => true)
       .catch((e) => console.log(e))
   }

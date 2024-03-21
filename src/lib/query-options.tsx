@@ -110,6 +110,26 @@ export const lastMessageQueryOptions = ({
   enabled: isCardinalConnected,
 })
 
+export const lastCQLQueryOptions = ({
+  cardinalUrl,
+  isCardinalConnected,
+  body,
+}: lastQueryOptionsProps) => ({
+  queryKey: ['last-query'],
+  queryFn: async () => {
+    const res = await fetch(`${cardinalUrl}/cql`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}/cql`)
+    }
+    return res.json()
+  },
+  enabled: isCardinalConnected,
+})
+
 interface personaQueryOptionsProps {
   cardinalUrl: string
   isCardinalConnected: boolean
