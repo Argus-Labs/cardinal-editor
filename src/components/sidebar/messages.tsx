@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
@@ -28,7 +28,7 @@ import {
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { useConfig } from '@/lib/config-provider'
-import { lastMessageQueryOptions } from '@/lib/query-options'
+import { lastMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
 import { formatName } from './utils'
@@ -74,7 +74,8 @@ interface MessageProp {
 
 function Message({ message }: MessageProp) {
   const { config, setConfig } = useConfig()
-  const { cardinalUrl, isCardinalConnected, cardinalNamespace } = useCardinal()
+  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm()
 
@@ -82,13 +83,14 @@ function Message({ message }: MessageProp) {
   const handleSubmit = async (values) => {
     const { persona: personaTag, ...fields } = values as { [k: string]: string }
     const persona = config.personas.filter((p) => p.personaTag === personaTag)[0]
-    const account = accountFromPersona(persona)
-    const msg = `${personaTag}${cardinalNamespace}${persona.nonce}${JSON.stringify(fields)}`
-    const signature = account.sign(msg)
+    const { sign } = accountFromPersona(persona)
+    const { namespace } = data!
+    const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
+    const signature = sign(msg)
     const body = {
-      personaTag: personaTag,
+      personaTag,
       signature,
-      namespace: cardinalNamespace,
+      namespace,
       nonce: persona.nonce,
       body: fields,
     }

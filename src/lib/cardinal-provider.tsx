@@ -4,7 +4,6 @@ interface CardinalProviderState {
   cardinalUrl: string
   setCardinalUrl: (url: string) => void
   isCardinalConnected: boolean
-  cardinalNamespace: string
 }
 
 interface CardinalProviderProps {
@@ -14,12 +13,10 @@ interface CardinalProviderProps {
 // TODO: consider whether to put cardinal url/port in .env too
 const storageKey = 'cardinal-url'
 const defaultCardinalUrl = 'http://localhost:4040'
-const defaultCardinalNamespace = (import.meta.env.CARDINAL_NAMESPACE as string) || 'world-1'
 const initialState: CardinalProviderState = {
   cardinalUrl: defaultCardinalUrl,
   setCardinalUrl: () => null,
   isCardinalConnected: false,
-  cardinalNamespace: defaultCardinalNamespace,
 }
 
 const CardinalProviderContext = createContext(initialState)
@@ -55,7 +52,6 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
       setCardinalUrl(url)
     },
     isCardinalConnected,
-    cardinalNamespace: defaultCardinalNamespace,
   }
 
   return (

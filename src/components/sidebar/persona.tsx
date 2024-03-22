@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { useConfig } from '@/lib/config-provider'
-import { personaQueryOptions } from '@/lib/query-options'
+import { personaQueryOptions, worldQueryOptions } from '@/lib/query-options'
 
 const formSchema = z.object({
   personaTag: z
@@ -35,7 +35,8 @@ const formSchema = z.object({
 
 export function CreatePersona() {
   const { config, setConfig } = useConfig()
-  const { cardinalUrl, isCardinalConnected, cardinalNamespace } = useCardinal()
+  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,16 +46,16 @@ export function CreatePersona() {
   })
 
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {
-    const account = createPersonaAccount(personaTag)
-    const { privateKey, address } = account
+    const { privateKey, address, sign } = createPersonaAccount(personaTag)
+    const { namespace } = data!
     const nonce = 0 // new accounts will always start with 0 as the nonce
-    const message = `${personaTag}${cardinalNamespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
-    const signature = account.sign(message)
+    const message = `${personaTag}${namespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
+    const signature = sign(message)
     const body = {
       personaTag,
       nonce,
       signature,
-      namespace: cardinalNamespace,
+      namespace,
       body: { personaTag, signerAddress: address },
     }
     // TODO: query error handling
