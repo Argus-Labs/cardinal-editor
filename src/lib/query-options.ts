@@ -61,69 +61,28 @@ export const worldQueryOptions = ({
   enabled: isCardinalConnected,
 })
 
-interface lastQueryOptionsProps {
+interface gameQueryOptionsProps {
   cardinalUrl: string
   isCardinalConnected: boolean
-  name: string // endpoint name
+  url: string
   body: object
 }
 
-export const lastQueryQueryOptions = ({
+export const gameQueryOptions = ({
   cardinalUrl,
   isCardinalConnected,
-  name,
+  url,
   body,
-}: lastQueryOptionsProps) => ({
-  queryKey: ['last-query'],
+}: gameQueryOptionsProps) => ({
+  queryKey: ['game'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/query/game/${name}`, {
+    const res = await fetch(`${cardinalUrl}${url}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/query/game/${name}`)
-    }
-    return res.json()
-  },
-  enabled: isCardinalConnected,
-})
-
-export const lastMessageQueryOptions = ({
-  cardinalUrl,
-  isCardinalConnected,
-  name,
-  body,
-}: lastQueryOptionsProps) => ({
-  queryKey: ['last-query'],
-  queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/tx/game/${name}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/tx/game/${name}`)
-    }
-    return res.json()
-  },
-  enabled: isCardinalConnected,
-})
-
-export const lastCQLQueryOptions = ({
-  cardinalUrl,
-  isCardinalConnected,
-  body,
-}: lastQueryOptionsProps) => ({
-  queryKey: ['last-query'],
-  queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/cql`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/cql`)
+      throw new Error(`Failed to fetch ${cardinalUrl}${url}`)
     }
     return res.json()
   },
