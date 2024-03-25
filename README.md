@@ -1,5 +1,5 @@
 # Cardinal Editor
-Cardinal Editor provides a visual interface for inspecting and interacting with Cardinal within your [World engine](github.com/Argus-Labs/world-engine) projects.
+Cardinal Editor provides a visual interface for inspecting and interacting with Cardinal within your [World Engine](github.com/Argus-Labs/world-engine) projects.
 
 ![Screenshot from 2024-03-22 15-14-34](https://github.com/Argus-Labs/cardinal-editor/assets/51780559/92c6fcd0-a6d0-4580-9463-681166c3ae08)
 
