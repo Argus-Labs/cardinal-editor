@@ -10,4 +10,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  define: {
+    __CARDINAL_PROJECT_ID__: `'__CARDINAL_PROJECT_ID__'`,
+  },
 })

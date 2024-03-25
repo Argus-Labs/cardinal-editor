@@ -8,7 +8,6 @@ import { NewEntityGroupSheet } from '@/components/sheets/new-entity-group'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { stateQueryOptions } from '@/lib/query-options'
 
 export const Route = createFileRoute('/')({
@@ -16,10 +15,8 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, view, setView, entityGroups } = useCardinal()
   const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
-  const { config, setConfig } = useConfig()
-  const { view, entityGroups } = config
 
   const hasNoEntities = !(entities && entities.length > 0)
   // TODO: this is probably very inefficient. come up with a better filter algorithm
@@ -35,17 +32,13 @@ function Index() {
   }))
   const ungrouped = entities?.filter((e) => !grouped.has(e.id)) ?? []
 
-  const handleTabSwitch = (view: string) => {
-    setConfig({ ...config, view })
-  }
-
   return (
     <>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Entities</h1>
           <div className="flex items-center gap-4">
-            <Tabs value={view} onValueChange={handleTabSwitch} className="space-y-6">
+            <Tabs value={view} onValueChange={setView} className="space-y-6">
               <TabsList className="bg-background border">
                 <TabsTrigger value="card" className="data-[state=active]:bg-muted px-2">
                   <LayoutGrid size={20} />

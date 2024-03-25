@@ -14,6 +14,7 @@ export interface WorldField {
   fields: {
     [param: string]: string
   }
+  url: string
 }
 
 export interface WorldResponse {

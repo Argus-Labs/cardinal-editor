@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/select'
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { useConfig } from '@/lib/config-provider'
 import { lastMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
@@ -73,8 +72,7 @@ interface MessageProp {
 }
 
 function Message({ message }: MessageProp) {
-  const { config, setConfig } = useConfig()
-  const { cardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, personas, setPersonas } = useCardinal()
   const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm()
@@ -82,7 +80,7 @@ function Message({ message }: MessageProp) {
   // @ts-ignore
   const handleSubmit = async (values) => {
     const { persona: personaTag, ...fields } = values as { [k: string]: string }
-    const persona = config.personas.filter((p) => p.personaTag === personaTag)[0]
+    const persona = personas.filter((p) => p.personaTag === personaTag)[0]
     const { sign } = accountFromPersona(persona)
     const { namespace } = data!
     const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
@@ -102,12 +100,11 @@ function Message({ message }: MessageProp) {
         body,
       }),
     )
-    setConfig({
-      ...config,
-      personas: config.personas.map((p) => {
+    setPersonas(
+      personas.map((p) => {
         return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
       }),
-    })
+    )
   }
 
   return (
@@ -135,7 +132,7 @@ function Message({ message }: MessageProp) {
                   <FormLabel>Persona tag</FormLabel>
                   <Select
                     required
-                    disabled={config.personas.length === 0}
+                    disabled={personas.length === 0}
                     defaultValue={field.value as string}
                     onValueChange={field.onChange}
                   >
@@ -143,13 +140,13 @@ function Message({ message }: MessageProp) {
                       <SelectTrigger className="h-8">
                         <SelectValue
                           placeholder={
-                            config.personas.length === 0 ? 'No personas found' : 'Select persona'
+                            personas.length === 0 ? 'No personas found' : 'Select persona'
                           }
                         />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {config.personas.map(({ personaTag }) => (
+                      {personas.map(({ personaTag }) => (
                         <SelectItem key={personaTag} value={personaTag}>
                           {personaTag}
                         </SelectItem>

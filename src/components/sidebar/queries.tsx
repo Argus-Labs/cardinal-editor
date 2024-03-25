@@ -34,6 +34,7 @@ export function SidebarQueries({ queries }: SidebarQueriesProps) {
     fields: {
       CQL: 'string',
     },
+    url: '/cql'
   }
 
   return (
