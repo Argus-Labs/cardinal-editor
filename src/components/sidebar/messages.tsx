@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select'
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { lastMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { gameQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
 import { formatName } from './utils'
@@ -93,10 +93,10 @@ function Message({ message }: MessageProp) {
       body: fields,
     }
     await queryClient.fetchQuery(
-      lastMessageQueryOptions({
+      gameQueryOptions({
         cardinalUrl,
         isCardinalConnected,
-        name: message.name,
+        url: message.url,
         body,
       }),
     )
