@@ -13,13 +13,13 @@ export const stateQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['state'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/query/debug/state`, {
+    const res = await fetch(`${cardinalUrl}/debug/state`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/query/debug/state`)
+      throw new Error(`Failed to fetch ${cardinalUrl}/debug/state`)
     }
     return res.json() as Promise<Entity[]>
   },
@@ -33,13 +33,13 @@ export const syncStateQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['sync-state'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/query/debug/state`, {
+    const res = await fetch(`${cardinalUrl}/debug/state`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/query/debug/state`)
+      throw new Error(`Failed to fetch ${cardinalUrl}/debug/state`)
     }
     return res.json() as Promise<Entity[]>
   },
