@@ -15,7 +15,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { personaQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { personaQueryOptions, receiptsQueryOptions, worldQueryOptions } from '@/lib/query-options'
+
+import { useToast } from '../ui/use-toast'
 
 const formSchema = z.object({
   personaTag: z
@@ -42,6 +44,7 @@ export function CreatePersona() {
       personaTag: '',
     },
   })
+  const { toast } = useToast()
 
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {
     const { privateKey, address, sign } = createPersonaAccount(personaTag)
@@ -56,8 +59,34 @@ export function CreatePersona() {
       namespace,
       body: { personaTag, signerAddress: address },
     }
-    // TODO: query error handling
-    await queryClient.fetchQuery(personaQueryOptions({ cardinalUrl, isCardinalConnected, body }))
+    const res = await queryClient.fetchQuery(
+      personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
+    )
+
+    // if we do it too fast the receipts could still be null
+    setTimeout(() => {
+      const receiptBody = { startTick: res.Tick }
+      queryClient
+        .fetchQuery(receiptsQueryOptions({ cardinalUrl, isCardinalConnected, body: receiptBody }))
+        .then((res) => {
+          if (!res.receipts) return
+          const result = res.receipts[0]
+          if (!result.result || !result.result.success) {
+            const errors = result.errors?.join('\n')
+            toast({
+              title: 'Error creating persona',
+              description: errors,
+              variant: 'destructive',
+            })
+            return
+          }
+          toast({
+            title: `Successfully created persona ${personaTag}`,
+          })
+        })
+        .catch((e) => console.log(e))
+    }, 1000)
+
     const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
     setPersonas([...personas, newPersona])
   }

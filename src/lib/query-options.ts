@@ -1,10 +1,11 @@
-import { Entity, WorldResponse } from '@/lib/types'
+import { Entity, Receipt, TransactionReturn, WorldResponse } from '@/lib/types'
 
 // TODO: consider returning error status & message instead of throwing
 
 interface cardinalQueryOptionsProps {
   cardinalUrl: string
   isCardinalConnected: boolean
+  body?: object
 }
 
 export const stateQueryOptions = ({
@@ -89,17 +90,11 @@ export const gameQueryOptions = ({
   enabled: isCardinalConnected,
 })
 
-interface personaQueryOptionsProps {
-  cardinalUrl: string
-  isCardinalConnected: boolean
-  body: object
-}
-
 export const personaQueryOptions = ({
   cardinalUrl,
   isCardinalConnected,
   body,
-}: personaQueryOptionsProps) => ({
+}: cardinalQueryOptionsProps) => ({
   queryKey: ['persona'],
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}/tx/persona/create-persona`, {
@@ -110,7 +105,27 @@ export const personaQueryOptions = ({
     if (!res.ok) {
       throw new Error(`Failed to fetch ${cardinalUrl}/tx/persona/create-persona`)
     }
-    return res.json()
+    return res.json() as Promise<TransactionReturn>
+  },
+  enabled: isCardinalConnected,
+})
+
+export const receiptsQueryOptions = ({
+  cardinalUrl,
+  isCardinalConnected,
+  body,
+}: cardinalQueryOptionsProps) => ({
+  queryKey: ['receipts'],
+  queryFn: async () => {
+    const res = await fetch(`${cardinalUrl}/query/receipts/list`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}/query/receipts/list`)
+    }
+    return res.json() as Promise<Receipt>
   },
   enabled: isCardinalConnected,
 })
