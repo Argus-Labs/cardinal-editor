@@ -18,6 +18,7 @@ import { useCardinal } from '@/lib/cardinal-provider'
 import { personaQueryOptions, receiptsQueryOptions, worldQueryOptions } from '@/lib/query-options'
 
 import { useToast } from '../ui/use-toast'
+import { sleep } from '@/lib/utils'
 
 const formSchema = z.object({
   personaTag: z
@@ -64,31 +65,40 @@ export function CreatePersona() {
     )
 
     // if we do it too fast the receipts could still be null
-    setTimeout(() => {
-      const receiptBody = { startTick: res.Tick }
-      queryClient
-        .fetchQuery(receiptsQueryOptions({ cardinalUrl, isCardinalConnected, body: receiptBody }))
-        .then((res) => {
-          if (!res.receipts) return
-          const result = res.receipts[0]
-          if (!result.result || !result.result.success) {
-            const errors = result.errors?.join('\n')
-            toast({
-              title: 'Error creating persona',
-              description: errors,
-              variant: 'destructive',
-            })
-            return
-          }
-          toast({
-            title: `Successfully created persona ${personaTag}`,
-          })
-          // only set the personas if there is no error
-          const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
-          setPersonas([...personas, newPersona])
-        })
-        .catch((e) => console.log(e))
-    }, 1000)
+    await sleep(1000)
+
+    const receiptBody = { startTick: res.Tick }
+    const receipt = await queryClient.fetchQuery(receiptsQueryOptions({ cardinalUrl, isCardinalConnected, body: receiptBody }))
+
+    // TODO: verify this
+    // we could just retry the query, however I couldn't get the receipt again after fetching
+    // a null receipt. this might me a bug with cardinal, or a feature(?).
+    if (!receipt.receipts) {
+      toast({
+        title: 'Couldn\'t fetch receipt',
+        description: 'We couldn\'t verify whether the persona was successfully created or not',
+      })
+      return
+    }
+
+    const result = receipt.receipts[0]
+    if (!result.result || !result.result.success) {
+      const errors = result.errors?.join('\n')
+      toast({
+        title: 'Error creating persona',
+        description: errors,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    toast({
+      title: `Successfully created persona ${personaTag}`,
+    })
+
+    // only set the personas if there is no error
+    const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
+    setPersonas([...personas, newPersona])
   }
 
   return (
