@@ -83,12 +83,12 @@ export function CreatePersona() {
           toast({
             title: `Successfully created persona ${personaTag}`,
           })
+          // only set the personas if there is no error
+          const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
+          setPersonas([...personas, newPersona])
         })
         .catch((e) => console.log(e))
     }, 1000)
-
-    const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
-    setPersonas([...personas, newPersona])
   }
 
   return (
