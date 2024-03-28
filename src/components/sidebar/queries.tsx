@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { gameQueryOptions } from '@/lib/query-options'
+import { gameQueryQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
 import { formatName } from './utils'
@@ -83,7 +83,7 @@ function Query({ query }: QueryProp) {
   const handleSubmit = (values) => {
     queryClient
       .fetchQuery(
-        gameQueryOptions({
+        gameQueryQueryOptions({
           cardinalUrl,
           isCardinalConnected,
           url: query.url,

@@ -16,9 +16,9 @@ import { Input } from '@/components/ui/input'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { personaQueryOptions, receiptsQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { sleep } from '@/lib/utils'
 
 import { useToast } from '../ui/use-toast'
-import { sleep } from '@/lib/utils'
 
 const formSchema = z.object({
   personaTag: z
@@ -68,15 +68,17 @@ export function CreatePersona() {
     await sleep(1000)
 
     const receiptBody = { startTick: res.Tick }
-    const receipt = await queryClient.fetchQuery(receiptsQueryOptions({ cardinalUrl, isCardinalConnected, body: receiptBody }))
+    const receipt = await queryClient.fetchQuery(
+      receiptsQueryOptions({ cardinalUrl, isCardinalConnected, body: receiptBody }),
+    )
 
     // TODO: verify this
     // we could just retry the query, however I couldn't get the receipt again after fetching
     // a null receipt. this might me a bug with cardinal, or a feature(?).
     if (!receipt.receipts) {
       toast({
-        title: 'Couldn\'t fetch receipt',
-        description: 'We couldn\'t verify whether the persona was successfully created or not',
+        title: "Couldn't fetch receipt",
+        description: "We couldn't verify whether the persona was successfully created or not",
       })
       return
     }

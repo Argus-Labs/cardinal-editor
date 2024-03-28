@@ -1,4 +1,5 @@
 import { Entity, Receipt, TransactionReturn, WorldResponse } from '@/lib/types'
+import { sleep } from '@/lib/utils'
 
 // TODO: consider returning error status & message instead of throwing
 
@@ -69,7 +70,7 @@ interface gameQueryOptionsProps {
   body: object
 }
 
-export const gameQueryOptions = ({
+export const gameQueryQueryOptions = ({
   cardinalUrl,
   isCardinalConnected,
   url,
@@ -86,6 +87,37 @@ export const gameQueryOptions = ({
       throw new Error(`Failed to fetch ${cardinalUrl}${url}`)
     }
     return res.json()
+  },
+  enabled: isCardinalConnected,
+})
+
+export const gameMessageQueryOptions = ({
+  cardinalUrl,
+  isCardinalConnected,
+  url,
+  body,
+}: gameQueryOptionsProps) => ({
+  queryKey: ['game'],
+  queryFn: async () => {
+    const res = await fetch(`${cardinalUrl}${url}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}${url}`)
+    }
+    const tx = (await res.json()) as TransactionReturn
+
+    await sleep(1000)
+
+    const receiptBody = { startTick: tx.Tick }
+    const receipt = await fetch(`${cardinalUrl}/query/receipts/list`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(receiptBody),
+    })
+    return receipt.json() as Promise<Receipt>
   },
   enabled: isCardinalConnected,
 })

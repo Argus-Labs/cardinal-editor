@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select'
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { gameQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { gameMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
 import { formatName } from './utils'
@@ -93,13 +93,14 @@ function Message({ message }: MessageProp) {
       body: fields,
     }
     await queryClient.fetchQuery(
-      gameQueryOptions({
+      gameMessageQueryOptions({
         cardinalUrl,
         isCardinalConnected,
         url: message.url,
         body,
       }),
     )
+    // increment nonce for the persona that submitted the message
     setPersonas(
       personas.map((p) => {
         return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p

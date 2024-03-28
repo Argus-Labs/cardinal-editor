@@ -5,4 +5,4 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const sleep = async (duration: number) => await new Promise(r => setTimeout(r, duration))
+export const sleep = async (duration: number) => await new Promise((r) => setTimeout(r, duration))
