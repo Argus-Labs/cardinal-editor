@@ -9,7 +9,7 @@ import { ResizablePanel } from '@/components/ui/resizable'
 export function BottomBar() {
   const ref = useRef<ImperativePanelHandle>(null)
   const [collapsed, setCollapsed] = useState(true)
-  const { data, isError, error } = useQuery({ queryKey: ['last-query'], enabled: false })
+  const { data, isError, error } = useQuery({ queryKey: ['game'], enabled: false })
 
   useEffect(() => {
     const panel = ref.current
