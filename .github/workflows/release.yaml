@@ -20,7 +20,7 @@ jobs:
       - name: Rename build with tag
         run: |
           ls -R
-          mv cardinal-editor.zip cardinal-editor-${{ github.event.release.tag_name }}.zip
+          mv cardinal-editor/cardinal-editor.zip cardinal-editor-${{ github.event.release.tag_name }}.zip
       - name: Publish Build to corresponding Github Release
         uses: skx/github-action-publish-binaries@master
         env:
