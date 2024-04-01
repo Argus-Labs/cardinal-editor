@@ -35,16 +35,14 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
-      - name: Compress Build Binary
-        uses: a7ul/tar-action@v1.1.3
-        id: compress
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.6
         with:
-          command: c
-          files: |
-            ./dist/
-          outPath: cardinal-editor.tar.gz
+          type: 'zip'
+          filename: 'cardinal-editor.zip'
+          path: ./dist/
       - name: Upload Build to Github artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cardinal-editor-build
-          path: cardinal-editor.tar.gz
+          name: cardinal-editor
+          path: cardinal-editor.zip
