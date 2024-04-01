@@ -42,17 +42,17 @@ function Root() {
         <Sidebar />
         <div className="w-full">
           <ResizablePanelGroup direction="vertical">
-            <ResizablePanel>
+            <ResizablePanel className="relative">
               <div className="bg-muted h-full px-4 pt-4 pb-16 overflow-y-auto">
                 <Outlet />
               </div>
+              <Toaster />
             </ResizablePanel>
             <ResizableHandle withHandle />
             <BottomBar />
           </ResizablePanelGroup>
         </div>
       </main>
-      <Toaster />
     </>
   )
 }
