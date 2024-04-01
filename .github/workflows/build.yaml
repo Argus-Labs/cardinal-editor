@@ -41,7 +41,7 @@ jobs:
         with:
           command: c
           files: |
-            ./dist/*
+            ./dist/
           outPath: cardinal-editor.tar.gz
       - name: Upload Build to Github artifact
         uses: actions/upload-artifact@v4
