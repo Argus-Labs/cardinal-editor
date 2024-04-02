@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { BookDashed, SearchCode } from 'lucide-react'
+import { BookDashed, Loader, SearchCode } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -133,7 +133,9 @@ function Query({ query }: QueryProp) {
                 )}
               />
             ))}
-            <Button className="w-full h-8">Send</Button>
+            <Button className="w-full h-8 gap-1">
+              {form.formState.isSubmitting ? <Loader size={20} className="animate-spin" /> : 'Send'}
+            </Button>
           </form>
         </Form>
       </AccordionContent>
