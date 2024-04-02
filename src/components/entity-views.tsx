@@ -42,9 +42,11 @@ export function EntityCard({ entity }: EntityCardProps) {
 }
 
 export function EntityList({ entities }: EntityCardsListProps) {
+  const defaultValues = entities.map((e) => e.id.toString())
+
   return (
     <>
-      <Accordion type="multiple" className="font-mono space-y-1">
+      <Accordion type="multiple" defaultValue={defaultValues} className="font-mono space-y-1">
         {entities.map((entity) => (
           <AccordionItem key={entity.id} value={entity.id.toString()} className="border-0">
             <AccordionTrigger className="px-3 py-2 border border-border rounded-lg data-[state=open]:rounded-b-none bg-background font-bold text-sm">
