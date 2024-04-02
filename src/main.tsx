@@ -9,9 +9,10 @@ import { ThemeProvider } from '@/lib/theme-provider'
 import './index.css'
 import { routeTree } from './routeTree.gen'
 
+const testlintererror = "test"
 const queryClient = new QueryClient()
 const router = createRouter({
-    routeTree,
+  routeTree,
   context: { queryClient },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
