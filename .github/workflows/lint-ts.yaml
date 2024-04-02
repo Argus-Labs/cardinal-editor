@@ -32,8 +32,6 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      ## linter errors annotation matcher
-      - uses: xt0rted/stylelint-problem-matcher@ac0fcffe105decd2d358ec7015da421193003fa2
       - name: Install dependencies
         run: pnpm install
       - name: Lint
