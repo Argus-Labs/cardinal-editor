@@ -38,7 +38,7 @@ function Root() {
   return (
     <>
       <Header />
-      <main className="flex min-h-[calc(100%-3rem-1px)]">
+      <main className="flex h-[calc(100%-3rem-1px)]">
         <Sidebar />
         <div className="w-full">
           <ResizablePanelGroup direction="vertical">

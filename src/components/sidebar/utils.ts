@@ -1,4 +1,6 @@
 export const formatName = (name: string) => {
-  const s = name.replace(/-/g, ' ')
-  return s.charAt(0).toUpperCase() + s.slice(1)
+  return name
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
 }

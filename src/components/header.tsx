@@ -2,7 +2,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 
-import logo from '@/assets/world.svg'
+import logoDark from '@/assets/world-dark.svg'
+import logoLight from '@/assets/world-light.svg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCardinal } from '@/lib/cardinal-provider'
@@ -23,7 +24,8 @@ export function Header() {
   return (
     <header className="border-b">
       <nav className="flex items-center justify-between px-3 h-12">
-        <img src={logo} width={32} height={32} />
+        <img src={logoLight} width={32} height={32} className="dark:hidden" />
+        <img src={logoDark} width={32} height={32} className="hidden dark:block" />
         <div className="flex items-center gap-2">
           <label htmlFor="host" className="flex-shrink-0 text-xs text-muted-foreground">
             Cardinal URL

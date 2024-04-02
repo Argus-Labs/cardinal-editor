@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Loader } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -122,7 +123,9 @@ export function CreatePersona() {
             </FormItem>
           )}
         />
-        <Button className="h-8 w-full">Create</Button>
+        <Button className="w-full h-8 gap-1">
+          {form.formState.isSubmitting ? <Loader size={20} className="animate-spin" /> : 'Create'}
+        </Button>
       </form>
     </Form>
   )
