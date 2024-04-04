@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, Loader, SearchCode } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -17,12 +18,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { gameQueryQueryOptions } from '@/lib/query-options'
 import { WorldField } from '@/lib/types'
 
-import { formatName } from './utils'
+import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
 interface SidebarQueriesProps {
   queries: WorldField[]
@@ -75,9 +75,10 @@ interface QueryProp {
 function Query({ query }: QueryProp) {
   const { cardinalUrl, isCardinalConnected } = useCardinal()
   const queryClient = useQueryClient()
-  // TODO: fix uncontrolled component error by adding default values here, tho we need to set the
-  // schema first to do this. same goes to the useForm in ./messages.tsx
-  const form = useForm()
+  const form = useForm({
+    resolver: zodResolver(formSchema(query)),
+    defaultValues: defaultValues(query),
+  })
 
   // @ts-ignore
   const handleSubmit = (values) => {
@@ -125,9 +126,7 @@ function Query({ query }: QueryProp) {
                         {query.fields[param]}
                       </span>
                     </FormLabel>
-                    <FormControl>
-                      <Input required className="h-8" {...field} />
-                    </FormControl>
+                    <FormControl>{goTypeToInputComponent(query.fields[param], field)}</FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

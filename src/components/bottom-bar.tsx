@@ -21,7 +21,6 @@ export function BottomBar() {
   const handleExpand = () => {
     const panel = ref.current
     if (panel) {
-      console.log(panel.getSize())
       if (panel.getSize() <= 5) {
         panel.collapse()
       }
