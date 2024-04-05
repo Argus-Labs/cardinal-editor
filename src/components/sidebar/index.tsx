@@ -2,21 +2,20 @@ import { useQuery } from '@tanstack/react-query'
 
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { worldQueryOptions } from '@/lib/query-options'
+import {
+  routeMsgAuthorizePersonaAddress,
+  routeMsgCreatePersona,
+  routeQryPersonaSigner,
+  routeQryReceiptsList,
+  worldQueryOptions,
+} from '@/lib/query-options'
 
 import { SidebarMessages } from './messages'
 import { CreatePersona } from './persona'
 import { SidebarQueries } from './queries'
 
-const builtinMessages = new Set([
-  '/tx/persona/create-persona',
-  '/tx/game/authorize-persona-address',
-])
-const builtinQueries = new Set([
-  '/query/persona/signer',
-  '/query/debug/state',
-  '/query/receipts/list',
-])
+const builtinMessages = new Set([routeMsgCreatePersona, routeMsgAuthorizePersonaAddress])
+const builtinQueries = new Set([routeQryPersonaSigner, routeQryReceiptsList])
 
 export function Sidebar() {
   const cardinal = useCardinal()
