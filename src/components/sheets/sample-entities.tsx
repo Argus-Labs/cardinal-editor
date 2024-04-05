@@ -5,10 +5,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { Entity, WorldField } from '@/lib/types'
+import { ComponentProperty, Entity, WorldField } from '@/lib/types'
 
 const sampleEntity = (selected: string[], components: WorldField[]): Entity => {
-  const componentsMap: { [key: string]: string } = components.reduce(
+  const componentsMap: ComponentProperty = components.reduce(
     (acc, c) => ({ ...acc, [c.name]: c.fields }),
     {},
   )

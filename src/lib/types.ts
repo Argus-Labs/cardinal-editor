@@ -1,12 +1,12 @@
-export interface Components {
-  [name: string]: {
-    [property: string]: any
-  }
+export interface ComponentProperty {
+  [property: string]: string | number | boolean
 }
 
 export interface Entity {
   id: number
-  components: Components
+  components: {
+    [component: string]: ComponentProperty
+  }
 }
 
 export interface WorldField {
@@ -40,13 +40,13 @@ export interface Receipt {
   startTick: number
   endTick: number
   receipts:
-    | {
-        txHash: string
-        tick: number
-        result: {
-          success: boolean
-        } | null
-        errors: string[] | null
-      }[]
-    | null
+  | {
+    txHash: string
+    tick: number
+    result: {
+      success: boolean
+    } | null
+    errors: string[] | null
+  }[]
+  | null
 }

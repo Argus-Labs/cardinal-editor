@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { Entity } from '@/lib/types'
+import { ComponentProperty, Entity } from '@/lib/types'
 
 interface EntityCardsListProps {
   entities: Entity[]
@@ -63,10 +63,9 @@ export function EntityList({ entities }: EntityCardsListProps) {
 
 interface ComponentDetailsProps {
   name: string
-  component: { [key: string]: any }
+  component: ComponentProperty
 }
 
-// TODO: add case for object types (arrays are included as objects too)
 const formatAttribute = (attr: any): React.ReactNode => {
   switch (typeof attr) {
     case 'string':
