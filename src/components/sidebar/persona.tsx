@@ -16,8 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { personaQueryOptions, receiptsQueryOptions, worldQueryOptions } from '@/lib/query-options'
-import { sleep } from '@/lib/utils'
+import { personaQueryOptions, worldQueryOptions } from '@/lib/query-options'
 
 import { useToast } from '../ui/use-toast'
 
@@ -61,16 +60,8 @@ export function CreatePersona() {
       namespace,
       body: { personaTag, signerAddress: address },
     }
-    const res = await queryClient.fetchQuery(
-      personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
-    )
-
-    // if we do it too fast the receipts could still be null
-    await sleep(1000)
-
-    const receiptBody = { startTick: res.Tick }
     const receipt = await queryClient.fetchQuery(
-      receiptsQueryOptions({ cardinalUrl, isCardinalConnected, body: receiptBody }),
+      personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
     )
 
     // TODO: verify this

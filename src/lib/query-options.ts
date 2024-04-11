@@ -3,6 +3,15 @@ import { sleep } from '@/lib/utils'
 
 // TODO: consider returning error status & message instead of throwing
 
+// builtin endpoints
+export const routeDebugState = '/debug/state'
+export const routeHealth = '/health'
+export const routeWorld = '/world'
+export const routeMsgCreatePersona = '/tx/persona/create-persona'
+export const routeMsgAuthorizePersonaAddress = '/tx/game/authorize-persona-address'
+export const routeQryPersonaSigner = '/query/persona/signer'
+export const routeQryReceiptsList = '/query/receipts/list'
+
 interface cardinalQueryOptionsProps {
   cardinalUrl: string
   isCardinalConnected: boolean
@@ -15,13 +24,13 @@ export const stateQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['state'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/debug/state`, {
+    const res = await fetch(`${cardinalUrl}${routeDebugState}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/debug/state`)
+      throw new Error(`Failed to fetch ${cardinalUrl}${routeDebugState}`)
     }
     return res.json() as Promise<Entity[]>
   },
@@ -35,13 +44,13 @@ export const syncStateQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['sync-state'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/debug/state`, {
+    const res = await fetch(`${cardinalUrl}${routeDebugState}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/debug/state`)
+      throw new Error(`Failed to fetch ${cardinalUrl}${routeDebugState}`)
     }
     return res.json() as Promise<Entity[]>
   },
@@ -54,9 +63,9 @@ export const worldQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['world'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/world`)
+    const res = await fetch(`${cardinalUrl}${routeWorld}`)
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/world`)
+      throw new Error(`Failed to fetch ${cardinalUrl}${routeWorld}`)
     }
     return res.json() as Promise<WorldResponse>
   },
@@ -112,11 +121,14 @@ export const gameMessageQueryOptions = ({
     await sleep(1000)
 
     const receiptBody = { startTick: tx.Tick }
-    const receipt = await fetch(`${cardinalUrl}/query/receipts/list`, {
+    const receipt = await fetch(`${cardinalUrl}${routeQryReceiptsList}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(receiptBody),
     })
+    if (!receipt.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}${routeQryReceiptsList}`)
+    }
     return receipt.json() as Promise<Receipt>
   },
   enabled: isCardinalConnected,
@@ -129,35 +141,28 @@ export const personaQueryOptions = ({
 }: cardinalQueryOptionsProps) => ({
   queryKey: ['persona'],
   queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/tx/persona/create-persona`, {
+    const res = await fetch(`${cardinalUrl}${routeMsgCreatePersona}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/tx/persona/create-persona`)
+      throw new Error(`Failed to fetch ${cardinalUrl}${routeMsgCreatePersona}`)
     }
-    return res.json() as Promise<TransactionReturn>
-  },
-  enabled: isCardinalConnected,
-})
+    const tx = (await res.json()) as TransactionReturn
 
-export const receiptsQueryOptions = ({
-  cardinalUrl,
-  isCardinalConnected,
-  body,
-}: cardinalQueryOptionsProps) => ({
-  queryKey: ['receipts'],
-  queryFn: async () => {
-    const res = await fetch(`${cardinalUrl}/query/receipts/list`, {
+    await sleep(1000)
+
+    const receiptBody = { startTick: tx.Tick }
+    const receipt = await fetch(`${cardinalUrl}${routeQryReceiptsList}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(receiptBody),
     })
-    if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}/query/receipts/list`)
+    if (!receipt.ok) {
+      throw new Error(`Failed to fetch ${cardinalUrl}${routeQryReceiptsList}`)
     }
-    return res.json() as Promise<Receipt>
+    return receipt.json() as Promise<Receipt>
   },
   enabled: isCardinalConnected,
 })

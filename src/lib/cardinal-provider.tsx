@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
+import { routeHealth } from '@/lib/query-options'
 import { Persona } from '@/lib/types'
 
 interface EntityGroup {
@@ -85,7 +86,7 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
   useEffect(() => {
     const ping = async () => {
       try {
-        const res = await fetch(`${config.cardinalUrl}/health`)
+        const res = await fetch(`${config.cardinalUrl}${routeHealth}`)
         setIsCardinalConnected(res.ok)
       } catch (error) {
         setIsCardinalConnected(false)

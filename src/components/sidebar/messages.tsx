@@ -28,7 +28,7 @@ import {
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { gameMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
-import { WorldField } from '@/lib/types'
+import { ComponentProperty, WorldField } from '@/lib/types'
 
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
@@ -80,9 +80,8 @@ function Message({ message }: MessageProp) {
     defaultValues: defaultValues(message),
   })
 
-  // @ts-ignore
-  const handleSubmit = async (values) => {
-    const { persona: personaTag, ...fields } = values as { [k: string]: string }
+  const handleSubmit = async (values: ComponentProperty) => {
+    const { persona: personaTag, ...fields } = values
     const persona = personas.filter((p) => p.personaTag === personaTag)[0]
     const { sign } = accountFromPersona(persona)
     const { namespace } = data!

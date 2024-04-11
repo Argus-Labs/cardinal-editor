@@ -3,7 +3,7 @@ import { ZodType, z } from 'zod'
 
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { WorldField } from '@/lib/types'
+import { ComponentProperty, WorldField } from '@/lib/types'
 
 export const formatName = (name: string) => {
   return name
@@ -69,9 +69,7 @@ export const formSchema = (wf: WorldField): ZodType => {
   })
 }
 
-// TODO: just allow any in typescript config smh
-type anyObj = { [key: string]: string | number | boolean }
-export const defaultValues = (wf: WorldField): anyObj => {
+export const defaultValues = (wf: WorldField): ComponentProperty => {
   return {
     persona: '',
     ...Object.keys(wf.fields).reduce(

@@ -72,7 +72,7 @@ module.exports = {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       fontFamily: {
-        mono: ['IBM Plex Mono', 'monospace'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       screens: {
         '3xl': '2080',
