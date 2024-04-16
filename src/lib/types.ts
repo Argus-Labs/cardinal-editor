@@ -40,13 +40,13 @@ export interface Receipt {
   startTick: number
   endTick: number
   receipts:
-  | {
-    txHash: string
-    tick: number
-    result: {
-      success: boolean
-    } | null
-    errors: string[] | null
-  }[]
-  | null
+    | {
+        txHash: string
+        tick: number
+        result: {
+          success: boolean
+        } | null
+        errors: string[] | null
+      }[]
+    | null
 }
