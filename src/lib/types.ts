@@ -43,9 +43,7 @@ export interface Receipt {
     | {
         txHash: string
         tick: number
-        result: {
-          success: boolean
-        } | null
+        result: object | null
         errors: string[] | null
       }[]
     | null

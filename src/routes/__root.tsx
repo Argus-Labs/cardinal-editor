@@ -62,7 +62,7 @@ function Root() {
 
       if (!receipt.receipts) return
       const result = receipt.receipts[0]
-      if (result.result && result.result.success) {
+      if (result.result) {
         const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
         setPersonas([...personas, newPersona])
       }
