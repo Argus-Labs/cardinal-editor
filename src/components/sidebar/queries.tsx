@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { gameQueryQueryOptions } from '@/lib/query-options'
+import { gameQueryQueryOptions, routeCql } from '@/lib/query-options'
 import { ComponentProperty, WorldField } from '@/lib/types'
 
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
@@ -34,8 +34,9 @@ export function SidebarQueries({ queries }: SidebarQueriesProps) {
     fields: {
       CQL: 'string',
     },
-    url: '/cql',
+    url: routeCql,
   }
+  queries = [...queries, cql]
 
   return (
     <Accordion collapsible type="single" defaultValue="default">
@@ -56,7 +57,6 @@ export function SidebarQueries({ queries }: SidebarQueriesProps) {
             </div>
           ) : (
             <Accordion collapsible type="single" className="space-y-2">
-              <Query query={cql} />
               {queries.map((q, i) => (
                 <Query key={i} query={q} />
               ))}
