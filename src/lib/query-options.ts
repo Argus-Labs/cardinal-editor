@@ -31,7 +31,8 @@ export const stateQueryOptions = ({
       body: '{}',
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${routeDebugState}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${routeDebugState}: ${error}`)
     }
     return res.json() as Promise<Entity[]>
   },
@@ -51,7 +52,8 @@ export const syncStateQueryOptions = ({
       body: '{}',
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${routeDebugState}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${routeDebugState}: ${error}`)
     }
     return res.json() as Promise<Entity[]>
   },
@@ -66,7 +68,8 @@ export const worldQueryOptions = ({
   queryFn: async () => {
     const res = await fetch(`${cardinalUrl}${routeWorld}`)
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${routeWorld}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${routeWorld}: ${error}`)
     }
     return res.json() as Promise<WorldResponse>
   },
@@ -94,7 +97,8 @@ export const gameQueryQueryOptions = ({
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${url}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${url}: ${error}`)
     }
     return res.json()
   },
@@ -115,7 +119,8 @@ export const gameMessageQueryOptions = ({
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${url}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${url}: ${error}`)
     }
     const tx = (await res.json()) as TransactionReturn
 
@@ -128,7 +133,8 @@ export const gameMessageQueryOptions = ({
       body: JSON.stringify(receiptBody),
     })
     if (!receipt.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${routeQryReceiptsList}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${routeQryReceiptsList}: ${error}`)
     }
     return receipt.json() as Promise<Receipt>
   },
@@ -148,7 +154,8 @@ export const personaQueryOptions = ({
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${routeMsgCreatePersona}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${routeMsgCreatePersona}: ${error}`)
     }
     const tx = (await res.json()) as TransactionReturn
 
@@ -161,7 +168,8 @@ export const personaQueryOptions = ({
       body: JSON.stringify(receiptBody),
     })
     if (!receipt.ok) {
-      throw new Error(`Failed to fetch ${cardinalUrl}${routeQryReceiptsList}`)
+      const error = await res.text()
+      throw new Error(`Error fetching ${cardinalUrl}${routeQryReceiptsList}: ${error}`)
     }
     return receipt.json() as Promise<Receipt>
   },

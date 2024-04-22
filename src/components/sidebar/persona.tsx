@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { Loader } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { personaQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { personaQueryOptions } from '@/lib/query-options'
 
 import { useToast } from '../ui/use-toast'
 
@@ -35,9 +35,12 @@ const formSchema = z.object({
     }),
 })
 
-export function CreatePersona() {
+interface CreatePersonaProps {
+  namespace: string
+}
+
+export function CreatePersona({ namespace }: CreatePersonaProps) {
   const { cardinalUrl, isCardinalConnected, personas, setPersonas } = useCardinal()
-  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,7 +52,6 @@ export function CreatePersona() {
 
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {
     const { privateKey, address, sign } = createPersonaAccount(personaTag)
-    const { namespace } = data!
     const nonce = 0 // new accounts will always start with 0 as the nonce
     const message = `${personaTag}${namespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
     const signature = sign(message)
@@ -60,39 +62,44 @@ export function CreatePersona() {
       namespace,
       body: { personaTag, signerAddress: address },
     }
-    const receipt = await queryClient.fetchQuery(
-      personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
-    )
 
-    // TODO: verify this
-    // we could just retry the query, however I couldn't get the receipt again after fetching
-    // a null receipt. this might me a bug with cardinal, or a feature(?).
-    if (!receipt.receipts) {
+    try {
+      const receipt = await queryClient.fetchQuery(
+        personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
+      )
+      // TODO: verify this
+      // we could just retry the query, however I couldn't get the receipt again after fetching
+      // a null receipt. this might me a bug with cardinal, or a feature(?).
+      if (!receipt.receipts) {
+        toast({
+          title: "Couldn't fetch receipt",
+          description: "We couldn't verify whether the persona was successfully created or not",
+        })
+        return
+      }
+      const result = receipt.receipts[0]
+      if (!result.result) {
+        const errors = result.errors?.join('\n')
+        toast({
+          title: 'Error creating persona',
+          description: errors,
+          variant: 'destructive',
+        })
+        return
+      }
       toast({
-        title: "Couldn't fetch receipt",
-        description: "We couldn't verify whether the persona was successfully created or not",
+        title: `Successfully created persona ${personaTag}`,
       })
-      return
-    }
-
-    const result = receipt.receipts[0]
-    if (!result.result) {
-      const errors = result.errors?.join('\n')
+      // only set the personas if there is no error
+      const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
+      setPersonas([...personas, newPersona])
+    } catch (error) {
       toast({
         title: 'Error creating persona',
-        description: errors,
+        description: error as string,
         variant: 'destructive',
       })
-      return
     }
-
-    toast({
-      title: `Successfully created persona ${personaTag}`,
-    })
-
-    // only set the personas if there is no error
-    const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
-    setPersonas([...personas, newPersona])
   }
 
   return (
