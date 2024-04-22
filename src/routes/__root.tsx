@@ -64,10 +64,10 @@ function Root() {
       const result = receipt.receipts[0]
       if (result.result) {
         const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
-        setPersonas([...personas, newPersona])
+        setPersonas([...newPersonas, newPersona])
       }
     }
-    sync().catch((e) => console.log(e))
+    if (isCardinalConnected) sync().catch((e) => console.log(e))
   }, [isCardinalConnected])
 
   return (
