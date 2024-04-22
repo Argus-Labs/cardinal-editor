@@ -76,7 +76,7 @@ export function CreatePersona() {
     }
 
     const result = receipt.receipts[0]
-    if (!result.result || !result.result.success) {
+    if (!result.result) {
       const errors = result.errors?.join('\n')
       toast({
         title: 'Error creating persona',

@@ -73,7 +73,7 @@ const formatAttribute = (attr: any): React.ReactNode => {
     case 'number':
       return <span className="text-orange-500">{attr}</span>
     case 'boolean':
-      return <span className="text-blue-500">{attr}</span>
+      return <span className="text-blue-500">{attr ? 'true' : 'false'}</span>
     default:
       return <span>{JSON.stringify(attr)}</span>
   }
