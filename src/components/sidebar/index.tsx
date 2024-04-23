@@ -35,7 +35,7 @@ export function Sidebar() {
 
   const messages = data?.messages.filter((m) => !builtinMessages.has(m.url)) ?? []
   const queries = data?.queries.filter((q) => !builtinQueries.has(q.url)) ?? []
-  const { namespace } = data!
+  const namespace = data?.namespace ?? ''
 
   return (
     <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 w-64 overflow-y-auto border-r text-sm">
