@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { ComponentProperty, Entity } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface EntityCardsListProps {
   entities: Entity[]
@@ -74,8 +75,21 @@ const formatAttribute = (attr: any): React.ReactNode => {
       return <span className="text-orange-500">{attr}</span>
     case 'boolean':
       return <span className="text-blue-500">{attr ? 'true' : 'false'}</span>
-    default:
-      return <span>{JSON.stringify(attr)}</span>
+    default: {
+      const json = JSON.stringify(attr)
+      const isTooLong = json.length > 12 // arbitrary, atm 12 works good but this might change
+      return (
+        // display: block if the JSON representation is too long to fit in 1 line
+        <span
+          className={cn(
+            'bg-muted border rounded-sm p-0.5 whitespace-pre-wrap',
+            isTooLong && 'block',
+          )}
+        >
+          {JSON.stringify(attr, null, isTooLong ? 2 : 0)}
+        </span>
+      )
+    }
   }
 }
 
@@ -93,7 +107,7 @@ function ComponentDetails({ name, component }: ComponentDetailsProps) {
       </summary>
       <div>
         {attributes.map((attr) => (
-          <p key={attr} className="ml-3 text-muted-foreground font-medium break-all">
+          <p key={attr} className="ml-3 text-muted-foreground font-medium break-all text-xs">
             {attr}: {formatAttribute(component[attr])}
           </p>
         ))}
