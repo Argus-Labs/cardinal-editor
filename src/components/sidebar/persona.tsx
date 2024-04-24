@@ -14,11 +14,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/use-toast'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { personaQueryOptions } from '@/lib/query-options'
-
-import { useToast } from '../ui/use-toast'
+import { errorToast } from '@/lib/utils'
 
 const formSchema = z.object({
   personaTag: z
@@ -94,11 +94,7 @@ export function CreatePersona({ namespace }: CreatePersonaProps) {
       const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
       setPersonas([...personas, newPersona])
     } catch (error) {
-      toast({
-        title: 'Error creating persona',
-        description: error as string,
-        variant: 'destructive',
-      })
+      errorToast(toast, error, 'Error creating persona')
     }
   }
 

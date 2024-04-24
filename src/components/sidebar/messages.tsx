@@ -25,12 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useToast } from '@/components/ui/use-toast'
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { gameMessageQueryOptions } from '@/lib/query-options'
 import { ComponentProperty, WorldField } from '@/lib/types'
+import { errorToast } from '@/lib/utils'
 
-import { useToast } from '../ui/use-toast'
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
 interface SidebarMessagesProps {
@@ -112,11 +113,7 @@ function Message({ message, namespace }: MessageProp) {
         }),
       )
     } catch (error) {
-      toast({
-        title: 'Failed to send message',
-        description: error as string,
-        variant: 'destructive',
-      })
+      errorToast(toast, error, 'Failed to send message')
     }
   }
 

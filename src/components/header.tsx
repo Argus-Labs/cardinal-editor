@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { worldQueryOptions } from '@/lib/query-options'
-import { cn } from '@/lib/utils'
+import { cn, errorToast } from '@/lib/utils'
 
 export function Header() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
@@ -22,11 +22,7 @@ export function Header() {
     try {
       await queryClient.fetchQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
     } catch (error) {
-      toast({
-        title: 'Error re-fetching word',
-        description: error as string,
-        variant: 'destructive',
-      })
+      errorToast(toast, error, 'Error re-fetching world')
     }
     setTimeout(() => setFetching(false), 900)
   }

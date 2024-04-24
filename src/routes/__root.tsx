@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { personaQueryOptions, syncStateQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { errorToast } from '@/lib/utils'
 
 export const Route = createRootRoute({
   component: Root,
@@ -71,25 +72,13 @@ function Root() {
               setPersonas([...newPersonas, newPersona])
             }
           } catch (error) {
-            toast({
-              title: 'Failed to create test persona',
-              description: error as string,
-              variant: 'destructive',
-            })
+            errorToast(toast, error, 'Failed to create test persona')
           }
         } catch (error) {
-          toast({
-            title: 'Failed to fetch cardinal namespace',
-            description: error as string,
-            variant: 'destructive',
-          })
+          errorToast(toast, error, 'Failed to fetch cardinal namespace')
         }
       } catch (error) {
-        toast({
-          title: 'Failed to sync personas',
-          description: error as string,
-          variant: 'destructive',
-        })
+        errorToast(toast, error, 'Failed to sync personas')
       }
     }
     if (isCardinalConnected) sync().catch((e) => console.log(e))

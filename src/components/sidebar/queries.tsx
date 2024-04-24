@@ -22,6 +22,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { gameQueryQueryOptions, routeCql } from '@/lib/query-options'
 import { ComponentProperty, WorldField } from '@/lib/types'
+import { errorToast } from '@/lib/utils'
 
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
@@ -93,13 +94,7 @@ function Query({ query }: QueryProp) {
         }),
       )
       .then(() => true)
-      .catch((error) =>
-        toast({
-          title: 'Error sending query',
-          description: error as string,
-          variant: 'destructive',
-        }),
-      )
+      .catch((error) => errorToast(toast, error, 'Error sending query'))
   }
 
   return (
