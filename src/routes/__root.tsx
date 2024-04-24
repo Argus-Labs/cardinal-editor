@@ -10,13 +10,13 @@ import { Toaster } from '@/components/ui/toaster'
 import { useToast } from '@/components/ui/use-toast'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { errorToast } from '@/lib/utils'
 import {
   personaQueryOptions,
   routeEvents,
   syncStateQueryOptions,
   worldQueryOptions,
 } from '@/lib/query-options'
+import { errorToast } from '@/lib/utils'
 
 export const Route = createRootRoute({
   component: Root,
