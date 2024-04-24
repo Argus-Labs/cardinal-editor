@@ -6,18 +6,24 @@ import logoDark from '@/assets/world-dark.svg'
 import logoLight from '@/assets/world-light.svg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { worldQueryOptions } from '@/lib/query-options'
-import { cn } from '@/lib/utils'
+import { cn, errorToast } from '@/lib/utils'
 
 export function Header() {
   const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
   const [fetching, setFetching] = useState(false)
   const queryClient = useQueryClient()
+  const { toast } = useToast()
 
   const refetchWorld = async () => {
     setFetching(true)
-    await queryClient.fetchQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+    try {
+      await queryClient.fetchQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
+    } catch (error) {
+      errorToast(toast, error, 'Error re-fetching world')
+    }
     setTimeout(() => setFetching(false), 900)
   }
 

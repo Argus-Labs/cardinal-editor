@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode, Loader } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
@@ -25,18 +25,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useToast } from '@/components/ui/use-toast'
 import { accountFromPersona } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { gameMessageQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { gameMessageQueryOptions } from '@/lib/query-options'
 import { ComponentProperty, WorldField } from '@/lib/types'
+import { errorToast } from '@/lib/utils'
 
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
 interface SidebarMessagesProps {
   messages: WorldField[]
+  namespace: string
 }
 
-export function SidebarMessages({ messages }: SidebarMessagesProps) {
+export function SidebarMessages({ messages, namespace }: SidebarMessagesProps) {
   return (
     <Accordion collapsible type="single" defaultValue="default">
       <AccordionItem value="default" className="border-0">
@@ -57,7 +60,7 @@ export function SidebarMessages({ messages }: SidebarMessagesProps) {
           ) : (
             <Accordion collapsible type="single" className="space-y-2">
               {messages.map((m, i) => (
-                <Message key={i} message={m} />
+                <Message key={i} message={m} namespace={namespace} />
               ))}
             </Accordion>
           )}
@@ -69,22 +72,22 @@ export function SidebarMessages({ messages }: SidebarMessagesProps) {
 
 interface MessageProp {
   message: WorldField
+  namespace: string
 }
 
-function Message({ message }: MessageProp) {
+function Message({ message, namespace }: MessageProp) {
   const { cardinalUrl, isCardinalConnected, personas, setPersonas } = useCardinal()
-  const { data } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const queryClient = useQueryClient()
   const form = useForm({
     resolver: zodResolver(formSchema(message)),
     defaultValues: defaultValues(message),
   })
+  const { toast } = useToast()
 
   const handleSubmit = async (values: ComponentProperty) => {
     const { persona: personaTag, ...fields } = values
     const persona = personas.filter((p) => p.personaTag === personaTag)[0]
     const { sign } = accountFromPersona(persona)
-    const { namespace } = data!
     const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
     const signature = sign(msg)
     const body = {
@@ -94,20 +97,24 @@ function Message({ message }: MessageProp) {
       nonce: persona.nonce,
       body: fields,
     }
-    await queryClient.fetchQuery(
-      gameMessageQueryOptions({
-        cardinalUrl,
-        isCardinalConnected,
-        url: message.url,
-        body,
-      }),
-    )
-    // increment nonce for the persona that submitted the message
-    setPersonas(
-      personas.map((p) => {
-        return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
-      }),
-    )
+    try {
+      await queryClient.fetchQuery(
+        gameMessageQueryOptions({
+          cardinalUrl,
+          isCardinalConnected,
+          url: message.url,
+          body,
+        }),
+      )
+      // increment nonce for the persona that submitted the message
+      setPersonas(
+        personas.map((p) => {
+          return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
+        }),
+      )
+    } catch (error) {
+      errorToast(toast, error, 'Failed to send message')
+    }
   }
 
   return (

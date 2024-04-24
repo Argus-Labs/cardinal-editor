@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Box, LayoutGrid, List, Unlink } from 'lucide-react'
+import { useEffect } from 'react'
 
 import { EntityCards, EntityList } from '@/components/entity-views'
 import { EditEntityGroupSheet } from '@/components/sheets/edit-entity-group'
 import { NewEntityGroupSheet } from '@/components/sheets/new-entity-group'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { stateQueryOptions } from '@/lib/query-options'
 
@@ -16,7 +18,22 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const { cardinalUrl, isCardinalConnected, view, setView, entityGroups } = useCardinal()
-  const { data: entities } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const {
+    data: entities,
+    isError,
+    error,
+  } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const { toast } = useToast()
+
+  // we need this useEffect to avoid react's infinite rerender error
+  useEffect(() => {
+    if (isError)
+      toast({
+        title: 'Failed to fetch entities',
+        description: error.message,
+        variant: 'destructive',
+      })
+  }, [isError, error, toast])
 
   const hasNoEntities = !(entities && entities.length > 0)
   // TODO: this is probably very inefficient. come up with a better filter algorithm
