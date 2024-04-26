@@ -1,13 +1,12 @@
 import { Entity, Receipt, TransactionReturn, WorldResponse } from '@/lib/types'
 import { sleep } from '@/lib/utils'
 
-// TODO: consider returning error status & message instead of throwing
-
 // builtin endpoints
 export const routeDebugState = '/debug/state'
 export const routeHealth = '/health'
 export const routeWorld = '/world'
 export const routeCql = '/cql'
+export const routeEvents = '/events'
 export const routeMsgCreatePersona = '/tx/persona/create-persona'
 export const routeMsgAuthorizePersonaAddress = '/tx/game/authorize-persona-address'
 export const routeQryPersonaSigner = '/query/persona/signer'

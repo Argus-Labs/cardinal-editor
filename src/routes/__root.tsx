@@ -10,12 +10,21 @@ import { Toaster } from '@/components/ui/toaster'
 import { useToast } from '@/components/ui/use-toast'
 import { createPersonaAccount } from '@/lib/account'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { personaQueryOptions, syncStateQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import {
+  personaQueryOptions,
+  routeEvents,
+  syncStateQueryOptions,
+  worldQueryOptions,
+} from '@/lib/query-options'
 import { errorToast } from '@/lib/utils'
 
 export const Route = createRootRoute({
   component: Root,
 })
+
+interface CardinalEvent {
+  Events: string[]
+}
 
 function Root() {
   const { personas, setPersonas, cardinalUrl, isCardinalConnected } = useCardinal()
@@ -82,7 +91,23 @@ function Root() {
       }
     }
     if (isCardinalConnected) sync().catch((e) => console.log(e))
-  }, [isCardinalConnected])
+  }, [isCardinalConnected, cardinalUrl, toast])
+
+  // setup websocket connection to receive events
+  useEffect(() => {
+    const wsCardinalUrl = cardinalUrl.replace(/https|http/, 'ws')
+    const ws = new WebSocket(`${wsCardinalUrl}${routeEvents}`)
+    ws.onopen = () => console.log('Connected to events ws')
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data as string) as CardinalEvent
+      if (data.Events && data.Events.length > 0) {
+        // data.Events is an array of base64-ed JSON representation of an event
+        const event = JSON.parse(atob(data.Events[0])) as { [key: string]: string }
+        toast({ title: event.event })
+      }
+    }
+    return () => ws.close()
+  }, [isCardinalConnected, cardinalUrl, toast])
 
   return (
     <>
