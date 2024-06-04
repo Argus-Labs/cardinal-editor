@@ -1,4 +1,4 @@
-import { Entity, Receipt, TransactionReturn, WorldResponse } from '@/lib/types'
+import { Receipt, TransactionReturn, UnPatchedEntity, WorldResponse } from '@/lib/types'
 import { sleep } from '@/lib/utils'
 
 // builtin endpoints
@@ -33,7 +33,7 @@ export const stateQueryOptions = ({
       const error = await res.text()
       throw new Error(`Error fetching ${cardinalUrl}${routeDebugState}: ${error}`)
     }
-    return res.json() as Promise<Entity[]>
+    return res.json() as Promise<UnPatchedEntity[]>
   },
   refetchInterval: 1000,
   enabled: isCardinalConnected,
@@ -54,7 +54,7 @@ export const syncStateQueryOptions = ({
       const error = await res.text()
       throw new Error(`Error fetching ${cardinalUrl}${routeDebugState}: ${error}`)
     }
-    return res.json() as Promise<Entity[]>
+    return res.json() as Promise<UnPatchedEntity[]>
   },
   enabled: isCardinalConnected,
 })

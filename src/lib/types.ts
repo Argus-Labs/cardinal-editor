@@ -9,6 +9,11 @@ export interface Entity {
   }
 }
 
+export interface UnPatchedEntity {
+  id: number
+  data: ComponentProperty[]
+}
+
 export interface WorldField {
   name: string
   fields: {

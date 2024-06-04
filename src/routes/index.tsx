@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
-import { stateQueryOptions } from '@/lib/query-options'
+import { stateQueryOptions, worldQueryOptions } from '@/lib/query-options'
+import { patchEntities } from '@/lib/utils'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -19,10 +20,11 @@ export const Route = createFileRoute('/')({
 function Index() {
   const { cardinalUrl, isCardinalConnected, view, setView, entityGroups } = useCardinal()
   const {
-    data: entities,
+    data: unpatchedEntities,
     isError,
     error,
   } = useQuery(stateQueryOptions({ cardinalUrl, isCardinalConnected }))
+  const { data: world } = useQuery(worldQueryOptions({ cardinalUrl, isCardinalConnected }))
   const { toast } = useToast()
 
   // we need this useEffect to avoid react's infinite rerender error
@@ -35,6 +37,7 @@ function Index() {
       })
   }, [isError, error, toast])
 
+  const entities = patchEntities(unpatchedEntities ?? [], world?.components ?? [])
   const hasNoEntities = !(entities && entities.length > 0)
   // TODO: this is probably very inefficient. come up with a better filter algorithm
   const grouped = new Set()

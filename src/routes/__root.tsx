@@ -16,7 +16,7 @@ import {
   syncStateQueryOptions,
   worldQueryOptions,
 } from '@/lib/query-options'
-import { errorToast } from '@/lib/utils'
+import { errorToast, patchEntities } from '@/lib/utils'
 
 export const Route = createRootRoute({
   component: Root,
@@ -37,9 +37,13 @@ function Root() {
         // syncs local personas with cardinal's. this is needed for running with `world cardinal start`,
         // where the state is persisted accross restarts. this is needed to keep track of the last nonce
         // used by each signer.
-        const entities = await queryClient.fetchQuery(
+        const unpatchedEntities = await queryClient.fetchQuery(
           syncStateQueryOptions({ cardinalUrl, isCardinalConnected }),
         )
+        const { components } = await queryClient.fetchQuery(
+          worldQueryOptions({ cardinalUrl, isCardinalConnected }),
+        )
+        const entities = patchEntities(unpatchedEntities, components)
         const newPersonas = personas.filter((p) => {
           const match = entities?.filter((e) => {
             const signer = e.components['SignerComponent']
