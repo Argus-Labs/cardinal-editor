@@ -69,5 +69,5 @@ world create my-game
 cd my-game
 
 # Start Cardinal in dev mode without the Cardinal Editor
-world cardinal dev --no-editor
+world cardinal dev --editor=false
 ```
