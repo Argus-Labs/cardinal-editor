@@ -8,13 +8,14 @@ interface EntityGroup {
   components: string[]
 }
 
-type ConfigItem = string | EntityGroup[] | Persona[]
+type ConfigItem = string | EntityGroup[] | Persona[] | boolean
 
 interface Config {
   cardinalUrl: string
   view: string // 'card' | 'list'
   entityGroups: EntityGroup[]
   personas: Persona[]
+  notifications: boolean
 }
 
 interface Projects {
@@ -31,6 +32,8 @@ interface CardinalProviderState {
   setEntityGroups: (entityGroups: EntityGroup[]) => void
   personas: Persona[]
   setPersonas: (personas: Persona[]) => void
+  notifications: boolean
+  setNotifications: (on: boolean) => void
 }
 
 interface CardinalProviderProps {
@@ -52,6 +55,7 @@ const defaultConfig: Config = {
   view: defaultView,
   entityGroups: defaultEntityGroups,
   personas: defaultPersonas,
+  notifications: false,
 }
 const defaultProject: Projects = {
   [__CARDINAL_PROJECT_ID__]: defaultConfig,
@@ -63,6 +67,7 @@ const initialState: CardinalProviderState = {
   setView: () => null,
   setEntityGroups: () => null,
   setPersonas: () => null,
+  setNotifications: () => null,
 }
 
 const CardinalProviderContext = createContext(initialState)
@@ -116,6 +121,7 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
     setView: (view: string) => setConfigItem('view', view),
     setEntityGroups: (entityGroups: EntityGroup[]) => setConfigItem('entityGroups', entityGroups),
     setPersonas: (personas: Persona[]) => setConfigItem('personas', personas),
+    setNotifications: (on: boolean) => setConfigItem('notifications', on),
   }
 
   return (
