@@ -27,7 +27,7 @@ interface CardinalEvent {
 }
 
 function Root() {
-  const { personas, setPersonas, cardinalUrl, isCardinalConnected } = useCardinal()
+  const { personas, setPersonas, cardinalUrl, isCardinalConnected, notifications } = useCardinal()
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
@@ -102,12 +102,25 @@ function Root() {
       const data = JSON.parse(event.data as string) as CardinalEvent
       if (data.Events && data.Events.length > 0) {
         // data.Events is an array of base64-ed JSON representation of an event
-        const event = JSON.parse(atob(data.Events[0])) as { [key: string]: string }
-        toast({ title: event.event })
+        data.Events.forEach((evt) => {
+          let eventData = atob(evt)
+          try {
+            const json = JSON.parse(eventData) as { [k: string]: string }
+            eventData = json.event
+          } catch (error) {
+            // this just means the backend used EmitStringEvent instead of EmitEvent,
+            // we can safely ignore this error
+          }
+          if (notifications) {
+            toast({ title: eventData })
+          } else {
+            console.log('Received event: ', eventData)
+          }
+        })
       }
     }
     return () => ws.close()
-  }, [isCardinalConnected, cardinalUrl, toast])
+  }, [isCardinalConnected, cardinalUrl, toast, notifications])
 
   return (
     <>

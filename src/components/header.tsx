@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { RefreshCw } from 'lucide-react'
+import { Bell, BellOff, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 
 import logoDark from '@/assets/world-dark.svg'
@@ -12,7 +12,8 @@ import { worldQueryOptions } from '@/lib/query-options'
 import { cn, errorToast } from '@/lib/utils'
 
 export function Header() {
-  const { cardinalUrl, setCardinalUrl, isCardinalConnected } = useCardinal()
+  const { cardinalUrl, setCardinalUrl, isCardinalConnected, notifications, setNotifications } =
+    useCardinal()
   const [fetching, setFetching] = useState(false)
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -51,6 +52,15 @@ export function Header() {
             onClick={() => void refetchWorld()}
           >
             <RefreshCw size={16} className={cn(fetching && 'animate-spin')} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8 flex-shrink-0"
+            title="Toggle notifications"
+            onClick={() => setNotifications(!notifications)}
+          >
+            {notifications ? <Bell size={17} /> : <BellOff size={17} />}
           </Button>
           <div
             className={cn(
