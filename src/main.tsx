@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
@@ -22,6 +23,34 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN as string,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.browserProfilingIntegration(),
+    Sentry.replayIntegration(),
+    Sentry.tanstackRouterBrowserTracingIntegration(router),
+    Sentry.feedbackIntegration({ colorScheme: 'system', autoInject: false }),
+  ],
+  release: 'cardinal-editor@v0.5.0',
+
+  /// Tracing
+  //  Capture 100% of the transactions
+  tracesSampleRate: 1.0,
+  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+  tracePropagationTargets: ['localhost'],
+
+  /// Session Replay
+  // This sets the sample rate at 10%. You may want to change it to 100% while in development
+  // and then sample at a lower rate in production.
+  replaysSessionSampleRate: 0.1,
+  // If you're not already sampling the entire session, change the sample rate to 100% when
+  // sampling sessions where errors occur.
+  replaysOnErrorSampleRate: 1.0,
+
+  profilesSampleRate: 1.0,
+})
 
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
