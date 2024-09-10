@@ -1,7 +1,7 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import path from 'node:path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({

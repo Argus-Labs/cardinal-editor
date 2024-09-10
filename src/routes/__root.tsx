@@ -163,6 +163,7 @@ function Fallback() {
           <a
             href="https://t.me/worldengine_dev"
             className={cn(buttonVariants({ variant: 'link' }), 'p-0')}
+            rel="noopener noreferrer"
           >
             World Engine Devs Telegram group
           </a>
