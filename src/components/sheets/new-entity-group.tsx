@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronsUpDown, X } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -59,6 +60,7 @@ export function NewEntityGroupSheet() {
     },
   })
   const [open, setOpen] = useState(false)
+  const posthog = usePostHog()
 
   const components = data?.components ?? []
   const options = components.map((c) => ({ label: c.name, value: c.name })) ?? []
@@ -84,12 +86,17 @@ export function NewEntityGroupSheet() {
     toast({
       title: 'Successfully created entity group',
     })
+    posthog.capture('Entity Group Created', {
+      componentsCount: values.components.length,
+    })
   }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button>New Entity Group</Button>
+        <Button onClick={() => posthog.capture('Entity Group Sheets Opened')}>
+          New Entity Group
+        </Button>
       </SheetTrigger>
       <SheetContent>
         <Form {...form}>

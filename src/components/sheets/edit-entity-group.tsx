@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronsUpDown, Edit, X } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -73,6 +74,7 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
     defaultValues: entityGroup,
   })
   const [open, setOpen] = useState(false)
+  const posthog = usePostHog()
 
   const originalName = entityGroup.name
   const components = data?.components ?? []
@@ -95,6 +97,13 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
     toast({
       title: 'Successfully updated entity group',
     })
+    const fieldsUpdated = Object.keys(entityGroup).filter((k) => {
+      const key = k as 'name' | 'components'
+      return entityGroup[key] !== values[key]
+    })
+    posthog.capture('Entity Group Edited', {
+      fieldsUpdated: fieldsUpdated,
+    })
   }
   const handleDelete = () => {
     const newEntityGroups = entityGroups.filter((eg) => eg.name !== originalName)
@@ -102,6 +111,9 @@ export function EditEntityGroupSheet({ entityGroup }: EditEntityGroupProps) {
     setOpen(false)
     toast({
       title: 'Successfully deleted entity group',
+    })
+    posthog.capture('Entity Group Deleted', {
+      componentsCount: entityGroup.components.length,
     })
   }
 

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { Loader } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -49,6 +50,7 @@ export function CreatePersona({ namespace }: CreatePersonaProps) {
     },
   })
   const { toast } = useToast()
+  const posthog = usePostHog()
 
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {
     const { privateKey, address, sign } = createPersonaAccount(personaTag)
@@ -93,8 +95,12 @@ export function CreatePersona({ namespace }: CreatePersonaProps) {
       // only set the personas if there is no error
       const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
       setPersonas([...personas, newPersona])
+      posthog.capture('Persona Created')
     } catch (error) {
       errorToast(toast, error, 'Error creating persona')
+      posthog.capture('Failed to Create Persona', {
+        error: error,
+      })
     }
   }
 
