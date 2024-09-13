@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { useEffect } from 'react'
@@ -5,6 +6,7 @@ import { useEffect } from 'react'
 import { BottomBar } from '@/components/bottom-bar'
 import { Header } from '@/components/header'
 import { Sidebar } from '@/components/sidebar'
+import { buttonVariants } from '@/components/ui/button'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Toaster } from '@/components/ui/toaster'
 import { useToast } from '@/components/ui/use-toast'
@@ -16,7 +18,7 @@ import {
   syncStateQueryOptions,
   worldQueryOptions,
 } from '@/lib/query-options'
-import { errorToast } from '@/lib/utils'
+import { cn, errorToast } from '@/lib/utils'
 
 export const Route = createRootRoute({
   component: Root,
@@ -123,7 +125,7 @@ function Root() {
   }, [isCardinalConnected, cardinalUrl, toast, notifications])
 
   return (
-    <>
+    <Sentry.ErrorBoundary fallback={Fallback}>
       <Header />
       <main className="flex h-[calc(100%-3rem-1px)]">
         <Sidebar />
@@ -140,6 +142,34 @@ function Root() {
           </ResizablePanelGroup>
         </div>
       </main>
-    </>
+    </Sentry.ErrorBoundary>
+  )
+}
+
+function Fallback() {
+  return (
+    <main className="flex justify-center pt-64 bg-muted min-h-screen">
+      <div className="bg-background border border-border rounded-lg max-w-xl p-4 space-y-4 self-start">
+        <h1 className="font-bold">An Unexpected Error Occured</h1>
+        <hr className="border-border" />
+        <p className="text-sm">Looks like we missed a bug, sorry about that!</p>
+        <p className="text-sm">
+          Most likely we've already been notified about this error, and are working to get a fix out
+          as soon as possible. In the mean time, try restarting the Cardinal Editor to see if it
+          helps.
+        </p>
+        <p className="text-sm">
+          You can also ask for help in the{' '}
+          <a
+            href="https://t.me/worldengine_dev"
+            className={cn(buttonVariants({ variant: 'link' }), 'p-0')}
+            rel="noopener noreferrer"
+          >
+            World Engine Devs Telegram group
+          </a>
+          .
+        </p>
+      </div>
+    </main>
   )
 }

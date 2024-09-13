@@ -1,6 +1,7 @@
+import * as Sentry from '@sentry/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Bell, BellOff, RefreshCw } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import logoDark from '@/assets/world-dark.svg'
 import logoLight from '@/assets/world-light.svg'
@@ -18,6 +19,12 @@ export function Header() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
+  useEffect(() => {
+    const feedback = Sentry.getFeedback()
+    const unsubscribe = feedback?.attachTo('#feedback-btn')
+    return unsubscribe
+  }, [])
+
   const refetchWorld = async () => {
     setFetching(true)
     try {
@@ -34,6 +41,12 @@ export function Header() {
         <img src={logoLight} width={32} height={32} className="dark:hidden" />
         <img src={logoDark} width={32} height={32} className="hidden dark:block" />
         <div className="flex items-center gap-2">
+          <div
+            className={cn(
+              'size-2 rounded-full flex-shrink-0',
+              isCardinalConnected ? 'bg-green-500' : 'bg-red-500',
+            )}
+          />
           <label htmlFor="host" className="flex-shrink-0 text-xs text-muted-foreground">
             Cardinal URL
           </label>
@@ -62,12 +75,9 @@ export function Header() {
           >
             {notifications ? <Bell size={17} /> : <BellOff size={17} />}
           </Button>
-          <div
-            className={cn(
-              'size-2 rounded-full flex-shrink-0',
-              isCardinalConnected ? 'bg-green-500' : 'bg-red-500',
-            )}
-          />
+          <Button id="feedback-btn" variant="outline" className="h-8 gap-2">
+            Give Feedback
+          </Button>
         </div>
       </nav>
     </header>
