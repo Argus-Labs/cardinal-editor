@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, MessageSquareCode, Loader } from 'lucide-react'
-import { usePostHog } from 'posthog-js/react'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -84,7 +83,6 @@ function Message({ message, namespace }: MessageProp) {
     defaultValues: defaultValues(message),
   })
   const { toast } = useToast()
-  const posthog = usePostHog()
 
   const handleSubmit = async (values: ComponentProperty) => {
     const { persona: personaTag, ...fields } = values
@@ -114,12 +112,8 @@ function Message({ message, namespace }: MessageProp) {
           return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
         }),
       )
-      posthog.capture('Message Submitted')
     } catch (error) {
       errorToast(toast, error, 'Failed to send message')
-      posthog.capture('Failed to Submit Message', {
-        error: error,
-      })
     }
   }
 

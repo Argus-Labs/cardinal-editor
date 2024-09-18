@@ -55,7 +55,10 @@ Sentry.init({
 
 const postHogConfig = {
   apiKey: import.meta.env.VITE_POSTHOG_KEY as string,
-  options: {},
+  options: {
+    person_profiles: 'identified_only',
+    capture_pageview: false,
+  },
 }
 
 const rootElement = document.getElementById('root')!

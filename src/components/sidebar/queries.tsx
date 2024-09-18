@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { BookDashed, Loader, SearchCode } from 'lucide-react'
-import { usePostHog } from 'posthog-js/react'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -83,7 +82,6 @@ function Query({ query }: QueryProp) {
     defaultValues: defaultValues(query),
   })
   const { toast } = useToast()
-  const posthog = usePostHog()
 
   const handleSubmit = (values: ComponentProperty) => {
     queryClient
@@ -95,15 +93,8 @@ function Query({ query }: QueryProp) {
           body: values,
         }),
       )
-      .then(() => {
-        posthog.capture('Query Submitted')
-      })
-      .catch((error) => {
-        errorToast(toast, error, 'Error sending query')
-        posthog.capture('Failed to Submit Query', {
-          error: error as string,
-        })
-      })
+      .then(() => true)
+      .catch((error) => errorToast(toast, error, 'Error sending query'))
   }
 
   return (
