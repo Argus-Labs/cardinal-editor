@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { PostHogConfig } from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
@@ -58,7 +59,7 @@ const postHogConfig = {
   options: {
     person_profiles: 'identified_only',
     capture_pageview: false,
-  },
+  } as PostHogConfig,
 }
 
 const rootElement = document.getElementById('root')!
