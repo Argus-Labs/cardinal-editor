@@ -1,6 +1,8 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { PostHogConfig } from 'posthog-js'
+import { PostHogProvider } from 'posthog-js/react'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 
@@ -52,18 +54,28 @@ Sentry.init({
   profilesSampleRate: 1.0,
 })
 
+const postHogConfig = {
+  apiKey: import.meta.env.VITE_POSTHOG_KEY as string,
+  options: {
+    person_profiles: 'identified_only',
+    capture_pageview: false,
+  } as PostHogConfig,
+}
+
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <QueryClientProvider client={queryClient}>
-          <CardinalProvider>
-            <RouterProvider router={router} />
-          </CardinalProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <PostHogProvider apiKey={postHogConfig.apiKey} options={postHogConfig.options}>
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+          <QueryClientProvider client={queryClient}>
+            <CardinalProvider>
+              <RouterProvider router={router} />
+            </CardinalProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </PostHogProvider>
     </StrictMode>,
   )
 }

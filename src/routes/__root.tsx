@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
+import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
 import { BottomBar } from '@/components/bottom-bar'
@@ -22,6 +23,9 @@ import { cn, errorToast } from '@/lib/utils'
 
 export const Route = createRootRoute({
   component: Root,
+  beforeLoad: (route) => {
+    posthog.capture('$pageview', { path: route.location.pathname })
+  },
 })
 
 interface CardinalEvent {
