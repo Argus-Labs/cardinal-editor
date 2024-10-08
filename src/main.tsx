@@ -27,7 +27,7 @@ declare module '@tanstack/react-router' {
 }
 
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN as string,
+  dsn: __SENTRY_DSN__,
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.browserProfilingIntegration(),
@@ -55,7 +55,7 @@ Sentry.init({
 })
 
 const postHogConfig = {
-  apiKey: import.meta.env.VITE_POSTHOG_KEY as string,
+  apiKey: __POSTHOG_KEY__,
   options: {
     person_profiles: 'identified_only',
     capture_pageview: false,
