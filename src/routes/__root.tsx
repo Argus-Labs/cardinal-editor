@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { Outlet, createRootRoute } from '@tanstack/react-router'
 import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
@@ -37,6 +37,7 @@ function Root() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
+  // biome-ignore lint: we don't want to rerun whenever `personas` changes
   useEffect(() => {
     const sync = async () => {
       try {
@@ -97,7 +98,7 @@ function Root() {
       }
     }
     if (isCardinalConnected) sync().catch((e) => console.log(e))
-  }, [isCardinalConnected, cardinalUrl, toast])
+  }, [isCardinalConnected, cardinalUrl, toast, queryClient, setPersonas])
 
   // setup websocket connection to receive events
   useEffect(() => {
@@ -113,7 +114,7 @@ function Root() {
           try {
             const json = JSON.parse(eventData) as { [k: string]: string }
             eventData = json.event
-          } catch (error) {
+          } catch (_error) {
             // this just means the backend used EmitStringEvent instead of EmitEvent,
             // we can safely ignore this error
           }
@@ -126,7 +127,7 @@ function Root() {
       }
     }
     return () => ws.close()
-  }, [isCardinalConnected, cardinalUrl, toast, notifications])
+  }, [cardinalUrl, toast, notifications])
 
   return (
     <Sentry.ErrorBoundary fallback={Fallback}>

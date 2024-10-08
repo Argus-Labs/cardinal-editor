@@ -93,7 +93,7 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
       try {
         const res = await fetch(`${config.cardinalUrl}${routeHealth}`)
         setIsCardinalConnected(res.ok)
-      } catch (error) {
+      } catch (_error) {
         setIsCardinalConnected(false)
       }
     }
