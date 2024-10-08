@@ -35,7 +35,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build
-        run: pnpm build
+        run: |
+          echo $VITE_SENTRY_DSN
+          echo $VITE_POSTHOG_KEY
+          pnpm build
         env:
           VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           VITE_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
