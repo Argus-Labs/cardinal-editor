@@ -3,12 +3,11 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'JetBrains Mono';
-  src:
-    url('./assets/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2') format('woff2'),
-    url('./assets/fonts/jetbrains-mono/JetBrainsMono-Medium.woff2') format('woff2'),
-    url('./assets/fonts/jetbrains-mono/JetBrainsMono-SemiBold.woff2') format('woff2'),
-    url('./assets/fonts/jetbrains-mono/JetBrainsMono-Bold.woff2') format('woff2');
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2") format("woff2"),
+    url("./assets/fonts/jetbrains-mono/JetBrainsMono-Medium.woff2") format("woff2"),
+    url("./assets/fonts/jetbrains-mono/JetBrainsMono-SemiBold.woff2") format("woff2"),
+    url("./assets/fonts/jetbrains-mono/JetBrainsMono-Bold.woff2") format("woff2");
 }
 
 @layer base {
@@ -85,7 +84,7 @@
 }
 
 html {
-  font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', Arial, sans-serif;
+  font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova", Arial, sans-serif;
 }
 
 html,
