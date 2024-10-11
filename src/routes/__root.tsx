@@ -98,7 +98,7 @@ function Root() {
       }
     }
     if (isCardinalConnected) sync().catch((e) => console.log(e))
-  }, [isCardinalConnected, cardinalUrl, toast, queryClient, setPersonas])
+  }, [isCardinalConnected, cardinalUrl, toast, queryClient])
 
   // setup websocket connection to receive events
   useEffect(() => {
