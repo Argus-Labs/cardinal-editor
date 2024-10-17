@@ -92,11 +92,11 @@ function CardinalUrl() {
           isCardinalConnected ? 'bg-green-500' : 'bg-red-500',
         )}
       />
-      <label htmlFor="host" className="flex-shrink-0 text-xs text-muted-foreground">
+      <label htmlFor="cardinal-host" className="flex-shrink-0 text-xs text-muted-foreground">
         Cardinal URL
       </label>
       <Input
-        id="host"
+        id="cardinal-host"
         placeholder="localhost:4040"
         value={cardinalUrl}
         onChange={(e) => setCardinalUrl(e.target.value)}
@@ -129,11 +129,11 @@ function JaegerUrl() {
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="host" className="flex-shrink-0 text-xs text-muted-foreground">
+      <label htmlFor="jaeger-host" className="flex-shrink-0 text-xs text-muted-foreground">
         Jaeger URL
       </label>
       <Input
-        id="host"
+        id="jaeger-host"
         placeholder="localhost:16686"
         value={jaegerUrl}
         onChange={(e) => setJaegerUrl(e.target.value)}
@@ -144,7 +144,7 @@ function JaegerUrl() {
         target="_blank"
         className={cn(buttonVariants({ variant: 'outline', size: 'icon' }), 'size-8 flex-shrink-0')}
         title="Open full Jaeger UI"
-        rel="noreferrer"
+        rel="noopener noreferrer"
       >
         <ExternalLink size={17} />
       </a>

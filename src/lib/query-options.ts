@@ -232,21 +232,19 @@ export const jaegerServicesQueryOptions = ({ jaegerUrl }: JaegerQueryOptionProps
   },
 })
 
-// TODO: validations && clean up
-function getDuration(lookback: string) {
+function getDurationMicroSeconds(lookback: string) {
   const lookupSeconds: { [k: string]: number } = {
     m: 60,
     h: 60 * 60,
     d: 60 * 60 * 24,
   }
-  const unit = lookback[lookback.length - 1]
-  const ns = lookupSeconds[unit] * 1_000_000
-  return ns
+  const seconds = lookback[lookback.length - 1]
+  return lookupSeconds[seconds] * 1_000_000
 }
 
 // since we're embedding an iframe, instead of fetching the page here, we're just
 // returning the url with the search params. we're effectively using tanstack query
-// as a state managemnt tool instead of putting it in a react context
+// as a state management tool instead of putting it in a react context
 export const jaegerSearchQueryOptions = ({ jaegerUrl, options }: JaegerQueryOptionProps) => ({
   queryKey: ['jaegerSearch'],
   queryFn: () => {
@@ -258,8 +256,8 @@ export const jaegerSearchQueryOptions = ({ jaegerUrl, options }: JaegerQueryOpti
     url.searchParams.append('limit', options.limit.toString())
     url.searchParams.append('uiEmbed', 'v0')
 
-    const now = Date.now() * 1000 // convert to ns
-    url.searchParams.append('start', (now - getDuration(options.lookback)).toString())
+    const now = Date.now() * 1000 // convert to microseconds
+    url.searchParams.append('start', (now - getDurationMicroSeconds(options.lookback)).toString())
     url.searchParams.append('end', now.toString())
 
     if (options.operation && options.operation.length > 0) {

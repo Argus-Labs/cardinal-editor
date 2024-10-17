@@ -15,8 +15,12 @@ function Jaeger() {
 
   useEffect(() => {
     const ping = async () => {
-      const res = await fetch(jaegerUrl)
-      setIsJaegerRunning(res.ok)
+      try {
+        const res = await fetch(jaegerUrl)
+        setIsJaegerRunning(res.ok)
+      } catch (_error) {
+        // no need to do anything as isJaegerRunning false by default
+      }
     }
     ping().then()
   }, [jaegerUrl])
@@ -35,7 +39,7 @@ function Jaeger() {
         </div>
       ) : (
         <div className="p-2 bg-white h-full border border-border rounded-md">
-          <iframe src={(url as string) ?? defaultUrl} className="w-full h-full" />
+          <iframe src={url && typeof url === 'string' ? url : defaultUrl} className="w-full h-full" />
         </div>
       )}
     </>

@@ -128,7 +128,6 @@ export function JaegerSidebar() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormControl></FormControl>
                   <FormMessage className="text-xs break-words" />
                 </FormItem>
               )}
@@ -140,7 +139,6 @@ export function JaegerSidebar() {
                 <FormItem>
                   <FormLabel>Operation</FormLabel>
                   <Select
-                    required
                     disabled={!selectedService}
                     defaultValue={field.value}
                     onValueChange={field.onChange}
@@ -166,7 +164,6 @@ export function JaegerSidebar() {
                         ))}
                     </SelectContent>
                   </Select>
-                  <FormControl></FormControl>
                   <FormMessage className="text-xs break-words" />
                 </FormItem>
               )}
@@ -208,7 +205,6 @@ export function JaegerSidebar() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormControl></FormControl>
                   <FormMessage className="text-xs break-words" />
                 </FormItem>
               )}

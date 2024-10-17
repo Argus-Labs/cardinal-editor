@@ -90,6 +90,9 @@ function CardinalLayout() {
       }
     }
     if (isCardinalConnected) sync().catch((e) => console.log(e))
+    // NOTE: take caution when adding dependencies here. you shouldn't add `personas` to this
+    // dependency array as it will result in a weird bug. Linters will always ask for
+    // exhaustive deps, be sure to test first before autofixing.
   }, [isCardinalConnected, cardinalUrl, toast, queryClient])
 
   // setup websocket connection to receive events
