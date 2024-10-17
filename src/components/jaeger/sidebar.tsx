@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
 import { jaegerSearchQueryOptions, jaegerServicesQueryOptions } from '@/lib/query-options'
 import { errorToast } from '@/lib/utils'
@@ -24,7 +25,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { BookDashed, Loader } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useToast } from '@/components/ui/use-toast'
 
 // custom lookback values not supported yet
 const lookbackValues = [
@@ -70,6 +70,7 @@ export function JaegerSidebar() {
     },
   })
   const { toast } = useToast()
+
   const serviceNames = Object.keys((services as object) ?? {})
   const selectedService = form.watch('service')
 
@@ -96,177 +97,170 @@ export function JaegerSidebar() {
   return (
     <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 w-64 overflow-y-auto border-r text-sm">
       <div className="space-y-2">
-        {!services ? (
-          <div className="flex flex-col gap-4 items-center bg-muted text-muted-foreground py-4 rounded-lg">
-            <BookDashed size={24} strokeWidth={2.5} />
-            <div className="space-y-2 text-center">
-              <p className="text-xs font-semibold">Disconnected...</p>
-            </div>
-          </div>
-        ) : (
-          <Form {...form}>
-            <form onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)} className="space-y-2">
-              <FormField
-                control={form.control}
-                name="service"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Service</FormLabel>
-                    <Select
-                      required
-                      disabled={serviceNames.length === 0}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-8">
-                          <SelectValue
-                            placeholder={
-                              serviceNames.length === 0 ? 'No services found' : 'Select service'
-                            }
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {serviceNames.map((service) => (
-                          <SelectItem key={service} value={service}>
-                            {service}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormControl></FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="operation"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Operation</FormLabel>
-                    <Select
-                      required
-                      disabled={!selectedService}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-8">
-                          <SelectValue
-                            placeholder={!selectedService ? 'No operations found' : 'All'}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem key="all" value="all">
-                          All
+        <Form {...form}>
+          <form onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)} className="space-y-2">
+            <FormField
+              control={form.control}
+              name="service"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Service</FormLabel>
+                  <Select
+                    required
+                    disabled={serviceNames.length === 0}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-8">
+                        <SelectValue
+                          placeholder={
+                            serviceNames.length === 0 ? 'No services found' : 'Select service'
+                          }
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {serviceNames.map((service) => (
+                        <SelectItem key={service} value={service}>
+                          {service}
                         </SelectItem>
-                        {services[selectedService] &&
-                          services[selectedService].map((operation) => (
-                            <SelectItem key={operation} value={operation}>
-                              {operation}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                    <FormControl></FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="tags"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tags</FormLabel>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormControl></FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="operation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Operation</FormLabel>
+                  <Select
+                    required
+                    disabled={!selectedService}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <FormControl>
-                      <Input
-                        placeholder="http.status_code=200 error=true"
-                        className="h-8"
-                        {...field}
-                      />
+                      <SelectTrigger className="h-8">
+                        <SelectValue
+                          placeholder={!selectedService ? 'No operations found' : 'All'}
+                        />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lookback"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lookback</FormLabel>
-                    <Select required defaultValue={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="h-8">
-                          <SelectValue placeholder="Select lookback" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {lookbackValues.map(({ title, value }) => (
-                          <SelectItem key={value} value={value}>
-                            {title}
+                    <SelectContent>
+                      <SelectItem key="all" value="all">
+                        All
+                      </SelectItem>
+                      {services &&
+                        selectedService &&
+                        services[selectedService] &&
+                        services[selectedService].map((operation) => (
+                          <SelectItem key={operation} value={operation}>
+                            {operation}
                           </SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-                    <FormControl></FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="maxDuration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Max Duration</FormLabel>
+                    </SelectContent>
+                  </Select>
+                  <FormControl></FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="http.status_code=200 error=true"
+                      className="h-8"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lookback"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lookback</FormLabel>
+                  <Select required defaultValue={field.value} onValueChange={field.onChange}>
                     <FormControl>
-                      <Input placeholder="e.g. 1.2s, ..." className="h-8" {...field} />
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder="Select lookback" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="minDuration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Min Duration</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 1.2s, ..." className="h-8" {...field} />
-                    </FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="limit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Limit Results</FormLabel>
-                    <FormControl>
-                      <Input required type="number" className="h-8" min="1" max="1500" {...field} />
-                    </FormControl>
-                    <FormMessage className="text-xs break-words" />
-                  </FormItem>
-                )}
-              />
-              <Button className="w-full h-8 gap-1">
-                {form.formState.isSubmitting ? (
-                  <Loader size={20} className="animate-spin" />
-                ) : (
-                  'Find Traces'
-                )}
-              </Button>
-            </form>
-          </Form>
-        )}
+                    <SelectContent>
+                      {lookbackValues.map(({ title, value }) => (
+                        <SelectItem key={value} value={value}>
+                          {title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormControl></FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="maxDuration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Duration</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 1.2s, ..." className="h-8" {...field} />
+                  </FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="minDuration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Min Duration</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 1.2s, ..." className="h-8" {...field} />
+                  </FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="limit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Limit Results</FormLabel>
+                  <FormControl>
+                    <Input required type="number" className="h-8" min="1" max="1500" {...field} />
+                  </FormControl>
+                  <FormMessage className="text-xs break-words" />
+                </FormItem>
+              )}
+            />
+            <Button disabled={!services} className="w-full h-8 gap-1">
+              {form.formState.isSubmitting ? (
+                <Loader size={20} className="animate-spin" />
+              ) : (
+                'Find Traces'
+              )}
+            </Button>
+          </form>
+        </Form>
       </div>
       <ThemeToggle className="self-end" />
     </aside>
