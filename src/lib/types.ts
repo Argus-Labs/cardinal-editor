@@ -48,3 +48,11 @@ export interface Receipt {
       }[]
     | null
 }
+
+export interface JaegerServicesResponse {
+  data: string[]
+  total: number
+  limit: number
+  offset: number
+  errors: string[] | null
+}

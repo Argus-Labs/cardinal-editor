@@ -12,14 +12,14 @@ import {
   worldQueryOptions,
 } from '@/lib/query-options'
 
-import { SidebarMessages } from './messages'
+import { CardinalSidebarMessages } from './messages'
 import { CreatePersona } from './persona'
-import { SidebarQueries } from './queries'
+import { CardinalSidebarQueries } from './queries'
 
 const builtinMessages = new Set([routeMsgCreatePersona, routeMsgAuthorizePersonaAddress])
 const builtinQueries = new Set([routeQryPersonaSigner, routeQryReceiptsList])
 
-export function Sidebar() {
+export function CardinalSidebar() {
   const cardinal = useCardinal()
   const { data, isError, error } = useQuery(worldQueryOptions(cardinal))
   const { toast } = useToast()
@@ -41,8 +41,8 @@ export function Sidebar() {
     <aside className="flex flex-col justify-between px-3 pt-4 pb-2 min-w-64 w-64 overflow-y-auto border-r text-sm">
       <div className="space-y-2">
         <CreatePersona namespace={namespace} />
-        <SidebarMessages messages={messages} namespace={namespace} />
-        <SidebarQueries queries={queries} />
+        <CardinalSidebarMessages messages={messages} namespace={namespace} />
+        <CardinalSidebarQueries queries={queries} />
       </div>
       <ThemeToggle className="self-end" />
     </aside>
