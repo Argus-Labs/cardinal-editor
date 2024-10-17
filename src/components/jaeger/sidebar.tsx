@@ -22,7 +22,7 @@ import { jaegerSearchQueryOptions, jaegerServicesQueryOptions } from '@/lib/quer
 import { errorToast } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { BookDashed, Loader } from 'lucide-react'
+import { Loader } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 

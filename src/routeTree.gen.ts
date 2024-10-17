@@ -11,11 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as CardinalImport } from './routes/_cardinal'
-import { Route as CardinalCardinalImport } from './routes/_cardinal.cardinal'
 import { Route as JaegerImport } from './routes/_jaeger'
-import { Route as JaegerJaegerImport } from './routes/_jaeger.jaeger'
+import { Route as CardinalImport } from './routes/_cardinal'
 import { Route as IndexImport } from './routes/index'
+import { Route as JaegerJaegerImport } from './routes/_jaeger.jaeger'
+import { Route as CardinalCardinalImport } from './routes/_cardinal.cardinal'
 
 // Create/Update Routes
 
