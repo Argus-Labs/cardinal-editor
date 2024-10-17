@@ -1,4 +1,4 @@
-import { EntityCard } from '@/components/entity-views'
+import { EntityCard } from '@/components/cardinal/entity-views'
 import {
   Accordion,
   AccordionContent,

@@ -11,13 +11,37 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as JaegerImport } from './routes/_jaeger'
+import { Route as CardinalImport } from './routes/_cardinal'
 import { Route as IndexImport } from './routes/index'
+import { Route as JaegerJaegerImport } from './routes/_jaeger.jaeger'
+import { Route as CardinalCardinalImport } from './routes/_cardinal.cardinal'
 
 // Create/Update Routes
+
+const JaegerRoute = JaegerImport.update({
+  id: '/_jaeger',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CardinalRoute = CardinalImport.update({
+  id: '/_cardinal',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const JaegerJaegerRoute = JaegerJaegerImport.update({
+  path: '/jaeger',
+  getParentRoute: () => JaegerRoute,
+} as any)
+
+const CardinalCardinalRoute = CardinalCardinalImport.update({
+  path: '/cardinal',
+  getParentRoute: () => CardinalRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -25,14 +49,158 @@ const IndexRoute = IndexImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
+    }
+    '/_cardinal': {
+      id: '/_cardinal'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof CardinalImport
+      parentRoute: typeof rootRoute
+    }
+    '/_jaeger': {
+      id: '/_jaeger'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof JaegerImport
+      parentRoute: typeof rootRoute
+    }
+    '/_cardinal/cardinal': {
+      id: '/_cardinal/cardinal'
+      path: '/cardinal'
+      fullPath: '/cardinal'
+      preLoaderRoute: typeof CardinalCardinalImport
+      parentRoute: typeof CardinalImport
+    }
+    '/_jaeger/jaeger': {
+      id: '/_jaeger/jaeger'
+      path: '/jaeger'
+      fullPath: '/jaeger'
+      preLoaderRoute: typeof JaegerJaegerImport
+      parentRoute: typeof JaegerImport
     }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexRoute])
+interface CardinalRouteChildren {
+  CardinalCardinalRoute: typeof CardinalCardinalRoute
+}
+
+const CardinalRouteChildren: CardinalRouteChildren = {
+  CardinalCardinalRoute: CardinalCardinalRoute,
+}
+
+const CardinalRouteWithChildren = CardinalRoute._addFileChildren(
+  CardinalRouteChildren,
+)
+
+interface JaegerRouteChildren {
+  JaegerJaegerRoute: typeof JaegerJaegerRoute
+}
+
+const JaegerRouteChildren: JaegerRouteChildren = {
+  JaegerJaegerRoute: JaegerJaegerRoute,
+}
+
+const JaegerRouteWithChildren =
+  JaegerRoute._addFileChildren(JaegerRouteChildren)
+
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '': typeof JaegerRouteWithChildren
+  '/cardinal': typeof CardinalCardinalRoute
+  '/jaeger': typeof JaegerJaegerRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '': typeof JaegerRouteWithChildren
+  '/cardinal': typeof CardinalCardinalRoute
+  '/jaeger': typeof JaegerJaegerRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/_cardinal': typeof CardinalRouteWithChildren
+  '/_jaeger': typeof JaegerRouteWithChildren
+  '/_cardinal/cardinal': typeof CardinalCardinalRoute
+  '/_jaeger/jaeger': typeof JaegerJaegerRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '' | '/cardinal' | '/jaeger'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '' | '/cardinal' | '/jaeger'
+  id:
+    | '__root__'
+    | '/'
+    | '/_cardinal'
+    | '/_jaeger'
+    | '/_cardinal/cardinal'
+    | '/_jaeger/jaeger'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  CardinalRoute: typeof CardinalRouteWithChildren
+  JaegerRoute: typeof JaegerRouteWithChildren
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  CardinalRoute: CardinalRouteWithChildren,
+  JaegerRoute: JaegerRouteWithChildren,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "__root.tsx",
+      "children": [
+        "/",
+        "/_cardinal",
+        "/_jaeger"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/_cardinal": {
+      "filePath": "_cardinal.tsx",
+      "children": [
+        "/_cardinal/cardinal"
+      ]
+    },
+    "/_jaeger": {
+      "filePath": "_jaeger.tsx",
+      "children": [
+        "/_jaeger/jaeger"
+      ]
+    },
+    "/_cardinal/cardinal": {
+      "filePath": "_cardinal.cardinal.tsx",
+      "parent": "/_cardinal"
+    },
+    "/_jaeger/jaeger": {
+      "filePath": "_jaeger.jaeger.tsx",
+      "parent": "/_jaeger"
+    }
+  }
+}
+ROUTE_MANIFEST_END */

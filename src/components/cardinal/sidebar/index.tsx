@@ -19,7 +19,7 @@ import { SidebarQueries } from './queries'
 const builtinMessages = new Set([routeMsgCreatePersona, routeMsgAuthorizePersonaAddress])
 const builtinQueries = new Set([routeQryPersonaSigner, routeQryReceiptsList])
 
-export function Sidebar() {
+export function CardinalSidebar() {
   const cardinal = useCardinal()
   const { data, isError, error } = useQuery(worldQueryOptions(cardinal))
   const { toast } = useToast()
