@@ -34,7 +34,7 @@ function CardinalLayout() {
     const sync = async () => {
       try {
         // syncs local personas with cardinal's. this is needed for running with `world cardinal start`,
-        // where the state is persisted accross restarts. this is needed to keep track of the last nonce
+        // where the state is persisted across restarts. this is needed to keep track of the last nonce
         // used by each signer.
         const entities = await queryClient.fetchQuery(
           syncStateQueryOptions({ cardinalUrl, isCardinalConnected }),

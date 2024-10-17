@@ -238,8 +238,10 @@ function getDurationMicroSeconds(lookback: string) {
     h: 60 * 60,
     d: 60 * 60 * 24,
   }
-  const seconds = lookback[lookback.length - 1]
-  return lookupSeconds[seconds] * 1_000_000
+  const unit = lookback[lookback.length - 1]
+  const unitToSeconds = lookupSeconds[unit]
+  const seconds = parseInt(lookback.slice(0, lookback.length))
+  return seconds * unitToSeconds * 1_000_000
 }
 
 // since we're embedding an iframe, instead of fetching the page here, we're just

@@ -33,7 +33,7 @@ export function Header() {
   return (
     <header className="border-b">
       <nav className="flex items-center justify-between px-3 h-12">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
           <img src={logoLight} width={32} height={32} className="dark:hidden" />
           <img src={logoDark} width={32} height={32} className="hidden dark:block" />
           {links.map((link) => (
@@ -41,8 +41,8 @@ export function Header() {
               key={link.href}
               to={link.href}
               className={cn(
-                buttonVariants({ variant: location === link.href ? 'default' : 'outline' }),
-                'px-4 py-2 h-8',
+                'text-sm font-medium transition-colors hover:text-primary',
+                location === link.href ? 'text-primary' : 'text-muted-foreground',
               )}
             >
               {link.title}
