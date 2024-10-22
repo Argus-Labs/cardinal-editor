@@ -1,13 +1,24 @@
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useCardinal } from '@/lib/cardinal-provider'
+import { routeJaegerServices } from '@/lib/query-options'
+import { errorToast } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Clipboard, Unlink } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
 
 export const Route = createFileRoute('/_jaeger/jaeger')({
   component: Jaeger,
+})
+
+const responseSchema = z.object({
+  data: z.string().array(),
+  total: z.number(),
+  limit: z.number(),
+  offset: z.number(),
+  errors: z.string().array().nullable(),
 })
 
 function Jaeger() {
@@ -19,10 +30,22 @@ function Jaeger() {
   useEffect(() => {
     const ping = async () => {
       try {
-        const res = await fetch(jaegerUrl)
-        setIsJaegerRunning(res.ok)
-      } catch (_error) {
-        // no need to do anything as isJaegerRunning false by default
+        // checking /api/services is more accurate than checking the root / route
+        const res = await fetch(jaegerUrl + routeJaegerServices)
+        if (!res.ok) {
+          const error = await res.text()
+          throw error
+        }
+        const body = await res.json()
+        const parsed = responseSchema.safeParse(body)
+        // this means jaegerUrl isn't pointing to a proper jaeger service
+        if (!parsed.success) {
+          throw new Error("Invalid Jaeger Services API")
+        }
+        setIsJaegerRunning(true)
+      } catch (error) {
+        setIsJaegerRunning(false)
+        errorToast(toast, error, "Error fetching Jaeger")
       }
     }
     ping().then()
