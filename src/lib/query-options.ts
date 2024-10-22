@@ -240,7 +240,7 @@ function getDurationMicroSeconds(lookback: string) {
   }
   const unit = lookback[lookback.length - 1]
   const unitToSeconds = lookupSeconds[unit]
-  const seconds = parseInt(lookback.slice(0, lookback.length))
+  const seconds = parseInt(lookback.slice(0, -1))
   return seconds * unitToSeconds * 1_000_000
 }
 
