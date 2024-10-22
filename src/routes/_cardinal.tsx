@@ -98,30 +98,39 @@ function CardinalLayout() {
   // setup websocket connection to receive events
   useEffect(() => {
     const wsCardinalUrl = cardinalUrl.replace(/https|http/, 'ws')
-    const ws = new WebSocket(`${wsCardinalUrl}${routeEvents}`)
-    ws.onopen = () => console.log('Connected to events ws')
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data as string) as CardinalEvent
-      if (data.Events && data.Events.length > 0) {
-        // data.Events is an array of base64-ed JSON representation of an event
-        data.Events.forEach((evt) => {
-          let eventData = atob(evt)
-          try {
-            const json = JSON.parse(eventData) as { [k: string]: string }
-            eventData = json.event
-          } catch (_error) {
-            // this just means the backend used EmitStringEvent instead of EmitEvent,
-            // we can safely ignore this error
-          }
-          if (notifications) {
-            toast({ title: eventData })
-          } else {
-            console.log('Received event: ', eventData)
-          }
-        })
+    let ws: WebSocket;
+    try {
+      // this throws error if url scheme is not valid
+      ws = new WebSocket(`${wsCardinalUrl}${routeEvents}`)
+      ws.onopen = () => console.log('Connected to events ws')
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data as string) as CardinalEvent
+        if (data.Events && data.Events.length > 0) {
+          // data.Events is an array of base64-ed JSON representation of an event
+          data.Events.forEach((evt) => {
+            let eventData = atob(evt)
+            try {
+              const json = JSON.parse(eventData) as { [k: string]: string }
+              eventData = json.event
+            } catch (_error) {
+              // this just means the backend used EmitStringEvent instead of EmitEvent,
+              // we can safely ignore this error
+            }
+            if (notifications) {
+              toast({ title: eventData })
+            } else {
+              console.log('Received event: ', eventData)
+            }
+          })
+        }
       }
+    } catch (error) {
+      // no need to toast this error as it might be spammy
+      console.log(error)
     }
-    return () => ws.close()
+    return () => {
+      if (ws) ws.close()
+    }
   }, [cardinalUrl, toast, notifications])
 
   return (
