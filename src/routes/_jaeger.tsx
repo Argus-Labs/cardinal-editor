@@ -11,7 +11,7 @@ function JaegerLayout() {
     <main className="flex h-[calc(100%-3rem-1px)]">
       <JaegerSidebar />
       <div className="w-full h-full">
-        <div className="bg-muted h-full p-4 overflow-y-auto">
+        <div className="bg-muted h-full p-3 overflow-y-auto">
           <Outlet />
         </div>
         <Toaster />

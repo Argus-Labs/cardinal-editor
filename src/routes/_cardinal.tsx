@@ -98,7 +98,7 @@ function CardinalLayout() {
   // setup websocket connection to receive events
   useEffect(() => {
     const wsCardinalUrl = cardinalUrl.replace(/https|http/, 'ws')
-    let ws: WebSocket;
+    let ws: WebSocket
     try {
       // this throws error if url scheme is not valid
       ws = new WebSocket(`${wsCardinalUrl}${routeEvents}`)

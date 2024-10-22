@@ -40,16 +40,16 @@ function Jaeger() {
         const parsed = responseSchema.safeParse(body)
         // this means jaegerUrl isn't pointing to a proper jaeger service
         if (!parsed.success) {
-          throw new Error("Invalid Jaeger Services API")
+          throw new Error('Invalid Jaeger Services API')
         }
         setIsJaegerRunning(true)
       } catch (error) {
         setIsJaegerRunning(false)
-        errorToast(toast, error, "Error fetching Jaeger")
+        errorToast(toast, error, 'Error fetching Jaeger')
       }
     }
     ping().then()
-  }, [jaegerUrl])
+  }, [jaegerUrl, toast])
 
   const defaultUrl = `${jaegerUrl}/?uiEmbed=v0`
   const telemetryCommand = 'world cardinal start --telemetry'
