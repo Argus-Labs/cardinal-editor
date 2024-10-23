@@ -16,6 +16,7 @@ interface Config {
   entityGroups: EntityGroup[]
   personas: Persona[]
   notifications: boolean
+  jaegerUrl: string
 }
 
 interface Projects {
@@ -34,6 +35,8 @@ interface CardinalProviderState {
   setPersonas: (personas: Persona[]) => void
   notifications: boolean
   setNotifications: (on: boolean) => void
+  jaegerUrl: string
+  setJaegerUrl: (jaegerUrl: string) => void
 }
 
 interface CardinalProviderProps {
@@ -50,12 +53,14 @@ const defaultEntityGroups: EntityGroup[] = [
   },
 ]
 const defaultPersonas: Persona[] = []
+const defaultJaegerUrl = 'http://localhost:16686'
 const defaultConfig: Config = {
   cardinalUrl: defaultCardinalUrl,
   view: defaultView,
   entityGroups: defaultEntityGroups,
   personas: defaultPersonas,
   notifications: false,
+  jaegerUrl: defaultJaegerUrl,
 }
 const defaultProject: Projects = {
   [__CARDINAL_PROJECT_ID__]: defaultConfig,
@@ -68,6 +73,7 @@ const initialState: CardinalProviderState = {
   setEntityGroups: () => null,
   setPersonas: () => null,
   setNotifications: () => null,
+  setJaegerUrl: () => null,
 }
 
 const CardinalProviderContext = createContext(initialState)
@@ -123,6 +129,7 @@ export function CardinalProvider({ children, ...props }: CardinalProviderProps) 
     setEntityGroups: (entityGroups: EntityGroup[]) => setConfigItem('entityGroups', entityGroups),
     setPersonas: (personas: Persona[]) => setConfigItem('personas', personas),
     setNotifications: (on: boolean) => setConfigItem('notifications', on),
+    setJaegerUrl: (jaegerUrl: string) => setConfigItem('jaegerUrl', jaegerUrl),
   }
 
   return (
