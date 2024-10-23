@@ -30,29 +30,3 @@ export interface Persona {
   address: string
   nonce: number
 }
-
-export interface TransactionReturn {
-  TxHash: string
-  Tick: number
-}
-
-export interface Receipt {
-  startTick: number
-  endTick: number
-  receipts:
-    | {
-        txHash: string
-        tick: number
-        result: object | null
-        errors: string[] | null
-      }[]
-    | null
-}
-
-export interface JaegerServicesResponse {
-  data: string[]
-  total: number
-  limit: number
-  offset: number
-  errors: string[] | null
-}

@@ -1,10 +1,4 @@
-import {
-  Entity,
-  JaegerServicesResponse,
-  Receipt,
-  TransactionReturn,
-  WorldResponse,
-} from '@/lib/types'
+import { Entity, WorldResponse } from '@/lib/types'
 import { sleep } from '@/lib/utils'
 
 // cardinal builtin endpoints
@@ -114,6 +108,24 @@ export const gameQueryQueryOptions = ({
   enabled: isCardinalConnected,
 })
 
+interface TransactionReturn {
+  TxHash: string
+  Tick: number
+}
+
+interface Receipt {
+  startTick: number
+  endTick: number
+  receipts:
+    | {
+        txHash: string
+        tick: number
+        result: object | null
+        errors: string[] | null
+      }[]
+    | null
+}
+
 export const gameMessageQueryOptions = ({
   cardinalUrl,
   isCardinalConnected,
@@ -196,6 +208,14 @@ interface JaegerQueryOptionProps {
     minDuration?: string
     limit: number
   }
+}
+
+export interface JaegerServicesResponse {
+  data: string[]
+  total: number
+  limit: number
+  offset: number
+  errors: string[] | null
 }
 
 export const jaegerServicesQueryOptions = ({ jaegerUrl }: JaegerQueryOptionProps) => ({
