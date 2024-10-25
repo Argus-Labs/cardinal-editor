@@ -45,7 +45,8 @@ function Jaeger() {
         setIsJaegerRunning(true)
       } catch (error) {
         setIsJaegerRunning(false)
-        errorToast(toast, error, 'Error fetching Jaeger')
+        errorToast(toast, new Error('Cannot connect to Jaeger service'), 'Error fetching Jaeger')
+        console.log(error)
       }
     }
     ping().then()
