@@ -117,13 +117,13 @@ interface Receipt {
   startTick: number
   endTick: number
   receipts:
-    | {
-        txHash: string
-        tick: number
-        result: object | null
-        errors: string[] | null
-      }[]
-    | null
+  | {
+    txHash: string
+    tick: number
+    result: object | null
+    errors: string[] | null
+  }[]
+  | null
 }
 
 export const gameMessageQueryOptions = ({
@@ -270,7 +270,8 @@ function getDurationMicroSeconds(lookback: string) {
 export const jaegerSearchQueryOptions = ({ jaegerUrl, options }: JaegerQueryOptionProps) => ({
   queryKey: ['jaegerSearch'],
   queryFn: () => {
-    if (!options) return // unreachable
+    // jaegerSearchQueryOptions must be called with options
+    if (!options) return
     const url = new URL(routeJaegerSearch, jaegerUrl)
 
     url.searchParams.append('service', options.service)
