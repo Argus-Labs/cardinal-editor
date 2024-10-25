@@ -34,12 +34,12 @@ import { errorToast } from '@/lib/utils'
 
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
-interface SidebarMessagesProps {
+interface CardinalSidebarMessagesProps {
   messages: WorldField[]
   namespace: string
 }
 
-export function SidebarMessages({ messages, namespace }: SidebarMessagesProps) {
+export function CardinalSidebarMessages({ messages, namespace }: CardinalSidebarMessagesProps) {
   return (
     <Accordion collapsible type="single" defaultValue="default">
       <AccordionItem value="default" className="border-0">

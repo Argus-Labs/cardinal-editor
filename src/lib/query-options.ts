@@ -1,7 +1,7 @@
-import { Entity, Receipt, TransactionReturn, WorldResponse } from '@/lib/types'
+import { Entity, WorldResponse } from '@/lib/types'
 import { sleep } from '@/lib/utils'
 
-// builtin endpoints
+// cardinal builtin endpoints
 export const routeDebugState = '/debug/state'
 export const routeHealth = '/health'
 export const routeWorld = '/world'
@@ -11,6 +11,10 @@ export const routeMsgCreatePersona = '/tx/persona/create-persona'
 export const routeMsgAuthorizePersonaAddress = '/tx/game/authorize-persona-address'
 export const routeQryPersonaSigner = '/query/persona/signer'
 export const routeQryReceiptsList = '/query/receipts/list'
+
+// jaeger endpoints
+export const routeJaegerServices = '/api/services'
+export const routeJaegerSearch = '/search'
 
 interface cardinalQueryOptionsProps {
   cardinalUrl: string
@@ -104,6 +108,24 @@ export const gameQueryQueryOptions = ({
   enabled: isCardinalConnected,
 })
 
+interface TransactionReturn {
+  TxHash: string
+  Tick: number
+}
+
+interface Receipt {
+  startTick: number
+  endTick: number
+  receipts:
+  | {
+    txHash: string
+    tick: number
+    result: object | null
+    errors: string[] | null
+  }[]
+  | null
+}
+
 export const gameMessageQueryOptions = ({
   cardinalUrl,
   isCardinalConnected,
@@ -173,4 +195,107 @@ export const personaQueryOptions = ({
     return receipt.json() as Promise<Receipt>
   },
   enabled: isCardinalConnected,
+})
+
+interface JaegerQueryOptionProps {
+  jaegerUrl: string
+  options?: {
+    service: string
+    operation?: string
+    tags?: string
+    lookback: string
+    maxDuration?: string
+    minDuration?: string
+    limit: number
+  }
+}
+
+export interface JaegerServicesResponse {
+  data: string[]
+  total: number
+  limit: number
+  offset: number
+  errors: string[] | null
+}
+
+export const jaegerServicesQueryOptions = ({ jaegerUrl }: JaegerQueryOptionProps) => ({
+  queryKey: ['jaegerServicesAndOperations'],
+  queryFn: async () => {
+    const res = await fetch(`${jaegerUrl}${routeJaegerServices}`)
+    if (!res.ok) {
+      const error = await res.text()
+      throw new Error(`error fetching ${jaegerUrl}${routeJaegerServices}: ${error}`)
+    }
+
+    const data = (await res.json()) as JaegerServicesResponse
+    if (data.errors) {
+      throw new Error(`error fetching ${jaegerUrl}${routeJaegerServices}: ${data.errors}`)
+    }
+
+    const services: { [k: string]: string[] } = {}
+    for (const service of data.data) {
+      const url = `${jaegerUrl}${routeJaegerServices}/${service}/operations`
+      const res = await fetch(url)
+      if (!res.ok) {
+        const error = await res.text()
+        throw new Error(`error fetching ${url}: ${error}`)
+      }
+      const operation = (await res.json()) as JaegerServicesResponse
+      // assume if 1 operation request errors, error the whole request
+      if (operation.errors) {
+        throw new Error(`error fetching ${url}: ${operation.errors}`)
+      }
+      services[service] = operation.data
+    }
+
+    return services
+  },
+})
+
+function getDurationMicroSeconds(lookback: string) {
+  const lookupSeconds: { [k: string]: number } = {
+    m: 60,
+    h: 60 * 60,
+    d: 60 * 60 * 24,
+  }
+  const unit = lookback[lookback.length - 1]
+  const unitToSeconds = lookupSeconds[unit]
+  const seconds = parseInt(lookback.slice(0, -1), 10)
+  return seconds * unitToSeconds * 1_000_000
+}
+
+// since we're embedding an iframe, instead of fetching the page here, we're just
+// returning the url with the search params. we're effectively using tanstack query
+// as a state management tool instead of putting it in a react context
+export const jaegerSearchQueryOptions = ({ jaegerUrl, options }: JaegerQueryOptionProps) => ({
+  queryKey: ['jaegerSearch'],
+  queryFn: () => {
+    // jaegerSearchQueryOptions must be called with options
+    if (!options) return
+    const url = new URL(routeJaegerSearch, jaegerUrl)
+
+    url.searchParams.append('service', options.service)
+    url.searchParams.append('lookback', options.lookback)
+    url.searchParams.append('limit', options.limit.toString())
+    url.searchParams.append('uiEmbed', 'v0')
+
+    const now = Date.now() * 1000 // convert to microseconds
+    url.searchParams.append('start', (now - getDurationMicroSeconds(options.lookback)).toString())
+    url.searchParams.append('end', now.toString())
+
+    if (options.operation && options.operation.length > 0) {
+      url.searchParams.append('operation', options.operation)
+    }
+    if (options.tags && options.tags.length > 0) {
+      url.searchParams.append('tags', options.tags)
+    }
+    if (options.maxDuration && options.maxDuration.length > 0) {
+      url.searchParams.append('maxDuration', options.maxDuration)
+    }
+    if (options.minDuration && options.minDuration.length > 0) {
+      url.searchParams.append('minDuration', options.minDuration)
+    }
+
+    return url.toString()
+  },
 })

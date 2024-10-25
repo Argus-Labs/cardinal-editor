@@ -26,11 +26,11 @@ import { errorToast } from '@/lib/utils'
 
 import { defaultValues, formSchema, formatName, goTypeToInputComponent } from './utils'
 
-interface SidebarQueriesProps {
+interface CardinalSidebarQueriesProps {
   queries: WorldField[]
 }
 
-export function SidebarQueries({ queries }: SidebarQueriesProps) {
+export function CardinalSidebarQueries({ queries }: CardinalSidebarQueriesProps) {
   const cql: WorldField = {
     name: 'CQL',
     fields: {
