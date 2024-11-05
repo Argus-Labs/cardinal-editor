@@ -90,6 +90,26 @@ function customSign(msg: string, privateKey: `0x${string}`) {
   return signatureToHex(signature)
 }
 
+function createTransaction(
+  privateKey: `0x${string}`,
+  personaTag: string,
+  namespace: string,
+  body: object,
+) {
+  const timestamp = Date.now()
+  const salt = crypto.getRandomValues(new Uint16Array(1))[0]
+  const msg = `${personaTag}${namespace}${timestamp}${salt}${JSON.stringify(body)}`
+  const signature = customSign(msg, privateKey).slice(2) // remove `0x` from hex string
+  return {
+    personaTag,
+    signature,
+    namespace,
+    timestamp,
+    salt,
+    body,
+  }
+}
+
 export const createPersonaAccount = (personaTag: string) => {
   const privateKey = generatePrivateKey()
   const { address } = privateKeyToAccount(privateKey)
@@ -98,9 +118,8 @@ export const createPersonaAccount = (personaTag: string) => {
     personaTag,
     privateKey,
     address,
-    sign: (msg: string) => {
-      const signature = customSign(msg, privateKey)
-      return signature.slice(2) // remove `0x` from hex string
+    createTransaction: (namespace: string, body: object) => {
+      return createTransaction(privateKey, personaTag, namespace, body)
     },
   }
 }
@@ -109,9 +128,8 @@ export const accountFromPersona = (persona: Persona) => {
   const privateKey = persona.privateKey as `0x{string}`
   return {
     ...persona,
-    sign: (msg: string) => {
-      const signature = customSign(msg, privateKey)
-      return signature.slice(2)
+    createTransaction: (namespace: string, body: object) => {
+      return createTransaction(privateKey, persona.personaTag, namespace, body)
     },
   }
 }
