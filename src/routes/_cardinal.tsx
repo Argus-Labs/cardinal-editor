@@ -34,11 +34,13 @@ function CardinalLayout() {
     const sync = async () => {
       try {
         // syncs local personas with cardinal's. this is needed for running with `world cardinal start`,
-        // where the state is persisted across restarts. this is needed to keep track of the last nonce
-        // used by each signer.
+        // where the state is persisted across restarts.
         const entities = await queryClient.fetchQuery(
           syncStateQueryOptions({ cardinalUrl, isCardinalConnected }),
         )
+        // this removes local personas that isn't in the remote cardinal state. if a local persona
+        // has the same persona tag and signer address as a remote persona, they are considered the
+        // same and are not removed.
         const newPersonas = personas.filter((p) => {
           const match = entities?.filter((e) => {
             const signer = e.components['SignerComponent']
@@ -57,26 +59,23 @@ function CardinalLayout() {
           const { namespace } = await queryClient.fetchQuery(
             worldQueryOptions({ cardinalUrl, isCardinalConnected }),
           )
-          const { privateKey, address, sign } = createPersonaAccount(personaTag)
-          const nonce = 0
-          const message = `${personaTag}${namespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
-          const signature = sign(message)
-          const body = {
-            personaTag,
-            nonce,
-            signature,
-            namespace,
-            body: { personaTag, signerAddress: address },
-          }
+          const { privateKey, address, createTransaction } = createPersonaAccount(personaTag)
+          const txBody = { personaTag, signerAddress: address }
+          const transaction = createTransaction(namespace, txBody)
+
           try {
             const receipt = await queryClient.fetchQuery(
-              personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
+              personaQueryOptions({
+                cardinalUrl,
+                isCardinalConnected,
+                body: transaction,
+              }),
             )
 
             if (!receipt.receipts) return
             const result = receipt.receipts[0]
             if (result.result) {
-              const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
+              const newPersona = { personaTag, privateKey, address }
               setPersonas([...newPersonas, newPersona])
             }
           } catch (error) {

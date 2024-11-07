@@ -76,7 +76,7 @@ interface MessageProp {
 }
 
 function Message({ message, namespace }: MessageProp) {
-  const { cardinalUrl, isCardinalConnected, personas, setPersonas } = useCardinal()
+  const { cardinalUrl, isCardinalConnected, personas } = useCardinal()
   const queryClient = useQueryClient()
   const form = useForm({
     resolver: zodResolver(formSchema(message)),
@@ -87,29 +87,15 @@ function Message({ message, namespace }: MessageProp) {
   const handleSubmit = async (values: ComponentProperty) => {
     const { persona: personaTag, ...fields } = values
     const persona = personas.filter((p) => p.personaTag === personaTag)[0]
-    const { sign } = accountFromPersona(persona)
-    const msg = `${personaTag}${namespace}${persona.nonce}${JSON.stringify(fields)}`
-    const signature = sign(msg)
-    const body = {
-      personaTag,
-      signature,
-      namespace,
-      nonce: persona.nonce,
-      body: fields,
-    }
+    const { createTransaction } = accountFromPersona(persona)
+    const transaction = createTransaction(namespace, fields)
     try {
       await queryClient.fetchQuery(
         gameMessageQueryOptions({
           cardinalUrl,
           isCardinalConnected,
           url: message.url,
-          body,
-        }),
-      )
-      // increment nonce for the persona that submitted the message
-      setPersonas(
-        personas.map((p) => {
-          return p.personaTag === personaTag ? { ...p, nonce: p.nonce + 1 } : p
+          body: transaction,
         }),
       )
     } catch (error) {

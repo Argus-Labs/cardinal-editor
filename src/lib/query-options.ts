@@ -117,13 +117,13 @@ interface Receipt {
   startTick: number
   endTick: number
   receipts:
-  | {
-    txHash: string
-    tick: number
-    result: object | null
-    errors: string[] | null
-  }[]
-  | null
+    | {
+        txHash: string
+        tick: number
+        result: object | null
+        errors: string[] | null
+      }[]
+    | null
 }
 
 export const gameMessageQueryOptions = ({

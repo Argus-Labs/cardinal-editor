@@ -28,5 +28,4 @@ export interface Persona {
   personaTag: string
   privateKey: string
   address: string
-  nonce: number
 }

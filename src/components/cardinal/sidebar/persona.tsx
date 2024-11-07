@@ -51,21 +51,17 @@ export function CreatePersona({ namespace }: CreatePersonaProps) {
   const { toast } = useToast()
 
   const handleSubmit = async ({ personaTag }: z.infer<typeof formSchema>) => {
-    const { privateKey, address, sign } = createPersonaAccount(personaTag)
-    const nonce = 0 // new accounts will always start with 0 as the nonce
-    const message = `${personaTag}${namespace}${nonce}{"personaTag":"${personaTag}","signerAddress":"${address}"}`
-    const signature = sign(message)
-    const body = {
-      personaTag,
-      nonce,
-      signature,
-      namespace,
-      body: { personaTag, signerAddress: address },
-    }
+    const { privateKey, address, createTransaction } = createPersonaAccount(personaTag)
+    const txBody = { personaTag, signerAddress: address }
+    const transaction = createTransaction(namespace, txBody)
 
     try {
       const receipt = await queryClient.fetchQuery(
-        personaQueryOptions({ cardinalUrl, isCardinalConnected, body }),
+        personaQueryOptions({
+          cardinalUrl,
+          isCardinalConnected,
+          body: transaction,
+        }),
       )
       // TODO: verify this
       // we could just retry the query, however I couldn't get the receipt again after fetching
@@ -91,7 +87,7 @@ export function CreatePersona({ namespace }: CreatePersonaProps) {
         title: `Successfully created persona ${personaTag}`,
       })
       // only set the personas if there is no error
-      const newPersona = { personaTag, privateKey, address, nonce: nonce + 1 }
+      const newPersona = { personaTag, privateKey, address }
       setPersonas([...personas, newPersona])
     } catch (error) {
       errorToast(toast, error, 'Error creating persona')
